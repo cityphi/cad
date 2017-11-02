@@ -1,4 +1,4 @@
-% Run this to get the graphs and angles relating to CG
+%Code to simulate the gondola running down the keel
 clear;clc;
 
 % Variables for the program
@@ -15,7 +15,7 @@ data = ones(points+1, 4);
 
 for i = 1:(points+1);
     loc = distanceStep*(i-1); % Actual distance on keel
-    CG = centre_of_mass(mass, loc, keelDist, radius);
+    CG = centreOfMass(mass, loc, keelDist, radius);
     pitch = atan(CG(1)/CG(2)) * 180/pi; % Use CV and CG to get pitch
 
     % Fix for if angle greater than -90

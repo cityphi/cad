@@ -100,7 +100,7 @@ set(handles.NumWeights,'Value',1); %The 1st item of the list is selected. Change
 set(handles.TXT_shaftlength,'String','21.25');
 
 %Set the window title with the group identification:
-set(handles.figure1,'Name','Group ABC // CADCAM 2017');
+set(handles.figure1,'Wildcat Engineering','Group RE3 // CADCAM 2017');
 
 %Add the 'subfunctions' folder to the path so that subfunctions can be
 %accessed

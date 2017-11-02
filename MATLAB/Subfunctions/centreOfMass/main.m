@@ -2,7 +2,7 @@
 clear;clc;
 
 % Variables for the program
-massFile = 'mass_location.csv'; %file name
+massFile = 'massLocation.csv'; %file name
 points = 1000; %number of points for graph
 extension = 50; %extension past CV
 keelDist = 27; %roughly an inch

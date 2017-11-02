@@ -1,4 +1,4 @@
-function CG = centre_of_mass(M, loc, keelDist, radius)
+function CG = centreOfMass(M, loc, keelDist, radius)
 total = sum(M);
 MTotal = total(1);
 pos = [gondola(loc, 'x', keelDist, radius) ...

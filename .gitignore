@@ -38,4 +38,9 @@ Thumbs.db
 
 # MATLAB files #
 ################
-.m~
+*.asv
+*.m~
+*.mex*
+slprj/
+octave-workspace
+*.autosave

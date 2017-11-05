@@ -33,4 +33,3 @@ if  isequal(round(output, 4), round(expected, 4)) == 0
     result = 'Fail';
 end
 end
-

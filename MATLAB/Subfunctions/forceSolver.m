@@ -111,10 +111,3 @@ if unsolveable ~= 1
         solved(i, 1:3) = unknown(i, 1:3);
     end
 end
-
-
-
-
-    
-            
-            

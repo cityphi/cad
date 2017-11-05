@@ -1,11 +1,10 @@
-% DELETE THIS FILE FOR FINAL
-% USED TO TEST THE FUNCTIONS
+% tests all funcitons using the code in /testFunctions
+% !!!Delete this from master when project is done
 clear; clc;
 
 % gets all the subfolders
 addpath(genpath(pwd));
 
-% copy this for the different tests that care created
+% ---forceSolver Test
 forceSolverTestResult = forceSolverTest();
 disp(strcat('Force Solver --', forceSolverTestResult));
-

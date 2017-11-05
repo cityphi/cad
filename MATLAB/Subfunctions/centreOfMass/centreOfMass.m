@@ -1,6 +1,6 @@
-%This function takes a fixed and moving centre of mass as well information
-%on the location of the Gondola, then returns the overall centre of mass
-function CG = centreOfMass(M, loc, keelDist, radius)
+function CM = centreOfMass(M, loc, keelDist, radius)
+%Finds the Centre of Mass using location of the Gondola
+
 %Get the total mass of system
 total = sum(M);
 MTotal = total(1);
@@ -8,13 +8,13 @@ MTotal = total(1);
 %Get the x-z position of gondola
 pos = gondola(loc, keelDist, radius);
 
-%Calculate the CV
-CG  = [((M(1, 2) + pos(1))*M(1, 1) + M(2, 2)*M(2, 1))/MTotal, ...
+%Calculate the Centre of Mass
+CM  = [((M(1, 2) + pos(1))*M(1, 1) + M(2, 2)*M(2, 1))/MTotal, ...
        ((M(1, 3) + pos(2))*M(1, 1) + M(2, 3)*M(2, 1))/MTotal];
 
-%Subfunction for centreOfMass, finds a x-z coordinate based on distance
-%traveled along the keel
-function pos = gondola(loc, keelDist, radius)
+
+function [x, z] = gondola(loc, keelDist, radius)
+%Finds a x-z coordinate based on distance traveled along the keel
 arcLength = radius*pi/2;
 
 %Flat section of the keel
@@ -37,6 +37,3 @@ else
     x = 0; z = 0;
     
 end
-
-%Build the array to feedback
-pos = [x, z];

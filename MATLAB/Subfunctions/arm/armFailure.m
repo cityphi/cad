@@ -15,6 +15,7 @@ a = aPitch*pi()/180;
 fixed = [ 0 0 -0.637 1 1 1 1 1 1 ];
 % Forces on arm [ locX locY locZ Fx Fy Fz Mx My Mz ] 
 numForces = size(weight, 1) + size(inForce, 1);
+forces = zeros((size(weight, 1) + size(inForce, 1))*2, 9);
 
 % BUILD Forces array for weight
 for i = 1:size(weight, 1)

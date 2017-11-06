@@ -92,9 +92,9 @@ while loop == 1
     % check if it has run out of points to take moments
     % if it has then end the porgram and return a blank array
     if loop == 1 && (about + 1) > numReactions
+        disp('Did not sovle reaction forces')
         loop = 0; unsolveable = 1;
     end
-    
 end
 
 % if the program solved - convert from rref format to output format

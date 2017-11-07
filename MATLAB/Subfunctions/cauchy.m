@@ -28,7 +28,7 @@ sigma1 = max(sigmas);
 sigma3 = min(sigmas);
 
 % brittle-mohr-coulomb
-if sigma1 >= 0 && sigmaB3 >= 0
+if sigma1 >= 0 && sigma3 >= 0
     n = Sut/sigma1;
     
 elseif sigma1 >= 0 && sigma3 <= 0

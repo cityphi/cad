@@ -23,8 +23,10 @@ motorForces = [
     0.5*Ls Lhs 0 0 0 0.5*Fspring 0 0 0; %spring forces acting on screw 2 
     ];
 
-screwReactions = [ -0.5*Ls Lhs 0 1 1 0 0 0 0;
-                    0.5*Ls Lhs 0 1 1 0 0 0 0; ];
+screwReactions = [ -0.5*Ls Lhs 0 1 1 0 1 1 0;
+                    0.5*Ls Lhs 0 0 1 0 0 0 0; ];
 
-output = forceSolver(motorForces, screwReactions)
+output = forceSolver(motorForces, screwReactions);
+
+disp(output)
 end

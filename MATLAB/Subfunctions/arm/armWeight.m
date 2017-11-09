@@ -19,5 +19,4 @@ locY = 4*(ro^3 - ri^3)/(3*pi()*(ro^2 - ri^2));
 locZ = -locY;
 
 weight = [ mag, locX, locY, locZ ];
-
 end

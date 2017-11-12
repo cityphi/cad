@@ -5,7 +5,7 @@ function [ armReactions, dimensions ] = arm( inForces, weights, material )
 %   material is [density modulus ..] whatever properties needed of material
 
 loop = 1; % looping variable for the function
-aPitch = 90; % unsure how want to do this yet
+aPitch = 45; % unsure how want to do this yet
 safetyFactor = 15; 
 
 % dimensions of the arm [ri thickness width]
@@ -23,7 +23,7 @@ while loop
     % analysis of the arm
     weights(end, :) = armWeight(dimensions, material);
     [armReactions, halfReactions] = armForces(weights, inForces, aPitch);
-    stressTensor = armFailure(halfReactions, dimensions);
+    stressTensor = armFailure(halfReactions, dimensions, [-0.0050 0.0025]);
     n = cauchy(stressTensor, material(2), material(3));
     
     % safety factor check and iteration    

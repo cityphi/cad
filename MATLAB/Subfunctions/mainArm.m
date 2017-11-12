@@ -18,6 +18,7 @@ material = [1550 600*10^6 570*10^6];
 % add all the subfolders to the path
 addpath(genpath(pwd));
 
+%worstCase = armFindWorstCase(inForce, weights, material);
 [forces, dimensions] = arm(inForce, weights, material);
-disp(forces)
-disp(dimensions)
+
+disp(dimensions);

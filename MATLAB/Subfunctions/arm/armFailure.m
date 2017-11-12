@@ -1,13 +1,15 @@
-function [ tensor ] = armFailure( forces, dimensions )
+function [ tensor ] = armFailure( forces, dimensions, location )
 %ARMFAILURE finds the safety factor of the arm
 %   forces is [ locX locY locZ Fx Fy Fz Mx My Mz ] acting on the arm
 %   dimensions is [ri thickness width]
-%   aPitch is the angle that the blimp is currently pitched at 
+%   location is [x y] and is the point to evaluate all stresses on face
 
 % split dimensions array for use in equations
 ri  = dimensions(1);
 h   = dimensions(2);
 k   = dimensions(3);
+x   = location(1);
+z   = location(2);
 
 % split the forces array for use in equations
 Fx  = forces(4);
@@ -25,8 +27,7 @@ e   = rbar - r; % difference from centre to neutral axis
 
 % area of the x-z cross-section
 A   = h*k;
-% distance from neutral axis to surface (max stress)
-ci  = r - ri;
+Iz  = k^3*h/12;
 
 % for the torsion calcualtions, need to know the largest dimension
 if h > k
@@ -37,11 +38,12 @@ end
 
 % assume that the max occurs from torsion and stress at corner
 Sx  = 0;
-Sy  = -Mx*ci/(e*A*ri) - 6*Mz/(k^2*h) + Fy/A; % two plane stress
+Sy  = -Mx*z/(e*A*ri) - Mz*x/Iz + Fy/A; % two plane stress
 Sz  = 0;
-txy = 0;
+
+txy = Fz*3/(2*A)*(1-z^2/(h/2)^2);
 txz = -My/(b*c^2)*(3+1.8*c/b); % torsional sheer
-tyz = 0;
+tyz = Fx*3/(2*A)*(1-x^2/(k/2)^2);
 
 % layout of the cauchy stress tensor
 tensor = [ Sx  txy txz;

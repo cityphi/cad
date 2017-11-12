@@ -24,6 +24,7 @@ ro  = ri + h;
 rbar= ri + h/2;
 r   = h/log(ro/ri);
 e   = rbar - r; % difference from centre to neutral axis
+z   = z - e; % modify the height to be 
 
 % area of the x-z cross-section
 A   = h*k;
@@ -40,7 +41,6 @@ end
 Sx  = 0;
 Sy  = -Mx*z/(e*A*ri) - Mz*x/Iz + Fy/A; % two plane stress
 Sz  = 0;
-
 txy = Fz*3/(2*A)*(1-z^2/(h/2)^2);
 txz = -My/(b*c^2)*(3+1.8*c/b); % torsional sheer
 tyz = Fx*3/(2*A)*(1-x^2/(k/2)^2);

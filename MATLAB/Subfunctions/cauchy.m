@@ -1,11 +1,17 @@
-function [ n ] = cauchy( s, Sut, Suc )
+function [ n ] = cauchy( s, Sut, Suc, Sy, brittle )
 %CAUCHY uses cauchy tensor to get a safety factor
-%   n = cauchy(s, Sut, Suc) takes the cauchy tensor s and material
-%   information (Ultimate tensile and compression) to calculate the safety
-%   factor.
-%   The method this is using the the Mohr-Coulomb failure model adapted for
-%   brittle materials. It uses the cauchy tensor to get the three
-%   principal stresses then uses them to find the safety factor.
+%   n = cauchy(s, Sut, Suc, Sy, brittle) takes the cauchy tensor s and 
+%   material information (Ultimate tensile and compression) to calculate 
+%   the safety factor.
+%
+%   For Brittle:
+%   Use the the Mohr-Coulomb failure model adapted for brittle materials. 
+%   It uses the cauchy tensor to get the three principal stresses then uses
+%   them to find the safety factor. (uses Sut, Suc)
+% 
+%   For Ductile:
+%   Use von Mises with the three primary stresses found to get a safety
+%   factor for the part. (uses Sy)
 %
 %   Tensor is of form (S is sigma, t is tau):
 %   | Sx  txy txz |
@@ -21,19 +27,28 @@ I2 = s(1, 1)*s(2, 2) + s(2, 2)*s(3, 3) + s(1, 1)*s(3, 3) - s(1, 2)^2 - ...
 % characteristic equation
 char = [-1 I1 -I2 I3];
 
-% get the sigmas and find the ones needed
-sigmas = roots(char);
+% get the roots and find the sigmas
+charRoots = roots(char);
+s1 = max(charRoots);
+s3 = min(charRoots);
+s2 = I1 - s1 - s3;
 
-sigma1 = max(sigmas);
-sigma3 = min(sigmas);
+switch brittle
+    % brittle-mohr-coulomb (Shigley, 227)
+    case 1
+        if s1 >= 0 && s3 >= 0
+            n = Sut/s1;
 
-% brittle-mohr-coulomb
-if sigma1 >= 0 && sigma3 >= 0
-    n = Sut/sigma1;
-    
-elseif sigma1 >= 0 && sigma3 <= 0
-    n = Sut*Suc/(Suc*sigma1-Sut*sigma3);
-    
-else
-    n = -Suc/sigma3;
+        elseif s1 >= 0 && s3 <= 0
+            n = Sut*Suc/(Suc*s1-Sut*s3);
+
+        else
+            n = -Suc/s3;
+        end
+        
+    % von Mises (Shigley, 216)
+    case 0
+        sPrime = sqrt(((s1 - s2)^2 + (s2 - s3)^2 + (s3 - s1)^2)/2);
+        n = Sy/sPrime;
+end
 end

@@ -8,3 +8,7 @@ addpath(genpath(pwd));
 % ---forceSolver Test
 forceSolverTestResult = forceSolverTest();
 disp(strcat('Force Solver --', forceSolverTestResult));
+
+% ---cauchy Test
+cauchyTestResult = cauchyTest();
+disp(strcat('Cauchy --', cauchyTestResult));

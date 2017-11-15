@@ -26,7 +26,7 @@ for aPitch = minAngle:1:maxAngle
     % find the safety factor at current conditions
     [~, halfReactions] = armForces(weights, inForces, aPitch);
     stressTensor = armTensor(halfReactions, dimensions);
-    n = cauchy(stressTensor, material(2), material(3));
+    n = cauchy(stressTensor, material);
 
     % store data
     data(i, :) = [aPitch n];

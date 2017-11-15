@@ -11,7 +11,7 @@ function [ dimensions ] = connector(inForces, weights, material)
 safetyFactor = 5; % hard coded value for the safety factor
 
 % [ length width height ] - starting
-dimensions = [ 0.04 0.001 0.033 ];
+dimensions = [ 0.04 0.0005 0.033 ];
 change = 0.0001;
 
 % location of analysis
@@ -30,17 +30,16 @@ for aPitch = minAngle:1:maxAngle
     
     % safety factor for stresses
     stressTensor = connectorTensor(bottomForces, dimensions);
-    SF(1) = cauchy(stressTensor, material(2), material(3));
+    SF(1) = cauchy(stressTensor, material);
     
     % safety factor for buckling
-    Pcr = (1.2)*pi()^2*material(4)* dimensions(2)^3/(12*dimensions(3));
+    Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
     SF(2) = Pcr/force(6);
 
     % store data
     data(i, :) = [aPitch SF];
     i = i + 1;
 end
-
 [worst, row] = min(data(:, 2:3));
 [~, col] = min(worst);
 
@@ -59,11 +58,11 @@ while loop && iterations < maxIterations;
     if col == 1
         % safety factor for stresses
         stressTensor = connectorTensor(bottomForces, dimensions);
-        n = cauchy(stressTensor, material(2), material(3));
+        n = cauchy(stressTensor, material);
         
     elseif col == 2
         % safety factor for buckling
-        Pcr = (1.2)*pi()^2*material(4)* dimensions(2)^3/(12*dimensions(3));
+        Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
         n = Pcr/force(6);
     end
     

@@ -28,7 +28,7 @@ while loop && iterations < maxIterations
     weights(end, :) = armWeight(dimensions, material(1));
     [~, halfReactions] = armForces(weights, inForces, aPitch);
     stressTensor = armTensor(halfReactions, dimensions);
-    n = cauchy(stressTensor, material(2), material(3));
+    n = cauchy(stressTensor, material);
     
     % safety factor check and iteration    
     if n < safetyFactor

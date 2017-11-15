@@ -35,8 +35,8 @@ solved = zeros(numReactions, 9); % output
 k = 1;
 if unsolveable ~= 1
     % set the forces
-    for j = 1:numForces
-        for i = 1:numReactions
+    for i = 1:numReactions
+        for j = 1:numForces
             if zeroForces((i-1)*numForces + j) == 0
                 solved(i, j+offset) = reducedSolver(k, end);
                 k = k + 1;

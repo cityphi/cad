@@ -12,10 +12,10 @@ tensor = [ 23814.2 12758.8 0 ;
 Sut = 31000;
 Suc = 109000;
        
-expected = 1.20;
+expected = 1.00;
 output = cauchy(tensor, Sut, Suc);
 
-if  isequal(round(output, 3), round(expected, 3)) == 0
+if  isequal(round(output, 2), round(expected, 2)) == 0
      result = 'Fail';  
 end
 end

@@ -1,15 +1,20 @@
 %Forces is [locX locY locZ Fx Fy Fz Mx My Mz] 
 %Test for forces acting on gondola driving motor
 
-Tw = 4;   %motor torque
-Ls = 4;   %distance between screws
-Lhs = 5;  %length from motor hinge axle to motor mount screws
-Lsw = 1;  %length from motor mount screw to friction wheel contact point
-La = 1;   %length from motor hinge axle to gondola screw a 
-Lb = 3;   %length from motor hinge axle to gondola screw b 
-Hsw = 2;  %height of friction wheel contact point off hinge
-rFw = 1;  %friction wheel radius
-Mu = 0.5; %frictionwheel to keel coefficient of friction
+Tw = 0.1;             %motor torque
+Ls = 0.04;             %distance between screws
+Lhs = 0.05;            %length from motor hinge axle to motor mount screws
+Lsw = 0.015;            %length from motor mount screw to friction wheel contact point
+La = 0.01;             %length from motor hinge axle to gondola screw a 
+Lb = 0.03;             %length from motor hinge axle to gondola screw b 
+Hsw = 0.024;            %height of friction wheel contact point off hinge
+rFw = 0.0127;       %friction wheel radius
+Mu = 0.65;          %frictionwheel to keel coefficient of friction
+Muwasher = 0.2;     %washer to gondola coefficent of friction
+Dscrew = 0.003;       %gondola/hinge screw diameter 
+Dwashero = 0.005;     %outer washer diameter
+Dwasheri = 0.003;     %inner washer diameter
+Scompressive = 55;  %The compressive yield strength of Nylon 6 [Mpa]
 
 Tspring = 1.5 * (Tw * (Lhs+Lsw))/(rFw * Mu); %spring torque
 
@@ -25,22 +30,29 @@ motorForces = [
   %  0 0 0 0 0 0 Tw 0 0;
     ];
 
-hingeReactions = [ %-0.5*Ls Lhs 0 1 1 0 0 0 0; 
-                   % 0.5*Ls Lhs 0 0 1 0 0 0 0;
+ hingeReactions = [ %-0.5*Ls La 0 1 1 1 0 1 0; 
+                   %0.5*Ls Lb 0 1 0 1 0 0 0;];
                     0 0 0 1 1 1 1 1 1;];
 
 hingeForce = -forceSolver(motorForces, hingeReactions)
 
 %gondola screw reactions
 
-gondScrewReactions = [ -0.5*Ls La 0 1 1 1 0 0 0; 
-                       0.5*Ls Lb 0 1 1 1 0 0 0;];
+gondScrewReactionsWorst = [ -0.5*Ls La 0 1 1 1 1 1 0; 
+                        0.5*Ls Lb 0 0 1 0 0 0 0;];
 
-gondScrewReactionsFixed = forceSolver(hingeForce, gondScrewReactions);
+gondScrewReactionsWorstSolved = forceSolver(hingeForce, gondScrewReactions);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Calculating compressive safety factor for screw
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+gondScrewReactionsWorstSolved = gondScrewReactionsWorstSolved(1,:)
 
-%adjusting for proper reactions 
+Fbolt = sqrt(gondScrewReactionsWorstSolved(1,4)^2+gondScrewReactionsWorstSolved(1,5)^2)... 
+    /Muwasher + gondScrewReactionsWorstSolved(1,6)
+
+Ncompressive = Scompressive*10^6/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2))
 
 % screwReactionsFixed(1,4) = 0.5*screwReactionsFixed(1,4);
 % screwReactionsFixed(2,4) = screwReactionsFixed(1,4);

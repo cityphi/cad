@@ -2,8 +2,6 @@
 clear; clc;
 
 % ---INPUTS
-% pitch angle of airship
-aPitch = 0;
 
 % Weights of components [ weigth locX locY locZ ]
 weights = [1.33 0 0.642 0; 4.46 0 0.684 0];
@@ -11,14 +9,17 @@ weights = [1.33 0 0.642 0; 4.46 0 0.684 0];
 % Input Forces [ locX locY locZ Fx Fy Fz Mx My Mz ] 
 inForce = [ 0 0.802 0 4.56 0 0 0 0 0 ];
 
-% Material [density Sut Suc]
-material = [1550 600*10^6 570*10^6];
+% Material [density Sut Suc E brittle]
+carbon   = [1550 600*10^6 570*10^6 109*10^9 1];
+aluminum = [2700 124*10^6 60*10^6  71*10^9  0]; % WIKIPEDIA
 
 % ---TEST
 % add all the subfolders to the path
 addpath(genpath(pwd));
 
-worstCase = armWorstCase(inForce, weights, material);
-[forces, dimensions] = arm(inForce, weights, material);
+[weights, armDimensions] = arm(inForce, weights, carbon);
 
-disp(dimensions);
+connectorDimensions = connector(inForce, weights, aluminum);
+
+disp(armDimensions)
+disp(connectorDimensions)

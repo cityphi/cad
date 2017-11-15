@@ -1,8 +1,7 @@
-function [ n ] = cauchy( s, Sut, Suc, Sy, brittle )
+function [ n ] = cauchy( s, material )
 %CAUCHY uses cauchy tensor to get a safety factor
-%   n = cauchy(s, Sut, Suc, Sy, brittle) takes the cauchy tensor s and 
-%   material information (Ultimate tensile and compression) to calculate 
-%   the safety factor.
+%   n = cauchy(s, M) takes the cauchy tensor s and material information 
+%   to calculate the safety factor.
 %
 %   For Brittle:
 %   Use the the Mohr-Coulomb failure model adapted for brittle materials. 
@@ -17,6 +16,12 @@ function [ n ] = cauchy( s, Sut, Suc, Sy, brittle )
 %   | Sx  txy txz |
 %   | txy Sy  tyz |
 %   | txz tyz Sz  |
+
+% convert material to easy to read
+Sut = material(2);
+Suc = material(3);
+Sy  = material(4);
+brittle = material(5);
 
 % coefficients of the charateristic equation
 I1 = trace(s);

@@ -1,10 +1,12 @@
 function [ worstCase ] = armWorstCase( inForces, weights, material )
-%ARMFINDWORSTCASE Used to find the worst case based on loading
-%   Should not be used when parameterizing, but should be run before to get
-%   the data then it can be hard coded into the final.
-%   inForces is [ locX locY locZ Fx Fy Fz Mx My Mz ] (thrust force)
-%   weights is [ weigth locX locY locZ ] of any non-arm components acting
-%   material is [density Sut Suc] of the material
+%ARMWORSTCASE Evaluates the worst pitch angle for the arm.
+%   a = armWorstCase(F, W, M) returns the worst angle for the stress in the
+%   arm. This is run before doing the optimization so optimization is done
+%   for only one location.
+%   
+%   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - thrust force
+%   W [ weight locX locY locZ ] - weight of components held by the arm
+%   M [ density Sut Suc E brittle ] - information of the material
 
 % dimensions of the arm [ri thickness width]
 h = 0.005;
@@ -12,36 +14,25 @@ k = 0.01;
 dimensions = [ 0.637 h k ];
 
 % add the weight of the arm based on dimensions
-weights(end+1, :) = armWeight(dimensions, material);
-
-% set the number of points in x-z to take
-points = 5;
-pointsCount = points - 1;
+weights(end+1, :) = armWeight(dimensions, material(1));
 
 % iterations to find the lowest safety factor
-data = zeros(points^2, 4);
+minAngle = -60;
+maxAngle = 90;
+data = zeros(maxAngle-minAngle, 2);
 i = 1;
-for aPitch = 0:5:90
-    for z = -h/2:h/pointsCount:h/2
-        for x = -k/2:k/pointsCount:k/2
-            % find the safety factor at current conditions
-            [~, halfReactions] = armForces(weights, inForces, aPitch);
-            stressTensor = armFailure(halfReactions, dimensions, [x,z]);
-            n = cauchy(stressTensor, material(2), material(3));
-            
-            % store data
-            data(i, :) = [aPitch x z n];
-            i = i + 1;
-        end
-    end
+
+for aPitch = minAngle:1:maxAngle
+    % find the safety factor at current conditions
+    [~, halfReactions] = armForces(weights, inForces, aPitch);
+    stressTensor = armTensor(halfReactions, dimensions);
+    n = cauchy(stressTensor, material);
+
+    % store data
+    data(i, :) = [aPitch n];
+    i = i + 1;
 end
-
-% find and return the worst case value
-[~, ind] = min(data(:, 4));
-worstCase = data(ind, :);
-
-% graph the cross-section fo worst case
-aPitch = data(ind, 1);
-[~, halfReactions] = armForces(weights, inForces, aPitch);
-armGraphCrossSection(halfReactions, dimensions, material);
+% find and return the worst case pitch
+[~, ind] = min(data(:, 2));
+worstCase = data(ind, 1:end-1);
 end

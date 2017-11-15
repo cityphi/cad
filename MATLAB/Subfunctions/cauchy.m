@@ -12,16 +12,17 @@ function [ n ] = cauchy( s, material )
 %   Use von Mises with the three primary stresses found to get a safety
 %   factor for the part. (uses Sy)
 %
-%   Tensor is of form (S is sigma, t is tau):
+%   s - tensor of form:
 %   | Sx  txy txz |
 %   | txy Sy  tyz |
 %   | txz tyz Sz  |
+%   material [density Sut Suc Sy E brittle] - of the material information
 
 % convert material to easy to read
 Sut = material(2);
 Suc = material(3);
 Sy  = material(4);
-brittle = material(5);
+brittle = material(end);
 
 % coefficients of the charateristic equation
 I1 = trace(s);

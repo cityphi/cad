@@ -34,19 +34,20 @@ for aPitch = minAngle:1:maxAngle
     
     % safety factor for buckling
     Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
-    SF(2) = Pcr/force(6);
+    SF(2) = abs(Pcr/force(6));
 
     % store data
     data(i, :) = [aPitch SF];
     i = i + 1;
 end
+
 [worst, row] = min(data(:, 2:3));
 [~, col] = min(worst);
 
 pitches = data(row, 1);
 
 force = armForces(weights, inForces, pitches(1));
-force(1:3) = [0 0 dimensions(3)]; % change the coordinates
+force(1:3) = [0 0 dimensions(3)] % change the coordinates
 bottomForces = forceSolver(force, reaction);
 
 % loop to find a dimension that gives the desire safety factor

@@ -17,9 +17,12 @@ aluminum6061 = [2700 310*10^6 0        276*10^6 68.9*10^9  0]; % matweb
 % add all the subfolders to the path
 addpath(genpath(pwd));
 
-[weights, armDimensions] = arm(inForce, weights, carbon);
+% [weights, armDimensions] = arm(inForce, weights, carbon);
+% 
+% connectorDimensions = connector(inForce, weights, aluminum6061);
+% 
+% disp(armDimensions)
+% disp(connectorDimensions)
 
-connectorDimensions = connector(inForce, weights, aluminum6061);
-
-disp(armDimensions)
-disp(connectorDimensions)
+weights = [1.33 0 0.642 0; 4.46 0 0.684 0; 1.285 0 0.4078 -0.4078];
+keelDimensions = keelConnector(inForce, weights, aluminum6061);

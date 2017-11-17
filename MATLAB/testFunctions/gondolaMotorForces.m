@@ -11,10 +11,12 @@ Hsw = 0.024;            %height of friction wheel contact point off hinge
 rFw = 0.0127;       %friction wheel radius
 Mu = 0.65;          %frictionwheel to keel coefficient of friction
 Muwasher = 0.2;     %washer to gondola coefficent of friction
-Dscrew = 0.003;       %gondola/hinge screw diameter 
-Dwashero = 0.005;     %outer washer diameter
-Dwasheri = 0.003;     %inner washer diameter
+Dscrew = 0.003;     %gondola/hinge screw diameter 
+Dwashero = 0.005;   %outer washer diameter
+Dwasheri = 0.003;   %inner washer diameter
 Scompressive = 55;  %The compressive yield strength of Nylon 6 [Mpa]
+Lgond = 0.15        %length of one gondola car
+Wgond = 0.075       %width of gondola 
 
 Tspring = 1.5 * (Tw * (Lhs+Lsw))/(rFw * Mu); %spring torque
 
@@ -34,25 +36,42 @@ motorForces = [
                    %0.5*Ls Lb 0 1 0 1 0 0 0;];
                     0 0 0 1 1 1 1 1 1;];
 
-hingeForce = -forceSolver(motorForces, hingeReactions)
+ hingeForce = -forceSolver(motorForces, hingeReactions)
 
-%gondola screw reactions
+ %rotating hinge force to gondola coordinate system
+    hingeForce(1,4) = hingeForce(1,4);
+    hingeForce(1,5) = ((sqrt(2)/2)*(hingeForce(1,5)+hingeForce(1,6)));
+    hingeForce(1,6) = ((sqrt(2)/2)*(hingeForce(1,5)+hingeForce(1,6)));
+    hingeForce(1,7) = hingeForce(1,7);
+    hingeForce(1,8) = ((sqrt(2)/2)*(hingeForce(1,8)+hingeForce(1,9)));
+    hingeForce(1,9) = ((sqrt(2)/2)*(hingeForce(1,8)+hingeForce(1,9)));
+    
 
-gondScrewReactionsWorst = [ -0.5*Ls La 0 1 1 1 1 1 0; 
-                        0.5*Ls Lb 0 0 1 0 0 0 0;];
+gondScrewReactionsWorst = [ -0.5*Ls La 0 1 1 1 2 2 0; 
+                        0.5*Ls Lb 0 0 1 0 2 2 0;];
 
-gondScrewReactionsWorstSolved = forceSolver(hingeForce, gondScrewReactions);
+gondScrewReactionsWorstSolved = forceSolver(hingeForce, gondScrewReactionsWorst)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calculating compressive safety factor for screw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-gondScrewReactionsWorstSolved = gondScrewReactionsWorstSolved(1,:)
-
 Fbolt = sqrt(gondScrewReactionsWorstSolved(1,4)^2+gondScrewReactionsWorstSolved(1,5)^2)... 
-    /Muwasher + gondScrewReactionsWorstSolved(1,6)
+    /Muwasher + gondScrewReactionsWorstSolved(1,6);
 
-Ncompressive = Scompressive*10^6/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2))
+Ncompressive = Scompressive*10^6/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2));
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Calculating Gondola arm forces 
+%assumptions: 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Calculating Gondola acceleration 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % screwReactionsFixed(1,4) = 0.5*screwReactionsFixed(1,4);
 % screwReactionsFixed(2,4) = screwReactionsFixed(1,4);

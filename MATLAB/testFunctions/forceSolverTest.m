@@ -14,6 +14,7 @@ expected = [0 0 -0.6370 0 0 18.0100 10.6946 0 0 ];
 output = forceSolver(forces, reaction);
 
 if  isequal(round(output, 3), round(expected, 3)) == 0
+    disp(output)
     result = 'Fail';
 end
 
@@ -26,7 +27,8 @@ reaction = [ 0 0 -0.00006 1 1 1 1 1 1 ];
 expected = [0 0 -0.00006 0 0 5.481 0.4090 0 0 ];
 output = forceSolver(forces, reaction);
 
-if  isequal(round(output, 3), round(expected, 3)) == 0
+if isequal(round(output, 3), round(expected, 3)) == 0
+    disp(output)
     result = 'Fail';
 end
 
@@ -39,11 +41,16 @@ hingeReactions = [ 0 0 0 1 1 1 1 1 1 ];
 hingeForces = -forceSolver(motorForces, hingeReactions);
 
 % second reaction
-gondScrewReactions = [ 2 3 0 2 1 2 2 2 0; 
-                        -2 1 0 2 1 2 2 2 0];
+gondScrewReactions = [ 2 3 0 2 1 3 4 5 0; 
+                      -2 1 0 2 1 3 4 5 0];
 
-[gondForces, error] = forceSolver(hingeForces, gondScrewReactions);
+expected = [ 2 3 0 -2 -10 7.2 57.6 -32.8 0;
+            -2 1 0 -2  10 7.2 57.6 -32.8 0];
+         
+[output, ~] = forceSolver(hingeForces, gondScrewReactions);
 
-disp(gondForces)
-disp(error)
+if isequal(round(output, 3), round(expected, 3)) == 0
+    disp(output)
+    result = 'Fail';
+end
 end

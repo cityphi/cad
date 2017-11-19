@@ -18,8 +18,10 @@ aluminum6061 = [2700 310*10^6 0        276*10^6 68.9*10^9  0]; % matweb
 addpath(genpath(pwd));
 
 [weights, armDimensions] = arm(inForce, weights, carbon);
+disp(armDimensions)
 
 connectorDimensions = connector(inForce, weights, aluminum6061);
-
-disp(armDimensions)
 disp(connectorDimensions)
+
+keelSafety = keelConnector(inForce, weights, aluminum6061);
+disp(keelSafety)

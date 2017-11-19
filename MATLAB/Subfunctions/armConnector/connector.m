@@ -6,7 +6,7 @@ function [ dimensions ] = connector(inForces, weights, material)
 %
 %   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - thrust force
 %   W [ weight locX locY locZ ] - weight of all components above connector
-%   M [ density Sut Suc E brittle ] - information of the material
+%   M [ density Sut Suc Sy E brittle ] - information of the material
 
 safetyFactor = 5; % hard coded value for the safety factor
 
@@ -34,12 +34,13 @@ for aPitch = minAngle:1:maxAngle
     
     % safety factor for buckling
     Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
-    SF(2) = Pcr/force(6);
+    SF(2) = abs(Pcr/force(6));
 
     % store data
     data(i, :) = [aPitch SF];
     i = i + 1;
 end
+
 [worst, row] = min(data(:, 2:3));
 [~, col] = min(worst);
 
@@ -105,7 +106,7 @@ Iy  = l^3*w/12;
 % for the stress calculations
 y = w/2; x = l/2;
 
-% for the torsion calcualtions
+% for the torsion calculations
 b = l; c = w;
 
 % assume that max occurs at top right corner

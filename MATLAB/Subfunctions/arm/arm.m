@@ -5,7 +5,7 @@ function [weights, dimensions] = arm(inForces, weights, material)
 %
 %   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - thrust force
 %   W [ weight locX locY locZ ] - weight of components held by the arm
-%   M [ density Sut Suc E brittle ] - information of the material
+%   M [ density Sut Suc Sy E brittle ] - information of the material
 
 safetyFactor = 5; % hard coded value for the safety factor
 

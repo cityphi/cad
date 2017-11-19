@@ -6,7 +6,7 @@ function [ dimensions ] = connector(inForces, weights, material)
 %
 %   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - thrust force
 %   W [ weight locX locY locZ ] - weight of all components above connector
-%   M [ density Sut Suc E brittle ] - information of the material
+%   M [ density Sut Suc Sy E brittle ] - information of the material
 
 safetyFactor = 5; % hard coded value for the safety factor
 
@@ -47,7 +47,7 @@ end
 pitches = data(row, 1);
 
 force = armForces(weights, inForces, pitches(1));
-force(1:3) = [0 0 dimensions(3)] % change the coordinates
+force(1:3) = [0 0 dimensions(3)]; % change the coordinates
 bottomForces = forceSolver(force, reaction);
 
 % loop to find a dimension that gives the desire safety factor
@@ -106,7 +106,7 @@ Iy  = l^3*w/12;
 % for the stress calculations
 y = w/2; x = l/2;
 
-% for the torsion calcualtions
+% for the torsion calculations
 b = l; c = w;
 
 % assume that max occurs at top right corner

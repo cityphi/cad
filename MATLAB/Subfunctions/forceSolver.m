@@ -1,10 +1,12 @@
-function [ solved, totalError ] = forceSolver( forces, reactions )
+function solved = forceSolver(forces, reactions, scenario)
 %FORCESOLVER is a tool to find reaction forces with known input forces
 %   sovled = forceSolver( forces, unknown) reaction forces
 %   Forces is [ locX locY locZ Fx Fy Fz Mx My Mz ] 
 %   Unkown Forces is same format but the forces and moments correspond to
 %   their ability to resist
-%   Solved is [ locX locY locZ Fx Fy Fz Mx My Mz ] 
+%   Solved is [ locX locY locZ Fx Fy Fz Mx My Mz ]
+
+if ~exist('scenario','var'), scenario=0; end
 
 % setting up useful values used
 numReactions = size(reactions, 1);
@@ -12,7 +14,7 @@ numForces    = 6; % constant for the number of forces (Fxyz and Mxyz)
 offset       = 3; % number of coordinates (xyz) used to offset matrices
 
 % intermediate array that holds the information for the 6 equations
-solver = equationBuilder(reactions, forces, 1);
+solver = equationBuilder(reactions, forces, 1, scenario);
 
 % simplify the solver array and try to solve it
 zeroForces = all(solver == 0);
@@ -49,15 +51,10 @@ if unsolveable ~= 1
 else
     disp('--The matrix could not be solved')
 end
-
-%--check
-check = equationBuilder(solved, forces, 0);
-errors = sum(check(:, 1:end-1), 2) - check(:, end);
-percentOff = round(abs(sum(errors)/sum(check(:, end)))*100, 2);
-totalError = [transp(errors) percentOff];
 end
 
-function [ sysEquations ] = equationBuilder(reactions, forces, related)
+function [ sysEquations ] = equationBuilder(reactions, forces, related, ...
+    scenario)
 %EQUATIONBUILDER Makes a system of euqations
 %   Takes the reactions and forces of the system to make the system of
 %   equations of the system. Takes a related bool for cases where
@@ -67,7 +64,6 @@ function [ sysEquations ] = equationBuilder(reactions, forces, related)
 % constants used in main to make it easier to understand
 numReactions = size(reactions, 1);
 numForces    = 6;
-relations    = max(max(reactions(:, 4:9)));
 
 % random 3D point to take the moments about
 about = reactions(1, 1:3);
@@ -89,41 +85,15 @@ sysEquations(4, end) = -sum(totalM(1, :));
 sysEquations(5, end) = -sum(totalM(2, :));
 sysEquations(6, end) = -sum(totalM(3, :));
 
-% ---add related forces equations 
-extraEquations = zeros(numReactions * numForces + 1);
-line = 1;
-if related && relations > 1
-    for n = 2:relations
-        [i, j] = find(reactions(:, 4:9) == n);
-        count = size(i, 1);
-        loop = 0;
-        % allows the solver to still work if non-pairs are input
-        if count == 1;
-            reactions(i, j + 3) = 1;
-        else
-            % loop for number of same variables
-            for m = 1:count
-                reactions(i(m), j(m) + 3) = 1; % change reactions
-                loop = loop + 1;
-                % add a 1 and -1 pair to the equations
-                if loop == 1
-                    extraEquations(line, (i(m)-1)*6+j(m)) = 1;
-                elseif loop == 2
-                    extraEquations(line, (i(m)-1)*6+j(m)) = -1;
-                    line = line + 1;
-                else
-                    extraEquations(line,(i(m)-1)*6+j(m)) = -1;
-                    extraEquations(line,(i(m-1)-1)*6+j(m-1)) = 1;
-                    line = line + 1;
-                end
-            end
-        end    
+% ---assumptions
+if related
+    [sysEquations, reactions] = relations(sysEquations, reactions);
+end
+if scenario(1, 1)
+    for i = 1:size(scenario, 1)
+        sysEquations = specialCases(sysEquations, scenario(i, :));
     end
 end
-
-% remove the unused lines and add to the system of equations
-extraEquations( ~any(extraEquations,2), : ) = [];
-sysEquations = [sysEquations; extraEquations];
 
 % ---reaction forces
 for i = 1:numReactions
@@ -143,5 +113,68 @@ for i = 1:numReactions
     sysEquations(5, n+1) = -(reactions(i, 3) - about(3)) * reactions(i, 4);
     sysEquations(6, n+2) = -(reactions(i, 1) - about(1)) * reactions(i, 5);
     sysEquations(6, n+1) = -(reactions(i, 2) - about(2)) * reactions(i, 4);
+end
+end
+
+function [sysEquations, reactions] = relations(sysEquations, reactions)
+%RELATIONS Changes the system of equations and reactions based on reactions
+%   [sysEqs, reacts] = RELATIONS(sysEqs, reacts) returns modified arrays
+%   based on the values found in the reactions array.
+%   Works by pairing up any same numbers in the reactions array (excluding
+%   1) then adds rows to the system of equations to relate them.
+
+% setting up useful values used
+numReactions = size(reactions, 1);
+numForces    = 6; % constant for the number of forces (Fxyz and Mxyz)
+
+% ---add related forces equations
+extraEquations = zeros(numReactions * numForces + 1);
+line = 1;
+pairs = max(max(abs(reactions(:, 4:9)))); % find highest combination
+
+for n = 2:pairs
+    [i, j] = find(abs(reactions(:, 4:9)) == n);
+    count = size(i, 1);
+     
+    % loop for number of same variables
+    for m = 2:count
+        % check for if they should be equal and oposite
+        inverse = reactions(i(m-1), j(m-1)+3)/reactions(i(m), j(m)+3);
+        extraEquations(line,(i(m-1)-1)*6+j(m-1)) = 1;
+        extraEquations(line,(i(m)-1)*6+j(m)) = -1*inverse;
+        line = line + 1;
+    end
+
+    % change reactions
+    for k = 1:count
+        reactions(i(k), j(k) + 3) = 1; 
+    end
+end
+    
+% remove the unused lines and add to the system of equations
+extraEquations( ~any(extraEquations,2), : ) = [];
+sysEquations = [sysEquations; extraEquations];
+end
+
+function sysEquations = specialCases(sysEquations, scenario)
+%SPECIALCASES Adds specific assumptions to solve system
+%   sysEqs = SPECIALCASE(sysEqs, scenario) will return the system of
+%   equations with any assumptions that need to be made in order to
+%   solve for the reactions. These are not generic and come from analysis
+%   of the components.
+
+switch scenario(1)
+    % case 1 is for the angle between the gondola sections
+    case 1
+        % convert the angle
+        a = scenario(2)*pi/180;
+        
+        % add blank rows to the system of equations
+        columns = size(sysEquations(1, :));
+        sysEquations = [sysEquations; zeros(2, columns(2))];
+        
+        % add the assumptions that Fx - tan(a)Fz = 0 for two reactions
+        sysEquations(end-1, 1:3) = [ 1 0 -tan(a) ];
+        sysEquations(end, 10:12) = [ 1 0 -tan(a) ];
 end
 end

@@ -171,10 +171,13 @@ switch scenario(1)
         
         % add blank rows to the system of equations
         columns = size(sysEquations(1, :));
-        sysEquations = [sysEquations; zeros(2, columns(2))];
+        sysEquations = [sysEquations; zeros(5, columns(2))];
         
-        % add the assumptions that Fx - tan(a)Fz = 0 for two reactions
-        sysEquations(end-1, 1:3) = [ 1 0 -tan(a) ];
-        sysEquations(end, 10:12) = [ 1 0 -tan(a) ];
+        % add the assumptions that Fx + tan(a)Fz = 0 for two reactions
+        sysEquations(end-4, 1:3)   = [ 1        0  tan(a)    ];
+        sysEquations(end-3, 7:9)   = [ 1        0  tan(a)    ];
+        sysEquations(end-2, 1:3)   = [ 0       -1  1/cos(a)  ];
+        sysEquations(end-1, 7:9)   = [ 0        1  1/cos(a)  ];
+        sysEquations(end,   25:27) = [ tan(a/2) 0 -1         ];
 end
 end

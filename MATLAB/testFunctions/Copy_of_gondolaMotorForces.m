@@ -8,7 +8,7 @@
 %%%%%%All lengths/distances are in [m] other units are specified
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Tw = 0.01;           %motor torque [Nm]
+Tw = 0.1;           %motor torque [Nm]
 
 Ls = 0.08;          %distance from screw to center of torsion hinge 
 Lhd = 0.02185;      %distance in y from torsion hingle to friction wheel contact point 
@@ -21,7 +21,7 @@ rFw = 0.0127;       %friction wheel radius
 La = 0.005;         %length in y from torsion hinge to gondola screw a 
 Lb = 0.021;         %length in y from torsion hinge to gondola screw b
 Dscrew = 0.003;     %gondola/hinge screw diameter 
-Dwashero = 0.004;   %outer gondola/hinge screw washer diameter
+Dwashero = 0.005;   %outer gondola/hinge screw washer diameter
 Dwasheri = 0.003;   %inner gondola/hinge screw washer diameter
 
 Mu = 0.65;          %frictionwheel to keel coefficient of friction
@@ -43,10 +43,6 @@ Lcm1z = -0.030;     %center of gravity in x or gondola 1
 Lcm2x = 0.055;      %center of gravity in x or gondola 2
 Lcm2y = 0;          %center of gravity in x or gondola 2
 Lcm2z = -0.03;      %center of gravity in x or gondola 2
-
-%%%%%%%%%%
-%slip
-%%%%%%%
 
 Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
 Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
@@ -82,11 +78,7 @@ gondScrewReactionsWorstSolved = forceSolver(hingeForce, gondScrewReactionsWorst)
 Fbolt = sqrt(gondScrewReactionsWorstSolved(1,4)^2+gondScrewReactionsWorstSolved(1,5)^2)... 
     /Muwasher + gondScrewReactionsWorstSolved(1,6);
 
-Ncompressive = 0;
-while Ncompressive < 3
-    Ncompressive = Scompressive*10^6/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2));
-    Dwashero = Dwashero + 0.001;
-end 
+Ncompressive = Scompressive*10^6/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calculating Gondola Bearing Arm Reactions and Acceleration 

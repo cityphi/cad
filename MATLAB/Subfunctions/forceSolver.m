@@ -14,7 +14,7 @@ numForces    = 6; % constant for the number of forces (Fxyz and Mxyz)
 offset       = 3; % number of coordinates (xyz) used to offset matrices
 
 % intermediate array that holds the information for the 6 equations
-solver = equationBuilder(reactions, forces, 1, scenario);
+solver = equationBuilder(reactions, forces, 1, scenario)
 
 % simplify the solver array and try to solve it
 zeroForces = all(solver == 0);

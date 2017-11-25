@@ -1,7 +1,7 @@
 function [rotated] = rotate(in, xz, yz, scenario, n)
 %rotate will rotate positions and forces from one coordinate systemn to
-%another based on the angles provided between current and disired
-%coordnates systems in xz and yz planes
+%another based on the angles provided between current and desired
+%coordinates systems in xz and yz planes
 %scenario1 just positions, scenario2 just forces and moments,scenario3 all 
 %scenario4 just positions on second gondola
 %scenario5 just forces and moments on second gondola

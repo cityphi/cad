@@ -7,19 +7,23 @@ function [weight, dimensions] = thrusterShaft(forces, weights, ...
 %   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - thrust force
 %   W [ weight locX locY locZ ] -  weight of components held by the arm
 %   M [ density Sut Suc Sy E brittle ] - information of the material
+%   D [ LT mountDist] - distance to thrust and offset from shaft
 
+% hard-coded values
 safetyFactor = 5;
 a = 0;
-LT = distances(1);
+
+% set the names to be readable
+LT        = distances(1);
 mountDist = distances(2);
 
-% D [ bore minor major ] https://en.wikipedia.org/wiki/ISO_metric_screw_thread
-bore  = 0.0038; % size needed for the screw
-major = 0.006; % top of thread
-P = 0.00175; %pitch
-minor = major - 1.082532*P/2; % bottom of thread
+bore  = 0.0038; % radius needed for screw needed for the screw
 
-dimensions = [ bore, minor, major];
+% standard thread sizes and pitch (mm)
+% https://en.wikipedia.org/wiki/ISO_metric_screw_thread
+thread = [ 8 1.25 1; 10 1.5 1.25; 12 1.75 1.5; 14 2 1.5; 16 2 1.5;
+    18 2.5 2; 20 2.5 2; 22 2.5 2; 24 3 2];
+type = 2; % 2 = coarse, 3 = fine
 
 % reference point and locaiton of reactions
 bearing = [ 0 0 0 1 1 1 1 1 1];
@@ -28,10 +32,15 @@ bearing = [ 0 0 0 1 1 1 1 1 1];
 forces(end+1, :) = zeros(1, 9);
 weights(end+1, :) = [0 0 (LT-mountDist)/2 0];
 
-% looping variables
-maxIterations = 100; iterations = 0; loop = 1;
+for i = 1:size(thread, 1)
+    % values for dimensions
+    major = thread(i, 1)/1000; % major diameter (m)
+    pitch = thread(i, type)/1000; % pitch of threads (mm)
+    minor = major - 1.082532*pitch; % minor diameter (m)
 
-while loop && iterations < maxIterations
+    % D [ boreRadius minorRadius majorRadius thread(M)]
+    dimensions = [bore minor/2 major/2];
+    
     % change the weight of the shaft and find new forces each iteration
     weights(end, 1) = pi * dimensions(3)^2 * (LT - mountDist) * ...
         material(1) * 9.81;
@@ -42,14 +51,16 @@ while loop && iterations < maxIterations
     tensor = shaftTensor(reaction, dimensions);
     n = cauchy(tensor, material);
     
-    % optimization
-    if n < safetyFactor
-        dimensions(2) = dimensions(2) + 0.0001;
-        dimensions(3) = dimensions(3) + 0.0001;
-    else
-        loop = 0;
+    % end when safety factor is reached
+    if n > safetyFactor
+        break
     end
 end
+% display a message if the safety factor couldn't be acheived
+if n < safetyFactor
+    disp(strcat('Max thruster shaft safety factor reached:', int2str(n)))
+end
+
 weight = weights(end, :);
 end
 

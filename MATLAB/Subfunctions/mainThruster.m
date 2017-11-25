@@ -1,7 +1,17 @@
 % Main script to test the thruster functions
 clear; clc;
 
+% M [ density Sut Suc Sy E brittle ] - information of the material
+carbon       = [1550 600*10^6 570*10^6 0        109*10^9   1]; % need Sy
+aluminum6061 = [2700 310*10^6 0        276*10^6 68.9*10^9  0]; % matweb
+nylon6       = [1130 69*10^6  44*10^6  63*10^6  2.33*10^9  1]; % matweb unrenforced
+
 %---INPUTS
+reqSpeed = 10; %m/s
+reqTime = 60/60; %h
+
+
+%---INPUTS - TEMP
 % prop [ diameter pitch mass] - propeller properties (m, g)
 prop = [ 0.1778 0.127 14];
 mountDist = 0.01;
@@ -12,15 +22,14 @@ rpm = 11000;
 % pitch of the airship
 aPitch = 0;
 
-% M [ density Sut Suc Sy E brittle ] - information of the material
-carbon       = [1550 600*10^6 570*10^6 0        109*10^9   1]; % need Sy
-aluminum6061 = [2700 310*10^6 0        276*10^6 68.9*10^9  0]; % matweb
-nylon6       = [1130 69*10^6  44*10^6  63*10^6  2.33*10^9  1]; % matweb unrenforced
-
 % m [ mass ] - mass of motor, mount, and casing (g)
 mass = [ 25 28.33 15 ];
 
 %---SCRIPT
+
+batMotProp([reqSpeed, reqTime, 0]);
+
+
 % max occurs at 0 velocity
 FTmax = thrust(prop(1), prop(2), rpm, 0);
 
@@ -37,5 +46,3 @@ force = [ 0 LT 0 0 0 -FTmax 0 0 0 ];
 
 distances = [ LT mountDist ];
 [weight, dimensions] = thrusterShaft(force, weights, nylon6, distances);
-disp(weight)
-disp(dimensions)

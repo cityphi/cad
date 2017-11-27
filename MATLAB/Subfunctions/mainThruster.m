@@ -10,7 +10,6 @@ nylon6       = [1130 69*10^6  44*10^6  63*10^6  2.33*10^9  1]; % matweb unrenfor
 reqSpeed = 10; %m/s
 reqTime = 60/60; %h
 
-
 %---INPUTS - TEMP
 % prop [ diameter pitch mass] - propeller properties (m, g)
 prop = [ 0.1778 0.127 14];
@@ -26,9 +25,7 @@ aPitch = 0;
 mass = [ 25 28.33 15 ];
 
 %---SCRIPT
-
 batMotProp([reqSpeed, reqTime, 0]);
-
 
 % max occurs at 0 velocity
 FTmax = thrust(prop(1), prop(2), rpm, 0);

@@ -1,4 +1,4 @@
-function [ weights, force ] = batMotProp( required )
+function [ weights, force, choices ] = batMotProp( required )
 %BATMOTPROP Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -11,17 +11,19 @@ reqWeight = required(3);
 syms V
 assume(V, 'real')
 
+% file names
+propCSV = 'propellerMotorData.csv';
+battCSV = 'batteryData.csv';
+
 % data loading
-propCSV = 'propMotors.csv';
-propData = csvread(propCSV, 2);
-batteryCSV = 'batteries.csv';
-batData = csvread(batteryCSV, 2);
+propData = csvread(propCSV, 1, 1);
+battData = csvread(battCSV, 1, 1);
 
 % hard-coded drag function
 drag = -0.0003545*V^4 + 0.014182*V^3 - 0.053856*V^2 + 0.45054*V - 0.087259;
 
 % setup data array unique combinations of pitch and diameter
-pitchDiameters = unique(propData(:, 1:2), 'rows');
+pitchDiameters = unique(propData(:, 2:3), 'rows');
 data = zeros(size(pitchDiameters, 1), 9);
 data(:, 1:2) = sortrows(pitchDiameters,[1 2]);
 
@@ -88,47 +90,73 @@ possibleData = zeros(size(propData, 1), size(propData, 2));
 
 % check to see if any experimental data meets the calculated requirements
 for i = 1:size(propData, 1)
-    index = find(ismember(data(:, 1:2), propData(i, 1:2), 'rows'), 1);
-    if data(index, end-1) < propData(i, 4) && ... 
-            data(index, end) < propData(i, 3)
+    index = find(ismember(data(:, 1:2), propData(i, 2:3), 'rows'), 1);
+    if data(index, end-1) < propData(i, 5) && ... 
+            data(index, end) < propData(i, 4)
         possibleData(i, :) = propData(i, :);
     end
 end
 
 % remove any empty rows and sort the possible data
 possibleData( ~any(possibleData,2), : ) = [];
-possibleData = sortrows(possibleData, 3);
+possibleData = sortrows(possibleData, 4);
 
 % store the data of the propeller and motor
-propChoice = possibleData(1, 1:6);
-motChoice = possibleData(1, 7:end);
+propChoice = possibleData(1, 1:7);
+motChoice = possibleData(1, 8:end);
 
 %---BATTERY
-ampsNeeded = propChoice(:, 3)/batVoltage;
-possibleBat = zeros(size(batData, 1), size(batData, 2));
+ampsNeeded = propChoice(:, 4)/batVoltage;
+battLife = ampsNeeded * reqTime * 1000;
+possibleBatt = zeros(size(battData, 1), size(battData, 2));
 
-% check amps
-for i = 1:size(batData, 1)
-    if batData(i, 3) > ampsNeeded
-        possibleBat(i, :) = batData(i, :);
+% get a list of batteries with a high enough discharge
+for i = 1:size(battData, 1)
+    if battData(i, 4) > ampsNeeded
+        possibleBatt(i, :) = battData(i, :);
     end
 end
 
-possibleBat = sortrows(possibleBat, -2);
-batteryChoice = possibleBat(1, :);
+% remove any empty rows
+possibleBatt( ~any(possibleBatt, 2), : ) = [];
 
-possibleBat( ~any(possibleBat,2), : ) = [];
+% select best battery in case of none able to support the required life
+possibleBatt = sortrows(possibleBatt, -3);
+battChoice = possibleBatt(1, :);
 
-for i = 1:size(possibleBat, 1)
-    if possibleBat(i, 2) > ampsNeeded * reqTime * 1000
-        possibleBat(i, :) = [];
+for i = 1:size(possibleBatt, 1)
+    if possibleBatt(i, 3) < battLife
+        possibleBatt(i, :) = zeros(1, size(battData, 2));
     end
 end
 
-if ~isempty(possibleBat)
-    batteryChoice  = possibleBat(1, :);
+% remove any empty rows
+possibleBatt( ~any(possibleBatt, 2), : ) = [];
+
+% if there was a battery with enough life, assign it
+if ~isempty(possibleBatt)
+    battChoice  = possibleBatt(1, :);
+else
+    disp(strcat('Max life--', int2str(battChoice(1, 3)/ampsNeeded/100)))
 end
 
+% get the name of the motor chosen
+propFile = fopen(propCSV);
+motorNames = textscan(propFile, '%s%*[^\n]', 'Delimiter', ',', ...
+    'HeaderLines', 1);
+fclose(propFile);
+
+% get the name of the battery chosen
+batFile = fopen(battCSV);
+batteryNames = textscan(batFile, '%s%*[^\n]', 'Delimiter', ',', ...
+    'HeaderLines', 1);
+fclose(batFile);
+
+%--OUTPUT
+% Propeller name; Motor name; Battery name
+choices = [strcat(int2str(propChoice(1, 2)), 'x', int2str(propChoice(1, 3)));
+           motorNames{1, 1}(motChoice(1, 1));
+           batteryNames{1, 1}(battChoice(1, 1))];
 weights = [];
 force = [];
 end

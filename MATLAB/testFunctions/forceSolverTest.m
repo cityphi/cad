@@ -1,5 +1,8 @@
 function [ result ] = forceSolverTest( )
-% Test for forces acting on gondola driving motor
+%FORCESOLVERTEST Tests the Force Sovler function
+%   scenarios and results are built into this function to test if the
+%   function is working. Copy the code and add scenarios as they come up
+
 result = 'Pass';
 
 %---Test 1 (simple)

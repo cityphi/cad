@@ -1,4 +1,4 @@
-
+function gondolaAnalysis (aThrust)
 %This function gives safty factors and dimension for the bearing arms,
 %torsion hinge to gondola washers, the required motor torque, the required
 %motor force, the required braking force, the required acceleration, 
@@ -219,3 +219,4 @@ while abs(stressMax-stressMin) > 17*10^6
         armRadius = armRadius + 0.0005;
     end
 end
+end 

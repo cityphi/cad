@@ -1,4 +1,4 @@
-function [ weights, force, choices ] = batMotProp( required )
+function [ weights, force, choices ] = batMotProp( required, dragValues )
 %BATMOTPROP Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -6,6 +6,9 @@ function [ weights, force, choices ] = batMotProp( required )
 reqSpeed  = required(1);
 reqTime   = required(2);
 reqWeight = required(3);
+CD        = dragValues(1);
+rho       = dragValues(2);
+vol       = dragValues(3);
 
 % setup for solving drag and thrust intersect
 syms V
@@ -20,7 +23,7 @@ propData = csvread(propCSV, 1, 1);
 battData = csvread(battCSV, 1, 1);
 
 % hard-coded drag function
-drag = -0.0003545*V^4 + 0.014182*V^3 - 0.053856*V^2 + 0.45054*V - 0.087259;
+drag = 1.88 * CD * rho * vol^(2/3) * V^1.86;
 
 % setup data array unique combinations of pitch and diameter
 pitchDiameters = unique(propData(:, 2:3), 'rows');
@@ -91,8 +94,8 @@ possibleData = zeros(size(propData, 1), size(propData, 2));
 % check to see if any experimental data meets the calculated requirements
 for i = 1:size(propData, 1)
     index = find(ismember(data(:, 1:2), propData(i, 2:3), 'rows'), 1);
-    if data(index, end-1) < propData(i, 5) && ... 
-            data(index, end) < propData(i, 4)
+    if data(index, end-1) < propData(i, 6) && ... 
+            data(index, end) < propData(i, 5)
         possibleData(i, :) = propData(i, :);
     end
 end
@@ -102,11 +105,11 @@ possibleData( ~any(possibleData,2), : ) = [];
 possibleData = sortrows(possibleData, 4);
 
 % store the data of the propeller and motor
-propChoice = possibleData(1, 1:7);
-motChoice = possibleData(1, 8:end);
+propChoice = possibleData(1, 2:3);
+motChoice = possibleData(1, :);
 
 %---BATTERY
-ampsNeeded = propChoice(:, 4)/batVoltage;
+ampsNeeded = motChoice(:, 5)/motChoice(:, 4);
 battLife = ampsNeeded * reqTime * 1000;
 possibleBatt = zeros(size(battData, 1), size(battData, 2));
 
@@ -137,7 +140,7 @@ possibleBatt( ~any(possibleBatt, 2), : ) = [];
 if ~isempty(possibleBatt)
     battChoice  = possibleBatt(1, :);
 else
-    disp(strcat('Max life--', int2str(battChoice(1, 3)/ampsNeeded/100)))
+    disp(strcat('Max life--', num2str(battChoice(1, 3)/ampsNeeded/1000)))
 end
 
 % get the name of the motor chosen
@@ -154,9 +157,9 @@ fclose(batFile);
 
 %--OUTPUT
 % Propeller name; Motor name; Battery name
-choices = [strcat(int2str(propChoice(1, 2)), 'x', int2str(propChoice(1, 3)));
+choices = [strcat(int2str(propChoice(1, 1)), 'x', int2str(propChoice(1, 2)));
            motorNames{1, 1}(motChoice(1, 1));
-           batteryNames{1, 1}(battChoice(1, 1))];
+           batteryNames{1, 1}(battChoice(1, 1))]
 weights = [];
 force = [];
 end

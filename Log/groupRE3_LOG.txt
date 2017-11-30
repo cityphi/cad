@@ -1,0 +1,16 @@
+Max Speed   = 5.6962 m/s
+Flight Time = 35.4375minutes
+
+***Thruster Selection***
+Propeller - APC E 10x7
+	Weight: 20.1 g
+Motor - Komodo KH2413-11
+	Weight: 63 g
+	Volts:  7 V
+	KV:     750 RPM/V
+	Power:  32 W
+Battery - ZIPPY Compact 2700mAh 2S 25C Lipo Pack
+	Weight:    157 g
+	Capacity:  2700 mAh
+	Voltage:   7.4 V
+	Discharge: 25 C

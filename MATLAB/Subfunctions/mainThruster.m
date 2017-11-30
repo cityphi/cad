@@ -7,12 +7,10 @@ aluminum6061 = [2700 310*10^6 0        276*10^6 68.9*10^9  0]; % matweb
 nylon6       = [1130 69*10^6  44*10^6  63*10^6  2.33*10^9  1]; % matweb unrenforced
 
 %---INPUTS
-reqSpeed = 10; %m/s
-reqTime = 50/60; %h
+reqSpeed = 5; %m/s
+reqTime = 10/60; %h
 
 %---INPUTS - TEMP
-% prop [ diameter pitch mass] - propeller properties (m, g)
-prop = [ 0.1778 0.127 14];
 mountDist = 0.01;
 
 % rpm of the propellers
@@ -29,13 +27,8 @@ rho = 1.225;
 vol = 3.453;
 
 %---SCRIPT
-batMotProp([reqSpeed reqTime 0], [CD rho vol]);
-
-% max occurs at 0 velocity
-FTmax = thrust(prop(1), prop(2), rpm, 0);
-
-% distance from bearing end to thruster ---unsure how this will work
-LT = prop(1)/2 + 0.003; % add a little bit for the casing
+[thrusterMass, FTmax, propRadius] = batMotProp([reqSpeed reqTime 0], ...
+    [CD rho vol]);
 
 % W [ weight locX locY locZ ] - weight of components held by the bearing
 weights = zeros(4);
@@ -46,4 +39,6 @@ weights(:, 1) = [ prop(3) * 9.81/1000; mass(:) * 9.81/1000 ];
 force = [ 0 LT 0 0 0 -FTmax 0 0 0 ];
 
 distances = [ LT mountDist ];
-[weight, dimensions] = thrusterShaft(force, weights, nylon6, distances);
+
+[weight, dimensions] = thrusterShaft(FTmax, thrusterMass, propRadius, ...
+    nylon6);

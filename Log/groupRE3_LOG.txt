@@ -9,8 +9,14 @@ Motor - Komodo KH2413-11
 	Volts:  7 V
 	KV:     750 RPM/V
 	Power:  32 W
+	Thrust: 5.6962 N
 Battery - ZIPPY Compact 2700mAh 2S 25C Lipo Pack
 	Weight:    157 g
 	Capacity:  2700 mAh
 	Voltage:   7.4 V
 	Discharge: 25 C
+
+***Thruster Shaft***
+Safety Factor: 5.2085
+Weight:        7.4797 g
+Thread size:   M8

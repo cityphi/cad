@@ -1,4 +1,4 @@
-function [ totalWeight, thrust, radius ] = batMotProp( required, dragValues )
+function [ thrustMass, battMass, thrust, radius ] = batMotProp( required, dragValues )
 %BATMOTPROP Picks a battery, motor, and prop
 %   BATMOTPROP does the selection of the main thruster componenets and
 %   gives useful information back to the amin program
@@ -7,6 +7,9 @@ function [ totalWeight, thrust, radius ] = batMotProp( required, dragValues )
 reqSpeed  = required(1);
 reqTime   = required(2);
 reqWeight = required(3);
+
+syms V
+assume(V, 'real')
 
 % file names
 propCSV = 'propellerMotorData.csv';
@@ -47,7 +50,7 @@ for i = 1:size(data, 1)
         nApprox = (1-0.1*reqSpeed/Vzero)*nm;
         
         % max speed based on the thrust line and drag curve
-        Vmax = airshipSpeed(D, P, nApprox, dragValues);
+        Vmax = airshipSpeed(D, P, nApprox, dragValues, V);
     
         % check if attained a max speed
         if Vmax < reqSpeed
@@ -138,27 +141,32 @@ names = [[int2str(propChoice(1)) 'x' int2str(propChoice(2))];
          motorNames{1, 1}(motChoice(1));
          batteryNames{1, 1}(battChoice(1))];
 
-%--Log file
+%--OUTPUT
+% LOG file
 % get the top speed with this setup
 D = convlength(propChoice(1), 'in', 'm');
 P = convlength(propChoice(2), 'in', 'm');
-speed = airshipSpeed(D, P, motChoice(6)/60, dragValues);
+speed = airshipSpeed(D, P, motChoice(6)/60, dragValues, V);
 
 % setup the values that need to be in the log files
 propData = propChoice(3);
-motData  = [motChoice(12) motChoice(10) motChoice(5) motChoice(4) speed];
+motData  = [motChoice(12) motChoice(10) motChoice(5) motChoice(4) speed motChoice(7)];
 battData = [battChoice(2) battChoice(3) battChoice(5) battChoice(6)];
 
+% write to the log file
 thrusterLog( names, propData, motData, battData );
 
-%--OUTPUT
-% one arms weight of components and thrust
-totalWeight = motData(1) + propData(1) + battData(1);
+% passed back to main
+thrustMass = motData(1) + propData(1);
+battMass = battData(1);
 thrust = motChoice(7);
-radius = propChoice(1) * 0.5;
+radius = convlength(propChoice(1) * 0.5, 'in', 'm');
+
+% write to the solidworks file
+disp('PROP solidworks not done')
 end
 
-function topSpeed = airshipSpeed(D, P, n, dragValues)
+function topSpeed = airshipSpeed(D, P, n, dragValues, V)
 %AIRSHIPSPEED gives the airships top speed
 %   speed = AIRSHIPSPEED(D, P, n) returns the intersect of the
 %   thrust curve with the drag curve (top speed)
@@ -166,9 +174,6 @@ function topSpeed = airshipSpeed(D, P, n, dragValues)
 %   P - Pitch (in)
 %   n - RPMs
 %   dragValues [CD rho vol] - of the airship
-
-syms V
-assume(V, 'real')
 
 CD = dragValues(1);
 rho = dragValues(2);
@@ -189,7 +194,7 @@ function thrusterLog( names, propChoice, motChoice, battChoice )
 %   THRUSTERLOG(names, mot, prop, batt) does not return anything
 %   names - [prop mot batt]
 %   propChoice - [weight]
-%   motChoice - [weight KV power Volts topSpeed]
+%   motChoice - [weight KV power Volts topSpeed thrust]
 %   battChoice - [weight mAh Volts discharge]
 
 logFile = 'groupRE3_LOG.txt';
@@ -218,6 +223,8 @@ fprintf(fid, ['\tWeight: ' num2str(motChoice(1)) ' g\n']);
 fprintf(fid, ['\tVolts:  ' num2str(motChoice(4)) ' V\n']);
 fprintf(fid, ['\tKV:     ' num2str(motChoice(2)) ' RPM/V\n']);
 fprintf(fid, ['\tPower:  ' num2str(motChoice(3)) ' W\n']);
+fprintf(fid, ['\tThrust: ' num2str(motChoice(5)) ' N\n']);
+
 
 fprintf(fid, ['Battery - ' battName '\n']);
 fprintf(fid, ['\tWeight:    ' num2str(battChoice(1)) ' g\n']);

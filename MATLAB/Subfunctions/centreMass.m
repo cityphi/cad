@@ -16,11 +16,11 @@ function output = centreMass( weights, a )
 M = sum(weights(:, 1));
 
 % location of the centre of mass
-output = transp(weights(:, 1)) * weights(:, 2:4)/M;
+CM = transp(weights(:, 1)) * weights(:, 2:4)/M;
+output = [M CM];
 
 if nargin == 2
 	% build the point force
-	CM = output;
 	output = [ CM M*sin(a) 0 -M*cos(a) 0 0 0];
 end
 end

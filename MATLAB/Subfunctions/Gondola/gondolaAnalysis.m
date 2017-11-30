@@ -8,9 +8,8 @@ function gondolaAnalysis (aThrust)
 %it calculated the forces acting on the gondola bearing arms.
 %it computes the acceleration of the gondola in the specified conditions 
 %Format for forces/reactions arrays:[locX locY locZ Fx Fy Fz Mx My Mz]
-% M [ density Sut Suc Sy E brittle ] - information of the material
+%M [ density Sut Suc Sy E brittle ] - information of the material
 %All lengths/distances are in [m] other units are specified
-
 
 %%%%%%%%%%%%%%%%%%%%%%%% SET VARIABLES %%%%%%%%%%%%
 Tw = 0.01;          %motor torque [Nm]
@@ -42,24 +41,24 @@ Hbearing = 0.03954; %height in z from bearing contact to surface of gondola
 muBrake = 0.65;     %coefficient of friction for brake (same ruber as fricwheel)
 maxBrakeForce = 45; %max force that can be appluied by linear actuator [N]
 
-Larm = 0.0399;      %length of straigt section of bearing arm 
-Lcurvez = 0.0053;   %length of cruved section of bearing arm in z
-Lcurvey = 0.00427;  %length of cruved section of bearing arm in y
+Larm = 0.03597;      %length of straigt section of bearing arm 
+Lcurvez = 0.00919;   %length of cruved section of bearing arm in z
+Lcurvey = 0.00816;  %length of cruved section of bearing arm in y
 
 gondSpecs = [
-0.113515    %length in x of one gondola car
-0.06        %width in y of gondola 
-0.06        %height in z of gondola
--0.05737    %center of gravity in x or gondola 1
-0.0008      %center of gravity in y or gondola 1
--0.03266    %center of gravity in z or gondola 1
-0.06326     %center of gravity in x or gondola 2
--0.0007     %center of gravity in y or gondola 2
--0.0308     %center of gravity in z or gondola 2
-0.3434      %mass of gondola 1 in kg
-0.4154      %mass of gondola 2 in kg
--0.13585    %position of brake in x  
-0.028];     %height of brake in z   
+0.066    %length in x of one gondola car
+0.046        %width in y of gondola 
+0.038        %height in z of gondola
+-0.0405    %center of gravity in x or gondola 1
+0.0001      %center of gravity in y or gondola 1
+-0.01997    %center of gravity in z or gondola 1
+0.03524     %center of gravity in x or gondola 2
+-0.0003     %center of gravity in y or gondola 2
+-0.01566     %center of gravity in z or gondola 2
+0.09777      %mass of gondola 1 in kg
+0.208      %mass of gondola 2 in kg
+-0.07946    %position of brake in x  
+0.03259];     %height of brake in z   
 
 gondSpecs(1);
 
@@ -73,16 +72,16 @@ maxThrust = 1;  %maximum possible acceleration from thust [n] INPUT FROM ALEX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %slip prevention and required motor torque 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
-Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
-Fnfric =  -Fspring; % normal force of frction wheel equal to spring for
 
 worstCaseAcceleration = 0;
 
 while worstCaseAcceleration >= 0;
+    Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
+    Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
+    Fnfric =  -Fspring; % normal force of frction wheel equal to spring for
     worstCaseAcceleration = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, -Tw, Fnfric, 0,0);
     if worstCaseAcceleration >= 0;
-        Tw = Tw + 0.01;
+        Tw = Tw + 0.01
     end
 end
 
@@ -134,7 +133,7 @@ Ncompressive = 0;
 while Ncompressive < 3
     Ncompressive = Scompressive*10^6/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2));
     if Ncompressive < 3
-        Dwashero = Dwashero + 0.001;
+        Dwashero = Dwashero + 0.001
     end
 end 
 
@@ -157,18 +156,18 @@ end
 %Gondola Bearing Arm stress Analysis 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [~, minArmForce, ~] = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, 0, Fnfric, 0,0);
-[~, maxArmForce, ~] = gondolaForces(gondSpecs, 0, 0, 0, maxThrust, 0, Fnfric, 0,-maxBrakeForce);
+[~, maxArmForce, ~] = gondolaForces(gondSpecs, 0, -pi/2, 0, maxThrust, 0, Fnfric, 0,-maxBrakeForce);
 
-armRadius = 0.001;
+armRadius = 0.0015;
 E = nylon12(1,5); 
 
 %%%%%%%%%finding force moment couple %%%%%%%%%
 
-maxArmForces = [0 Lcurvey Larm+Lcurvez 0 -maxArmForce -maxArmForce 0 0 0];
-maxCouple = forceSolver(maxArmForces, [0 0 Larm 0 1 1 1 0 0]);
+maxArmForces = [0 Lcurvey Larm+Lcurvez 0 maxArmForce -maxArmForce 0 0 0];
+maxCouple = forceSolver(maxArmForces, [0 0 Larm 0 1 1 1 0 0])
 
-minArmForces = [0 Lcurvey Larm+Lcurvez 0 -minArmForce -minArmForce 0 0 0];
-minCouple = forceSolver(minArmForces, [0 0 Larm 0 1 1 1 0 0]);
+minArmForces = [0 Lcurvey Larm+Lcurvez 0 minArmForce -minArmForce 0 0 0];
+minCouple = forceSolver(minArmForces, [0 0 Larm 0 1 1 1 0 0])
 
 %%%%%%%%% arm deflection %%%%%%%%%%%%%%%
 
@@ -177,23 +176,23 @@ while armDeflection > 0.0025
     A = pi*armRadius^2;
     I = (pi/4) * armRadius^2;
     armDeflection = sqrt(((maxCouple(1,6)*Larm)/(A*E))^2 + ((maxCouple(1,5)*Larm^3)/...
-                    (3*E*I) + (maxCouple(1,7)*Larm^2)/(2*E*I))^2);
+                    (3*E*I) + (maxCouple(1,7)*Larm^2)/(2*E*I))^2)
     if armDeflection > 0.0025
-        armRadius = armRadius + 0.0005;
+        armRadius = armRadius + 0.0005
     end
 end
 
 %%%%%%%%% arm inner corner stress %%%%%%%%%%%%%%%
 nArmMax = 0;
-while nArmMax < 1.5
+while nArmMax < 5
     A = pi*armRadius^2;
     I = (pi/4) * armRadius^2;
     tensorMax = zeros(3,3);
     tensorMax(2,2) = maxCouple(1,5)/A;
     tensorMax(3,3) = (maxCouple(1,5)*Larm*armRadius)/I + (maxCouple(1,7)*armRadius)/I;
-    nArmMax = cauchy(tensorMax,nylon12);
-    if nArmMax < 1.5
-        armRadius = armRadius + 0.0005;
+    nArmMax = cauchy(tensorMax,nylon12)
+    if nArmMax < 5
+        armRadius = armRadius + 0.0005
     end
 end
 
@@ -208,15 +207,41 @@ while abs(stressMax-stressMin) > 17*10^6
     tensorMax = zeros(3,3);
     tensorMax(2,2) = maxCouple(1,5)/A;
     tensorMax(3,3) = (maxCouple(1,5)*Larm*armRadius)/I + (maxCouple(1,7)*armRadius)/I;
-    stressMax = nylon12(2)/(cauchy(tensorMax,nylon12));
+    stressMax = nylon12(2)/(cauchy(tensorMax,nylon12))
     
     tensorMin = zeros(3,3);
     tensorMin(2,2) = minCouple(1,5)/A;
     tensorMin(3,3) = (minCouple(1,5)*Larm*armRadius)/I + (minCouple(1,7)*armRadius)/I;
-    stressMin = nylon12(2)/(cauchy(tensorMin,nylon12));
+    stressMin = nylon12(2)/(cauchy(tensorMin,nylon12))
     
     if abs(stressMax-stressMin) > 17*10^6
-        armRadius = armRadius + 0.0005;
+        armRadius = armRadius + 0.0005
     end
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Snap fit analysis and required cut depth and angle 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+rSnap =     0.003175;
+snapCut =   0.001;
+snapDef=    0.001;
+Lsnap =     0.005;
+theta =     acos((rSnap-snapCut)/rSnap);
+Isnap =     (rSnap^4)/8*(theta-sin(theta)+2*sin(theta)*(sin(theta/2))^2);
+c =         rSnap - 4/3 * rSnap * ((sin(theta/2))^3)/(theta-sin(theta))...
+            +snapCut;  
+nSnap = 0;
+
+while nSnap <= 1.5
+Freq = (3*snapDef*nylon12(5)*Isnap)/Lsnap^3;
+stressSnap = (Freq*Lsnap*c)/Isnap;
+nSnap = nylon12(2)/stressSnap;
+    if nSnap <= 1.5
+        Lsnap = Lsnap+0.0001;
+    end
+end
+
+snapAngle = (Freq*Lsnap^2)/(2*nylon12(5)*Isnap);
+
 end 

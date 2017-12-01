@@ -2,8 +2,6 @@ function designCode( requirements )
 %DESIGNCODE Summary of this function goes here
 %   Detailed explanation goes here
 
-clear; clc;
-
 % M [ density Sut Suc Sy E brittle ] - information of the material
 carbon       = [1550 600*10^6 570*10^6 0        109*10^9   1]; % need Sy
 aluminum6061 = [2700 310*10^6 0        276*10^6 68.9*10^9  0]; % matweb

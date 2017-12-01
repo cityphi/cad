@@ -129,7 +129,7 @@ function sliderReqSpeed_Callback(hObject, eventdata, handles)
 if(isempty(handles))
     Wrong_File();
 else
-    value = round(get(hObject,'Value'));
+    value = round(get(hObject,'Value'), 1);
     set(handles.textSpeedValue,'String',num2str(value));
 end
 
@@ -207,17 +207,16 @@ if(isempty(handles))
 else
     %Get the design parameters from the interface
     
-    cd ..
     addpath(genpath(pwd));
     
     reqTime = get(handles.sliderReqTime, 'Value');
     reqWeight = get(handles.sliderReqWeight, 'Value');
-    reqSpeed = get(handles.sliderReqSpeed, 'Value');
+    reqSpeed = get(handles.sliderReqSpeed, 'Value')
     
     airshipLength = str2double(get(handles.textLength, 'String'));
 
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    designCode([reqTime, reqWeight, reqSpeed]);
+    designCode([reqSpeed, reqTime, reqWeight]);
 end

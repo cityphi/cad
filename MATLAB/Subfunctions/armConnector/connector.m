@@ -1,4 +1,4 @@
-function [ dimensions ] = connector(FT, thrustForceLoc, weight, radius, material)
+function [ dimensions ] = connector(FT, weight, radius, material)
 %CONNECTOR Connecter optimization 
 %   D = CONNECTOR(F, W, m) returns the optimized dimensions of the
 %   square piece of the connector. The height and length are fixed and the
@@ -11,7 +11,7 @@ function [ dimensions ] = connector(FT, thrustForceLoc, weight, radius, material
 safetyFactor = 5; % hard coded value for the safety factor
 aPitch = 90;
 a = aPitch*pi()/180;
-thrustForce = [thrustForceLoc FT 0 0 0 0 0 ]; % location and x force
+thrustForce = [0 0 0 FT*2 0 0 0 0 0 ]; % location and x force
 forces = [thrustForce; centreMass(weight, a)];
 
 % [ length width height ] - starting
@@ -21,7 +21,7 @@ change = 0.0001;
 % location of analysis
 reaction = [ 0 0 -radius 1 1 1 1 1 1 ];
 
-translatedForces = -forceSolver(forces, reaction);
+reactionForces = forceSolver(forces, reaction);
 
 % loop to find a dimension that gives the desired safety factor
 maxIterations = 100; iterations = 0; loop = 1;
@@ -30,12 +30,11 @@ while loop && iterations < maxIterations;
     iterations = iterations + 1;  
     
     % safety factor for stresses
-    stressTensor = connectorTensor(translatedForces, dimensions);
+    stressTensor = connectorTensor(reactionForces, dimensions);
     n = cauchy(stressTensor, material);
     
     if n < safetyFactor
         if dimensions(2) > 0.0029
-            disp(strcat('Max connector safety factor: ', int2str(n)))
             loop = 0;
         else
             dimensions(2) = dimensions(2) + change;
@@ -46,12 +45,40 @@ while loop && iterations < maxIterations;
 end
 
 %--CHECK for Buckling
-thrustForce = [thrustForceLoc 0 0 -FT 0 0 0 ]; % location and x force
-forces = [thrustForce; centreMass(weight, a)];
-translatedForces = -forceSolver(forces, reaction);
+thrustForce = [0 0 0 0 0 -FT*2 0 0 0 ]; % location and z force
+forces = [thrustForce; centreMass(weight, 0)];
 
 Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
-nBuck = Pcr/sum(translatedForces(:, 6));
+nBuck = -Pcr/sum(forces(:, 6));
+
+%--CHECK other part of the connector
+% dimensions of the base connector
+l  = 0.06;
+a1 = 0.01;
+w1 = a1*cos(pi()/4);
+h1 = w1/2;
+a2 = 0.008;
+
+% l a w h(main) a(smaller)
+keelDimensions = [ l a1 w1 h1 a2 ];
+
+keelReactions = [ -l/2 0 -h1 0 0 1 0 0 0;
+                   l/2 0  h1 1 0 1 0 0 0];
+
+thrustForce = [0 0 0 FT*2 0 0 0 0 0 ];
+forces = [thrustForce; centreMass(weight, pi()/2)];
+forces(:, 3) = forces(:, 3) + radius + dimensions(3);
+reactionForces = forceSolver(forces, keelReactions);
+
+% build a stress tensor and use cauchy to solve for safety factor
+stressTensor = keelTensor(reactionForces(2, :), keelDimensions);
+nKeel = cauchy(stressTensor, material);
+
+%--LOG File
+connectorLog(n, nBuck, nKeel, safetyFactor)
+
+%--Solidworks
+disp('CONNECTOR solidworks not done')
 end
 
 function [ tensor ] = connectorTensor(forces, dimensions)
@@ -62,12 +89,9 @@ function [ tensor ] = connectorTensor(forces, dimensions)
 % split dimensions array for use in equations
 l   = dimensions(1);
 w   = dimensions(2);
-h   = dimensions(3);
 
 % split the forces array for use in equations
-Fx  = forces(4);
 Fy  = forces(5);
-Fz  = forces(6);
 Mx  = forces(7);
 My  = forces(8);
 Mz  = forces(9);
@@ -99,4 +123,81 @@ tyz = 0;
 tensor = [ Sx  txy txz;
            txy Sy  tyz;
            txz tyz Sz ];
+end
+
+function [ tensor ] = keelTensor(forces, dimensions)
+%KEELTENSOR Cauchy stress tensor of the keel section of the connector
+%   tensor = connectorTensor(F, D) returns a 3x3 matrix which is used by
+%   the cauchy function to find a safety factor for the connector
+
+% split dimensions array for use in equations
+a   = dimensions(2);
+w   = dimensions(3);
+h   = dimensions(4);
+
+% split the forces array for use in equations
+Fx  = forces(4);
+Fz  = forces(6);
+
+% area of the z-y cross-section
+A  = a^2;
+I  = a^4/12;
+
+% for shear stress
+V = Fz;
+Q = (w*h/2)*(h/3);
+b = w;
+
+% assume that max occurs in middle
+%        ^
+%   /\  z|-->
+%   \/     y
+Sx  = Fx/A;
+Sy  = 0;
+Sz  = 0;
+txy = 0;
+txz = -V*Q/(I*b);
+tyz = 0;
+
+% layout of the cauchy stress tensor
+tensor = [ Sx  txy txz;
+           txy Sy  tyz;
+           txz tyz Sz ];
+end
+
+function connectorLog(n, nBuck, nKeel, nReq)
+%CONNECTORLOG Outputs useful data to the log file
+%   CONNECTORLOG(mass) returns nothing
+
+logFile = 'groupRE3_LOG.txt';
+logFolder = fullfile('../Log');
+MATLABFolder = fullfile('../MATLAB');
+
+% append to the file
+cd(logFolder)
+fid = fopen(logFile, 'a+');
+fprintf(fid, '\n***Arm Connection to Keel***\n');
+fprintf(fid, ['Connector Stress SF: ' num2str(n)]);
+% display a message if the safety factor couldn't be acheived
+if n < nReq
+    fprintf(fid, ' ****This does not meet safety Factor\n');
+else
+    fprintf(fid, '\n');
+end
+fprintf(fid, ['Connector Buckling SF: ' num2str(nBuck)]);
+% display a message if the safety factor couldn't be acheived
+if nBuck < nReq
+    fprintf(fid, ' ****This does not meet safety Factor\n');
+else
+    fprintf(fid, '\n');
+end
+fprintf(fid, ['Keel Piece SF: ' num2str(nKeel)]);
+% display a message if the safety factor couldn't be acheived
+if nKeel < nReq
+    fprintf(fid, ' ****This does not meet safety Factor\n');
+else
+    fprintf(fid, '\n');
+end
+fclose(fid);
+cd(MATLABFolder)
 end

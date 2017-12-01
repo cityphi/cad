@@ -33,10 +33,5 @@ weight = thrusterAssy(thrusterWeight, battMass, airshipRad);
 
 % ---ARM
 weight = arm(FTmax, thrustForceLoc, weight, airshipRad, carbon);
-
-connectorDimensions = connector(FTmax, thrustForceLoc, weight, airshipRad, aluminum6061);
-disp(connectorDimensions)
-
-keelSafety = keelConnector(inForce, weight, aluminum6061);
-disp(keelSafety)
+connector(FTmax, weight, airshipRad, aluminum6061);
 end

@@ -20,7 +20,7 @@ weight = centreMass(weight);
 weight(3) = weight(3) + radius;
 
 % LOG file
-thrusterAssyLog(weight(1)*2*1000/9.81);
+thrusterAssyLog(round(weight(1)*2*1000/9.81, 1));
 end
 
 function thrusterAssyLog(mass)

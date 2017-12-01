@@ -29,5 +29,33 @@ end
 
 pitches = data(row, 1);
 
+%00000000000 KEEL CONNECTOR
+% checking at different pitch angles
+minAngle = -60; maxAngle = 90;
+data = zeros(maxAngle-minAngle+1, 2);
+i = 0;
+
+% checking for worst case scenario of the base of connector
+for aPitch = minAngle:1:maxAngle
+    i = i + 1;
+    % change the reaction assumptions based on the pitch angle
+    if aPitch < 0
+        reactions(:, 4) = [1; 0];
+        force = armForces(weights, inForces, aPitch);
+        force = [0 0 0.04 -force(4:end)]; % change the coordinates
+        bottomForces = forceSolver(force, reactions);
+        analysisForces = bottomForces(1, :);
+    else
+        reactions(:, 4) = [0; 1];
+        force = armForces(weights, inForces, aPitch);
+        force = [0 0 0.04 -force(4:end)]; % change the coordinates
+        bottomForces = forceSolver(force, reactions);
+        analysisForces = bottomForces(2, :);
+    end
+    % build a stress tensor and use cauchy to solve for safety factor
+    stressTensor = keelTensor(analysisForces, dimensions);
+    data(i, :) = [aPitch cauchy(stressTensor, material)];
+end
+
 end
 

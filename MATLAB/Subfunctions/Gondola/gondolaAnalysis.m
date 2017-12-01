@@ -49,12 +49,12 @@ gondSpecs = [
 0.066    %length in x of one gondola car
 0.046        %width in y of gondola 
 0.038        %height in z of gondola
--0.0405    %center of gravity in x or gondola 1
-0.0001      %center of gravity in y or gondola 1
--0.01997    %center of gravity in z or gondola 1
-0.03524     %center of gravity in x or gondola 2
--0.0003     %center of gravity in y or gondola 2
--0.01566     %center of gravity in z or gondola 2
+-0.0405    %center of gravity in x of gondola 1
+0.0001      %center of gravity in y of gondola 1
+-0.01997    %center of gravity in z of gondola 1
+0.03524     %center of gravity in x of gondola 2
+-0.0003     %center of gravity in y of gondola 2
+-0.01566     %center of gravity in z of gondola 2
 0.09777      %mass of gondola 1 in kg
 0.208      %mass of gondola 2 in kg
 -0.07946    %position of brake in x  
@@ -81,7 +81,7 @@ while worstCaseAcceleration >= 0;
     Fnfric =  -Fspring; % normal force of frction wheel equal to spring for
     worstCaseAcceleration = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, -Tw, Fnfric, 0,0);
     if worstCaseAcceleration >= 0;
-        Tw = Tw + 0.01
+        Tw = Tw + 0.01;
     end
 end
 
@@ -108,32 +108,23 @@ end
 
 %friction wheel contact point force, forces are acting in x,y',z' must be
 %rotated to y and z
-motorForces = [0 Lhd Hdrive Fw 0 Fnfric 0 0 0;]; 
+motorForces = [0 Lhd Hdrive Fw 0 Fnfric 0 0 0;];
 motorForces = rotate(motorForces, 0, hingeAngle, 2, 1);
-
-%reaction forces/moments acting at torsion spring hinge
-hingeReactions = [0 0 0 1 1 1 1 1 1;];
-
-%forces acting on hinge therefor negative
-hingeForces = -forceSolver(motorForces, hingeReactions);
-
-%rotating hinge force to gondola coordinate system
-hingeForces = rotate(hingeForces, 0, hingeAngle, 2, 1);
 
 %worst reaction forces of hinge/gondola screws, almost all reaction from screw a    
 gondScrewReactionsWorst = [ -Ls La 0 1 1 1 2 3 0; 
                              Ls Lb 0 0 1 0 2 3 0;];
 
-gondScrewReactionsWorstSolved = forceSolver(hingeForces, gondScrewReactionsWorst);
+gondScrewReactionsWorstSolved = forceSolver(motorForces, gondScrewReactionsWorst);
 
 Fbolt = sqrt(gondScrewReactionsWorstSolved(1,4)^2+gondScrewReactionsWorstSolved(1,5)^2)... 
-    /Muwasher + gondScrewReactionsWorstSolved(1,6);
+    /Muwasher + gondScrewReactionsWorstSolved(1,6)
 
 Ncompressive = 0;
 while Ncompressive < 3
     Ncompressive = Scompressive*10^6/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2));
     if Ncompressive < 3
-        Dwashero = Dwashero + 0.001
+        Dwashero = Dwashero + 0.001;
     end
 end 
 
@@ -164,10 +155,10 @@ E = nylon12(1,5);
 %%%%%%%%%finding force moment couple %%%%%%%%%
 
 maxArmForces = [0 Lcurvey Larm+Lcurvez 0 maxArmForce -maxArmForce 0 0 0];
-maxCouple = forceSolver(maxArmForces, [0 0 Larm 0 1 1 1 0 0])
+maxCouple = forceSolver(maxArmForces, [0 0 Larm 0 1 1 1 0 0]);
 
 minArmForces = [0 Lcurvey Larm+Lcurvez 0 minArmForce -minArmForce 0 0 0];
-minCouple = forceSolver(minArmForces, [0 0 Larm 0 1 1 1 0 0])
+minCouple = forceSolver(minArmForces, [0 0 Larm 0 1 1 1 0 0]);
 
 %%%%%%%%% arm deflection %%%%%%%%%%%%%%%
 
@@ -176,9 +167,9 @@ while armDeflection > 0.0025
     A = pi*armRadius^2;
     I = (pi/4) * armRadius^2;
     armDeflection = sqrt(((maxCouple(1,6)*Larm)/(A*E))^2 + ((maxCouple(1,5)*Larm^3)/...
-                    (3*E*I) + (maxCouple(1,7)*Larm^2)/(2*E*I))^2)
+                    (3*E*I) + (maxCouple(1,7)*Larm^2)/(2*E*I))^2);
     if armDeflection > 0.0025
-        armRadius = armRadius + 0.0005
+        armRadius = armRadius + 0.0005;
     end
 end
 
@@ -190,9 +181,9 @@ while nArmMax < 5
     tensorMax = zeros(3,3);
     tensorMax(2,2) = maxCouple(1,5)/A;
     tensorMax(3,3) = (maxCouple(1,5)*Larm*armRadius)/I + (maxCouple(1,7)*armRadius)/I;
-    nArmMax = cauchy(tensorMax,nylon12)
+    nArmMax = cauchy(tensorMax,nylon12);
     if nArmMax < 5
-        armRadius = armRadius + 0.0005
+        armRadius = armRadius + 0.0005;
     end
 end
 
@@ -207,15 +198,15 @@ while abs(stressMax-stressMin) > 17*10^6
     tensorMax = zeros(3,3);
     tensorMax(2,2) = maxCouple(1,5)/A;
     tensorMax(3,3) = (maxCouple(1,5)*Larm*armRadius)/I + (maxCouple(1,7)*armRadius)/I;
-    stressMax = nylon12(2)/(cauchy(tensorMax,nylon12))
+    stressMax = nylon12(2)/(cauchy(tensorMax,nylon12));
     
     tensorMin = zeros(3,3);
     tensorMin(2,2) = minCouple(1,5)/A;
     tensorMin(3,3) = (minCouple(1,5)*Larm*armRadius)/I + (minCouple(1,7)*armRadius)/I;
-    stressMin = nylon12(2)/(cauchy(tensorMin,nylon12))
+    stressMin = nylon12(2)/(cauchy(tensorMin,nylon12));
     
     if abs(stressMax-stressMin) > 17*10^6
-        armRadius = armRadius + 0.0005
+        armRadius = armRadius + 0.0005;
     end
 end
 
@@ -241,7 +232,10 @@ nSnap = nylon12(2)/stressSnap;
         Lsnap = Lsnap+0.0001;
     end
 end
+%%%%%%%%%%outputs
 
-snapAngle = (Freq*Lsnap^2)/(2*nylon12(5)*Isnap);
+
+
+snapAngle = (180/pi)*(Freq*Lsnap^2)/(2*nylon12(5)*Isnap)
 
 end 

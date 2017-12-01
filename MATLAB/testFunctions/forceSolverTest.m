@@ -76,22 +76,4 @@ if isequal(round(output, 2), round(expected, 2)) == 0
     result = 'Fail';
 end
 
-%---Test 5 (scenario 1 + pairs)
-forces = [ 0 0.05 -0.0003 0 0 -0.981 0 0 0;
-           0 0.08 0       0 0 -4.5   0 0 0];
-
-reaction = [ 0 0   0 1 0 1 2 3 4; 
-             0 0.1 0 1 0 1 2 3 4];
-
-expected = [0 0      0  1.7419 0  9.8786 -0.0154 0 -0.0871;
-            0 0.1000 0 -1.7419 0 -4.3976 -0.0154 0 -0.0871];
-        
-output = forceSolver(forces, reaction, [1 10]);
-
-if isequal(round(output, 3), round(expected, 3)) == 0
-    disp('Test 5')
-    disp(output)
-    result = 'Fail';
-end
-
 end

@@ -211,7 +211,7 @@ else
     
     reqTime = get(handles.sliderReqTime, 'Value');
     reqWeight = get(handles.sliderReqWeight, 'Value');
-    reqSpeed = get(handles.sliderReqSpeed, 'Value')
+    reqSpeed = get(handles.sliderReqSpeed, 'Value');
     
     airshipLength = str2double(get(handles.textLength, 'String'));
 

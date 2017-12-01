@@ -17,7 +17,7 @@ reqWeight = requirements(3);
 
 airshipRad = 0.637;
 
-%---SCRIPT
+%---THRUSTER
 inputs = [reqSpeed reqTime reqWeight];
 dragValues = [CD rho vol];
 
@@ -26,8 +26,17 @@ dragValues = [CD rho vol];
 
 % optimize the shaft
 [thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
-thrusterDist = thrusterDist + 0.04572 + airshipRad; % relate to CV
+thrustForceLoc = [ 0 thrusterDist+0.04572+airshipRad 0 ]; % relate to CV
 
 % get the total weight of one thruster assy relative to CV
-thrustAssyWeight = thrusterAssy(thrusterWeight, battMass, airshipRad);
+weight = thrusterAssy(thrusterWeight, battMass, airshipRad);
+
+% ---ARM
+weight = arm(FTmax, thrustForceLoc, weight, airshipRad, carbon);
+
+connectorDimensions = connector(FTmax, thrustForceLoc, weight, airshipRad, aluminum6061);
+disp(connectorDimensions)
+
+keelSafety = keelConnector(inForce, weight, aluminum6061);
+disp(keelSafety)
 end

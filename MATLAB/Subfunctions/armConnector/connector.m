@@ -1,71 +1,37 @@
-function [ dimensions ] = connector(inForces, weights, material)
+function [ dimensions ] = connector(FT, thrustForceLoc, weight, radius, material)
 %CONNECTOR Connecter optimization 
 %   D = CONNECTOR(F, W, m) returns the optimized dimensions of the
 %   square piece of the connector. The height and length are fixed and the
-%   value changing will be the width. 
+%   value changing will be the width.
 %
 %   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - thrust force
 %   W [ weight locX locY locZ ] - weight of all components above connector
 %   M [ density Sut Suc Sy E brittle ] - information of the material
 
 safetyFactor = 5; % hard coded value for the safety factor
+aPitch = 90;
+a = aPitch*pi()/180;
+thrustForce = [thrustForceLoc FT 0 0 0 0 0 ]; % location and x force
+forces = [thrustForce; centreMass(weight, a)];
 
 % [ length width height ] - starting
 dimensions = [ 0.04 0.0005 0.033 ];
 change = 0.0001;
 
 % location of analysis
-reaction = [ 0 0 0 1 1 1 1 1 1];
+reaction = [ 0 0 -radius 1 1 1 1 1 1 ];
 
-% loop to find the worst angle for each failure case
-minAngle = -60;
-maxAngle = 90;
-data = zeros(maxAngle-minAngle + 1, 3);
-i = 1;
+translatedForces = -forceSolver(forces, reaction);
 
-for aPitch = minAngle:1:maxAngle
-    force = armForces(weights, inForces, aPitch);
-    force(1:3) = [0 0 dimensions(3)]; % change the coordinates
-    bottomForces = forceSolver(force, reaction);
-    
-    % safety factor for stresses
-    stressTensor = connectorTensor(bottomForces, dimensions);
-    SF(1) = cauchy(stressTensor, material);
-    
-    % safety factor for buckling
-    Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
-    SF(2) = abs(Pcr/force(6));
-
-    % store data
-    data(i, :) = [aPitch SF];
-    i = i + 1;
-end
-
-[worst, row] = min(data(:, 2:3));
-[~, col] = min(worst);
-
-pitches = data(row, 1);
-
-force = armForces(weights, inForces, pitches(1));
-force(1:3) = [0 0 dimensions(3)]; % change the coordinates
-bottomForces = forceSolver(force, reaction);
-
-% loop to find a dimension that gives the desire safety factor
+% loop to find a dimension that gives the desired safety factor
 maxIterations = 100; iterations = 0; loop = 1;
 
 while loop && iterations < maxIterations;
     iterations = iterations + 1;  
     
-    if col == 1
-        % safety factor for stresses
-        stressTensor = connectorTensor(bottomForces, dimensions);
-        n = cauchy(stressTensor, material);
-        
-    elseif col == 2
-        % safety factor for buckling
-        Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
-        n = Pcr/force(6);
-    end
+    % safety factor for stresses
+    stressTensor = connectorTensor(translatedForces, dimensions);
+    n = cauchy(stressTensor, material);
     
     if n < safetyFactor
         if dimensions(2) > 0.0029
@@ -78,6 +44,14 @@ while loop && iterations < maxIterations;
         loop = 0;    
     end
 end
+
+%--CHECK for Buckling
+thrustForce = [thrustForceLoc 0 0 -FT 0 0 0 ]; % location and x force
+forces = [thrustForce; centreMass(weight, a)];
+translatedForces = -forceSolver(forces, reaction);
+
+Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
+nBuck = Pcr/sum(translatedForces(:, 6));
 end
 
 function [ tensor ] = connectorTensor(forces, dimensions)

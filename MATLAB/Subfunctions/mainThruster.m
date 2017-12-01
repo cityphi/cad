@@ -12,9 +12,18 @@ rho = 1.225;
 vol = 3.453;
 reqSpeed = 5; %m/s
 reqTime = 30/60; %h
+airshipRad = 0.637;
 
 %---SCRIPT
 inputs = [reqSpeed reqTime 0];
 dragValues = [CD rho vol];
+
+% pick battery, motor, and propeller
 [thrusterMass, battMass, FTmax, propRadius] = batMotProp(inputs, dragValues);
-[weight, dimensions] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
+
+% optimize the shaft
+[thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
+thrusterDist = thrusterDist + 0.04572 + airshipRad; % relate to CV
+
+% get the total weight of one thruster assy relative to CV
+thrustAssyWeight = thrusterAssy(thrusterWeight, battMass, airshipRad);

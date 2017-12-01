@@ -219,5 +219,5 @@ else
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    designCode(reqTime, reqWeight, reqSpeed, airshipLength);
+    designCode([reqTime, reqWeight, reqSpeed]);
 end

@@ -20,3 +20,6 @@ Battery - ZIPPY Compact 2700mAh 2S 25C Lipo Pack
 Safety Factor: 5.2085
 Weight:        7.4797 g
 Thread size:   M8
+
+***Thruster Assembly***
+Total Mass: 1314.9594 g

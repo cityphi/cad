@@ -1,4 +1,4 @@
-function [weight, dimensions] = thrusterShaft(thrust, thrustMass, ...
+function [weight, thrusterDist] = thrusterShaft(thrust, thrustMass, ...
     radius, material)
 %THRUSTERSHAFT Thruster arm optimization.
 %   [W, D] = ARM(F, W, M) returns the reaction forces at the worst
@@ -97,6 +97,7 @@ shaftLog(n, safetyFactor, weights(end, 1)/9.81*1000, thread(i, 1))
 % write to solidworks
 disp('SHAFT solidworks not done')
 
+% back to main
 weight = centreMass(weights(end, :));
 end
 
@@ -133,7 +134,7 @@ end
 
 function shaftLog(n, nReq, weight, thread)
 %SHAFTLOG Outputs useful data to the log file
-%   SHAFTLOG(n, weight, thread) returns nothing
+%   SHAFTLOG(n, nReq, weight, thread) returns nothing
 
 logFile = 'groupRE3_LOG.txt';
 logFolder = fullfile('../Log');

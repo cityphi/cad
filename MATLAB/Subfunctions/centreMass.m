@@ -5,7 +5,7 @@ function output = centreMass( weights, a )
 %   roll.
 %
 %   W [ weight locX locY locZ ] - weights
-%   a [ pitchAngle ] - current pitch angle of the airship
+%   a [ pitchAngle ] - current pitch angle of the airship RAD
 %   
 %   Output:
 %   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - point force output

@@ -1,25 +1,34 @@
-Max Speed   = 7.9043 m/s
-Flight Time = 15.0904minutes
+Max Speed   = 11.4542 m/s
+Flight Time = 8.3766minutes
 
 ***Thruster Selection***
-Propeller - APC E 11x7
-	Weight: 23 g
-Motor - TurBORIX 4023-850
-	Weight: 107 g
-	Volts:  6.8 V
-	KV:     893 RPM/V
-	Power:  73 W
-	Thrust: 7.9043 N
-Battery - ZIPPY Compact 2700mAh 2S 25C Lipo Pack
-	Weight:    157 g
+Propeller - APC E 10x7
+	Weight: 20.1 g
+Motor - Dualsky XM 3536-8
+	Weight: 105 g
+	Volts:  10.6 V
+	KV:     1010 RPM/V
+	Power:  205 W
+	Thrust: 11.4542 N
+Battery - ZIPPY Compact 2700mAh 3s 40c Lipo Pack
+	Weight:    235 g
 	Capacity:  2700 mAh
-	Voltage:   7.4 V
-	Discharge: 25 C
+	Voltage:   11.1 V
+	Discharge: 40 C
 
 ***Thruster Shaft***
-Safety Factor: 18.0756
-Weight:        18.493 g
-Thread size:   M12
+Safety Factor: 5.5549
+Weight:        11.687 g
+Thread size:   M10
 
 ***Thruster Assembly***
-Total Mass: 1336.986 g
+Total Mass: 1479.4 g
+
+***Thruster Arms***
+Total Mass:    393.6 g
+Safety Factor: 5.4943
+
+***Arm Connection to Keel***
+Connector Stress SF: 5.0586
+Connector Buckling SF: 305.0242
+Keel Piece SF: 146.9549

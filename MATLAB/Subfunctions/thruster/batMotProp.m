@@ -210,9 +210,9 @@ battName = char(names(3));
 amps = motChoice(3)/motChoice(4);
 
 cd(logFolder)
-fid = fopen(logFile, 'w+t');
+fid = fopen(logFile, 'a+');
 % lines of the file
-fprintf(fid, ['Max Speed   = ' num2str(motChoice(5)) ' m/s\n']);
+fprintf(fid, ['\nMax Speed   = ' num2str(motChoice(5)) ' m/s\n']);
 fprintf(fid, ['Flight Time = ' num2str(battChoice(2)*0.06/amps) 'minutes\n']);
 fprintf(fid, '\n***Thruster Selection***\n');
 fprintf(fid, ['Propeller - APC E ' propName '\n']);

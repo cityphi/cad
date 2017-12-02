@@ -1,37 +1,45 @@
-Max Speed   = 11.4919 m/s
-Flight Time = 10.53minutes
+
+***Envelope***
+Using a FR of 4.5 and L of 3m gives a D of 0.66667m.
+This corresponds to a CD of 0.159.
+With a volume of 0.69361m^3 which is 115.4g of helium.
+Approximately 154.7g of plastic.
+Centre of mass at 122.8mm (in x) from the centre of the thrusters
+
+Max Speed   = 11.017 m/s
+Flight Time = 23.2875minutes
 
 ***Thruster Selection***
-Propeller - APC E 10x7
-	Weight: 20.1 g
-Motor - GPS C35-36-C
-	Weight: 102 g
-	Volts:  7.8 V
-	KV:     1110 RPM/V
-	Power:  120 W
-	Thrust: 11.4919 N
-Battery - ZIPPY Compact 2700mAh 3s 40c Lipo Pack
-	Weight:    235 g
+Propeller - APC E 6x4
+	Weight: 5.1 g
+Motor - Grayson Mega Jet 18
+	Weight: 61 g
+	Volts:  6.9 V
+	KV:     1820 RPM/V
+	Power:  48 W
+	Thrust: 11.017 N
+Battery - ZIPPY Compact 2700mAh 2S 25C Lipo Pack
+	Weight:    157 g
 	Capacity:  2700 mAh
-	Voltage:   11.1 V
-	Discharge: 40 C
+	Voltage:   7.4 V
+	Discharge: 25 C
 
 ***Thruster Shaft***
-Safety Factor: 5.653
-Weight:        11.687 g
-Thread size:   M10
+Safety Factor: 9.3452
+Weight:        4.5221 g
+Thread size:   M8
 
 ***Thruster Assembly***
-Total Mass: 1479.4 g
+Total Mass: 1309 g
 
 ***Thruster Arms***
-Total Mass:    219.1 g
-Safety Factor: 5.3812
+Total Mass:    137.8 g
+Safety Factor: 6.8061
 
 ***Arm Connection to Keel***
 Assuming the piece is made from Aluminum 6061
 The optimized thickness is 1.5mm
 This gives safety factors for the different failures:
-	Connector Stress: 7.8543
-	Connector Buckling: 213.6724
-	Keel Piece: 243.6866
+	Connector Stress: 17.494
+	Connector Buckling: 361.2169
+	Keel Piece: 496.3473

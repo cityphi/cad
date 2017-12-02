@@ -8,9 +8,8 @@ function gondolaAnalysis (aThrust)
 %it calculated the forces acting on the gondola bearing arms.
 %it computes the acceleration of the gondola in the specified conditions 
 %Format for forces/reactions arrays:[locX locY locZ Fx Fy Fz Mx My Mz]
-% M [ density Sut Suc Sy E brittle ] - information of the material
+%M [ density Sut Suc Sy E brittle ] - information of the material
 %All lengths/distances are in [m] other units are specified
-
 
 %%%%%%%%%%%%%%%%%%%%%%%% SET VARIABLES %%%%%%%%%%%%
 Tw = 0.01;          %motor torque [Nm]
@@ -42,24 +41,24 @@ Hbearing = 0.03954; %height in z from bearing contact to surface of gondola
 muBrake = 0.65;     %coefficient of friction for brake (same ruber as fricwheel)
 maxBrakeForce = 45; %max force that can be appluied by linear actuator [N]
 
-Larm = 0.0399;      %length of straigt section of bearing arm 
-Lcurvez = 0.0053;   %length of cruved section of bearing arm in z
-Lcurvey = 0.00427;  %length of cruved section of bearing arm in y
+Larm = 0.03597;      %length of straigt section of bearing arm 
+Lcurvez = 0.00919;   %length of cruved section of bearing arm in z
+Lcurvey = 0.00816;  %length of cruved section of bearing arm in y
 
 gondSpecs = [
-0.113515    %length in x of one gondola car
-0.06        %width in y of gondola 
-0.06        %height in z of gondola
--0.05737    %center of gravity in x or gondola 1
-0.0008      %center of gravity in y or gondola 1
--0.03266    %center of gravity in z or gondola 1
-0.06326     %center of gravity in x or gondola 2
--0.0007     %center of gravity in y or gondola 2
--0.0308     %center of gravity in z or gondola 2
-0.3434      %mass of gondola 1 in kg
-0.4154      %mass of gondola 2 in kg
--0.13585    %position of brake in x  
-0.028];     %height of brake in z   
+0.066    %length in x of one gondola car
+0.046        %width in y of gondola 
+0.038        %height in z of gondola
+-0.0405    %center of gravity in x of gondola 1
+0.0001      %center of gravity in y of gondola 1
+-0.01997    %center of gravity in z of gondola 1
+0.03524     %center of gravity in x of gondola 2
+-0.0003     %center of gravity in y of gondola 2
+-0.01566     %center of gravity in z of gondola 2
+0.09777      %mass of gondola 1 in kg
+0.208      %mass of gondola 2 in kg
+-0.07946    %position of brake in x  
+0.03259];     %height of brake in z   
 
 gondSpecs(1);
 
@@ -73,13 +72,13 @@ maxThrust = 1;  %maximum possible acceleration from thust [n] INPUT FROM ALEX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %slip prevention and required motor torque 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
-Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
-Fnfric =  -Fspring; % normal force of frction wheel equal to spring for
 
 worstCaseAcceleration = 0;
 
 while worstCaseAcceleration >= 0;
+    Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
+    Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
+    Fnfric =  -Fspring; % normal force of frction wheel equal to spring for
     worstCaseAcceleration = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, -Tw, Fnfric, 0,0);
     if worstCaseAcceleration >= 0;
         Tw = Tw + 0.01;
@@ -109,23 +108,14 @@ end
 
 %friction wheel contact point force, forces are acting in x,y',z' must be
 %rotated to y and z
-motorForces = [0 Lhd Hdrive Fw 0 Fnfric 0 0 0;]; 
+motorForces = [0 Lhd Hdrive Fw 0 Fnfric 0 0 0;];
 motorForces = rotate(motorForces, 0, hingeAngle, 2, 1);
-
-%reaction forces/moments acting at torsion spring hinge
-hingeReactions = [0 0 0 1 1 1 1 1 1;];
-
-%forces acting on hinge therefor negative
-hingeForces = -forceSolver(motorForces, hingeReactions);
-
-%rotating hinge force to gondola coordinate system
-hingeForces = rotate(hingeForces, 0, hingeAngle, 2, 1);
 
 %worst reaction forces of hinge/gondola screws, almost all reaction from screw a    
 gondScrewReactionsWorst = [ -Ls La 0 1 1 1 2 3 0; 
                              Ls Lb 0 0 1 0 2 3 0;];
 
-gondScrewReactionsWorstSolved = forceSolver(hingeForces, gondScrewReactionsWorst);
+gondScrewReactionsWorstSolved = forceSolver(motorForces, gondScrewReactionsWorst);
 
 Fbolt = sqrt(gondScrewReactionsWorstSolved(1,4)^2+gondScrewReactionsWorstSolved(1,5)^2)... 
     /Muwasher + gondScrewReactionsWorstSolved(1,6);
@@ -157,17 +147,17 @@ end
 %Gondola Bearing Arm stress Analysis 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [~, minArmForce, ~] = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, 0, Fnfric, 0,0);
-[~, maxArmForce, ~] = gondolaForces(gondSpecs, 0, 0, 0, maxThrust, 0, Fnfric, 0,-maxBrakeForce);
+[~, maxArmForce, ~] = gondolaForces(gondSpecs, 0, -pi/2, 0, maxThrust, 0, Fnfric, 0,-maxBrakeForce);
 
-armRadius = 0.001;
+armRadius = 0.0015;
 E = nylon12(1,5); 
 
 %%%%%%%%%finding force moment couple %%%%%%%%%
 
-maxArmForces = [0 Lcurvey Larm+Lcurvez 0 -maxArmForce -maxArmForce 0 0 0];
+maxArmForces = [0 Lcurvey Larm+Lcurvez 0 maxArmForce -maxArmForce 0 0 0];
 maxCouple = forceSolver(maxArmForces, [0 0 Larm 0 1 1 1 0 0]);
 
-minArmForces = [0 Lcurvey Larm+Lcurvez 0 -minArmForce -minArmForce 0 0 0];
+minArmForces = [0 Lcurvey Larm+Lcurvez 0 minArmForce -minArmForce 0 0 0];
 minCouple = forceSolver(minArmForces, [0 0 Larm 0 1 1 1 0 0]);
 
 %%%%%%%%% arm deflection %%%%%%%%%%%%%%%
@@ -185,14 +175,14 @@ end
 
 %%%%%%%%% arm inner corner stress %%%%%%%%%%%%%%%
 nArmMax = 0;
-while nArmMax < 1.5
+while nArmMax < 5
     A = pi*armRadius^2;
     I = (pi/4) * armRadius^2;
     tensorMax = zeros(3,3);
     tensorMax(2,2) = maxCouple(1,5)/A;
     tensorMax(3,3) = (maxCouple(1,5)*Larm*armRadius)/I + (maxCouple(1,7)*armRadius)/I;
     nArmMax = cauchy(tensorMax,nylon12);
-    if nArmMax < 1.5
+    if nArmMax < 5
         armRadius = armRadius + 0.0005;
     end
 end
@@ -219,4 +209,75 @@ while abs(stressMax-stressMin) > 17*10^6
         armRadius = armRadius + 0.0005;
     end
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Snap fit analysis and required cut depth and angle 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+rSnap =     0.003175;
+snapCut =   0.001;
+snapDef=    0.001;
+Lsnap =     0.005;
+theta =     acos((rSnap-snapCut)/rSnap);
+Isnap =     (rSnap^4)/8*(theta-sin(theta)+2*sin(theta)*(sin(theta/2))^2);
+c =         rSnap - 4/3 * rSnap * ((sin(theta/2))^3)/(theta-sin(theta))...
+            +snapCut;  
+nSnap = 0;
+
+while nSnap <= 1.5
+Freq = (3*snapDef*nylon12(5)*Isnap)/Lsnap^3;
+stressSnap = (Freq*Lsnap*c)/Isnap;
+nSnap = nylon12(2)/stressSnap;
+    if nSnap <= 1.5
+        Lsnap = Lsnap+0.0001;
+    end
+end
+
+snapAngle = (Freq*Lsnap^2)/(2*nylon12(5)*Isnap);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Outputs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Dwashero = 1000*Dwashero;
+bearingArmDiameter = 2000*armRadius;
+Lsnap = 1000*Lsnap;
+snapAngle = (180/pi)* snapAngle;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG Outputs useful data to the log file
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+cd
+
+logFile = 'groupRE3_LOG.txt';
+logFolder = ('../../../Log');
+gondFolder = ('../MATLAB/Subfunctions/Gondola');
+swEqnFolder = ('../../../Solidworks/Equations');
+
+% append to the file
+cd(logFolder)
+fid = fopen(logFile, 'a+');
+fprintf(fid, ['\n***Gondola Analysis Outputs***\n']);
+fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\n' ]);
+fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\n']);
+fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\n']);
+fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) ]);
+fclose(fid);
+cd(gondFolder);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Write to text files for sw
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% cd('swEqnFolder')
+% fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
+% fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
+% fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
+% fprintf(fid, ['"cutangle"= ',num2str(snapAngle) '[mm]\n''cut angle of the snapfit']);
+% fclose(fid);
+% 
+% fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
+% fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
+% fclose(fid);
+%cd('../../MATLAB/Subfunctions/Gondola');
 end 

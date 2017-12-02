@@ -37,4 +37,7 @@ connector(FTmax, thrusterWeight, airshipRad, aluminum6061);
 %---MASS
 [totalMass, fixedMass, gondolaMass] = airshipMass(thrusterMass, envMass, airshipRad);
 
+%---GONDOLA
+gondolaAnalysis(FTmax/totalMass);
+
 end

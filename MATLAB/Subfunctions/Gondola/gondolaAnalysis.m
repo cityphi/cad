@@ -76,7 +76,7 @@ while worstCaseAcceleration >= 0;
     Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
     Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
     Fnfric =  -Fspring; % normal force of frction wheel equal to spring for
-    worstCaseAcceleration = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, -Tw, Fnfric, 0,0);
+    worstCaseAcceleration = gondolaForces(gondSpecs, -pi/2, 0, 0, aThrust, -Tw, Fnfric, 0,0);
     if worstCaseAcceleration >= 0;
         Tw = Tw + 0.01;
     end
@@ -129,22 +129,18 @@ end
 %Required braking force from linear actuator
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[reqAc,~,~] = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, 0, Fnfric, 0,0);
+[reqAc,~,~] = gondolaForces(gondSpecs, -pi/2, 0, 0, aThrust, 0, Fnfric, 0,0);
 
-[~,~,brakeForce] = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, 0, Fnfric, -reqAc,0);
+[~,~,brakeForce] = gondolaForces(gondSpecs, -pi/2, 0, 0, aThrust, 0, Fnfric, -reqAc,0);
 reqActuatorForce = abs(brakeForce(6));
 
-if reqActuatorForce <= maxBrakeForce 
-    disp('adequate linear actuator force');
-else
-     disp('choose new linear actuator force greater than',reqActuatorForce);
-end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Gondola Bearing Arm stress Analysis 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[~, minArmForce, ~] = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, 0, Fnfric, 0,0);
-[~, maxArmForce, ~] = gondolaForces(gondSpecs, 0, -pi/2, 0, maxThrust, 0, Fnfric, 0,-maxBrakeForce);
+[~, minArmForce, ~] = gondolaForces(gondSpecs, -pi/2, 0, 0, aThrust, 0, Fnfric, 0,0);
+[~, maxArmForce, ~] = gondolaForces(gondSpecs, 0, -pi/2, 0, aThrust, 0, Fnfric, 0,-maxBrakeForce);
 
 armRadius = 0.0015;
 E = nylon12(1,5); 
@@ -252,19 +248,24 @@ swEqnFolder = ('../Solidworks/Equations');
 % append to the file
 cd(logFolder)
 fid = fopen(logFile, 'a+');
-fprintf(fid, ['\n***Gondola Analysis Outputs***\n']);
+fprintf(fid, '\n***Gondola Analysis Outputs***\n');
 fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\n' ]);
 fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\n']);
 fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\n']);
 fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) ]);
+if reqActuatorForce <= maxBrakeForce 
+    fprintf(fid, 'Adequate linear actuator force.');
+else
+    fprintf(fid, ['Choose new linear actuator force greater than ' num2str(reqActuatorForce)]);
+end
 fclose(fid);
-cd(gondFolder);
+cd(MATLABFolder);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Write to text files for sw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cd('swEqnFolder')
+cd(swEqnFolder)
 fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
 fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
 fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
@@ -275,4 +276,6 @@ fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
 fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
 fclose(fid);
 cd('../../MATLAB');
+
+disp('Gondola Parameterized in SolidWorks');
 end 

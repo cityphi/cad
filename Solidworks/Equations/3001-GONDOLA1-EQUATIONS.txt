@@ -1,0 +1,4 @@
+"BArmDia"= 5[mm]'Bearing arm diameter
+"bearingcutdepth"= 12.5[mm]
+'depth of the bearing snap fit cut"cutangle"= 6.8755[mm]
+'cut angle of the snapfit

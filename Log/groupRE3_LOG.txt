@@ -1,15 +1,15 @@
-Max Speed   = 11.4542 m/s
-Flight Time = 8.3766minutes
+Max Speed   = 11.4919 m/s
+Flight Time = 10.53minutes
 
 ***Thruster Selection***
 Propeller - APC E 10x7
 	Weight: 20.1 g
-Motor - Dualsky XM 3536-8
-	Weight: 105 g
-	Volts:  10.6 V
-	KV:     1010 RPM/V
-	Power:  205 W
-	Thrust: 11.4542 N
+Motor - GPS C35-36-C
+	Weight: 102 g
+	Volts:  7.8 V
+	KV:     1110 RPM/V
+	Power:  120 W
+	Thrust: 11.4919 N
 Battery - ZIPPY Compact 2700mAh 3s 40c Lipo Pack
 	Weight:    235 g
 	Capacity:  2700 mAh
@@ -17,7 +17,7 @@ Battery - ZIPPY Compact 2700mAh 3s 40c Lipo Pack
 	Discharge: 40 C
 
 ***Thruster Shaft***
-Safety Factor: 5.5549
+Safety Factor: 5.653
 Weight:        11.687 g
 Thread size:   M10
 
@@ -25,13 +25,13 @@ Thread size:   M10
 Total Mass: 1479.4 g
 
 ***Thruster Arms***
-Total Mass:    393.6 g
-Safety Factor: 5.4943
+Total Mass:    219.1 g
+Safety Factor: 5.3812
 
 ***Arm Connection to Keel***
 Assuming the piece is made from Aluminum 6061
-The optimized thickness is 1.8mm
+The optimized thickness is 1.5mm
 This gives safety factors for the different failures:
-	Connector Stress: 5.0586
-	Connector Buckling: 305.0242
-	Keel Piece: 146.9549
+	Connector Stress: 7.8543
+	Connector Buckling: 213.6724
+	Keel Piece: 243.6866

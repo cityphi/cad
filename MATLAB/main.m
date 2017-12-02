@@ -22,7 +22,7 @@ function varargout = main(varargin)
 
 % Edit the above text to modify the response to help main
 
-% Last Modified by GUIDE v2.5 28-Nov-2017 15:35:23
+% Last Modified by GUIDE v2.5 02-Dec-2017 12:43:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -213,10 +213,35 @@ else
     reqWeight = get(handles.sliderReqWeight, 'Value');
     reqSpeed = get(handles.sliderReqSpeed, 'Value');
     
-    airshipLength = str2double(get(handles.textLength, 'String'));
-
+    airshipLength = str2double(get(handles.editLength, 'String'));
+    FRcontents = cellstr(get(handles.FR, 'String'));
+    finessRatio = str2double(FRcontents{get(handles.FR,'Value')});
+    
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    designCode([reqSpeed, reqTime, reqWeight]);
+    designCode([reqSpeed, reqTime, reqWeight], airshipLength, finessRatio);
+end
+
+
+% --- Executes on selection change in FR.
+function FR_Callback(hObject, eventdata, handles)
+% hObject    handle to FR (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns FR contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from FR
+
+
+% --- Executes during object creation, after setting all properties.
+function FR_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to FR (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
 end

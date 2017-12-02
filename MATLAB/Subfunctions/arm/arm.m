@@ -52,7 +52,7 @@ weight(3) = 0;
 weight(1) = weight(1)*2;
 
 %---SolidWorks
-disp('ARM solidworks not done')
+armSW(dimensions(2), dimensions(3))
 end
 
 function [ weight ] = armWeight( dimensions, rho )
@@ -229,4 +229,29 @@ fprintf(fid, ['Total Mass:    ' num2str(mass) ' g\n']);
 fprintf(fid, ['Safety Factor: ' num2str(n) '\n']);
 fclose(fid);
 cd(MATLABFolder)
+end
+
+function armSW(thickness, width)
+%ARMSW Outputs data to solidworks for the arm
+%   ARMSW(thickness, width) returns nothing
+
+SWArmFile = '2005-THRUSTER-ARMS-EQUATIONS.txt';
+SWPlateFile = '2008-PLATE-FRONT-EQUATIONS.txt';
+MATLABFolder = fullfile('../MATLAB');
+SWFolder = fullfile('../Solidworks/Equations');
+
+% write to the different solidworks files
+cd(SWFolder)
+fid = fopen(SWArmFile, 'w+t');
+fprintf(fid, ['"h"= ' num2str(thickness*1000) 'mm\n']);
+fprintf(fid, ['"k"= ' num2str(width*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWPlateFile, 'w+t');
+fprintf(fid, ['"k"= ' num2str(width*1000) 'mm\n']);
+fprintf(fid, ['"h"= ' num2str(thickness*1000) 'mm\n']);
+fclose(fid);
+cd ..
+cd(MATLABFolder)
+
+disp('Arm Parameterized in Solidworks');
 end

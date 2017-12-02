@@ -1,0 +1,2 @@
+﻿"rshaft"= 5mm'Thruster shaft radius
+"LS1"= 80mm'Thruster shaft length

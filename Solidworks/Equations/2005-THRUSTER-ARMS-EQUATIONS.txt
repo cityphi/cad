@@ -1,0 +1,4 @@
+"h"= 9mm
+"k"= 14mm
+"tsupport"= 1.8mm
+"rblimp"= 637mm

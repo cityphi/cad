@@ -1,0 +1,2 @@
+﻿"k"= 50.8mm'Width of thruster arms
+"h"= 3.175mm'thickness of thruster arms

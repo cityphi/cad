@@ -163,7 +163,7 @@ thrust = motChoice(7);
 radius = convlength(propChoice(1) * 0.5, 'in', 'm');
 
 % write to the solidworks file
-disp('PROP solidworks not done')
+thrusterSW(propChoice(1), battChoice(end), battChoice(end-2), battChoice(end-1));
 end
 
 function topSpeed = airshipSpeed(D, P, n, dragValues, V)
@@ -234,4 +234,41 @@ fprintf(fid, ['\tDischarge: ' num2str(battChoice(4)) ' C\n']);
 fclose(fid);
 cd(MATLABFolder)
 
+end
+
+function thrusterSW(diameter, battH, battL, battW)
+%THRUSTERSW Outputs data to solidworks for the arm
+%   THRUSTERSW(diameter, battH, battL, battW) returns nothing
+
+diameter = convlength(diameter, 'in', 'm')*1000;
+
+SWPropFile = '2016-PROPELLER-EQUATIONS.txt';
+SWPropCaseFile = '2017-PROPELLER-ENCASEMENT-EQUATIONS.txt';
+SWCovFile = '2013-COMPONENT-COVER-EQUATIONS.txt';
+SWDoorFile = '2014-COMPONENT-COVER-DOOR-EQUATIONS.txt';
+MATLABFolder = fullfile('../MATLAB');
+SWFolder = fullfile('../Solidworks/Equations');
+
+% write to the different solidworks files
+cd(SWFolder)
+fid = fopen(SWPropFile, 'w+t');
+fprintf(fid, ['"propdiameter"= ' num2str(diameter) 'mm\n']);
+fclose(fid);
+fid = fopen(SWPropCaseFile, 'w+t');
+fprintf(fid, ['"propdiameter"= ' num2str(diameter) 'mm\n']);
+fclose(fid);
+fid = fopen(SWCovFile, 'w+t');
+fprintf(fid, ['"batteryheighttwo"= ' num2str(battH) 'mm\n']);
+fprintf(fid, ['"batterylengthtwo"= ' num2str(battL) 'mm\n']);
+fprintf(fid, ['"batterywidthtwo"= ' num2str(battW) 'mm\n']);
+fclose(fid);
+fid = fopen(SWDoorFile, 'w+t');
+fprintf(fid, ['"batteryheighttwo"= ' num2str(battH) 'mm\n']);
+fprintf(fid, ['"batterylengthtwo"= ' num2str(battL) 'mm\n']);
+fprintf(fid, ['"batterywidthtwo"= ' num2str(battW) 'mm\n']);
+fclose(fid);
+cd ..
+cd(MATLABFolder)
+
+disp('Thruster Parameterized in Solidworks');
 end

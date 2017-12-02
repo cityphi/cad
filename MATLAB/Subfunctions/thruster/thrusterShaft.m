@@ -95,7 +95,7 @@ weights(1, 3) = weights(1, 3) + bearingOffset;
 shaftLog(n, safetyFactor, weights(end, 1)/9.81*1000, thread(i, 1))
 
 % write to solidworks
-disp('SHAFT solidworks not done')
+shaftSW(dimensions(3), shaftEnd)
 
 % back to main
 weight = centreMass(weights(end, :));
@@ -159,4 +159,56 @@ fprintf(fid, ['Thread size:   M' num2str(thread) '\n']);
 
 fclose(fid);
 cd(MATLABFolder)
+end
+
+function shaftSW(radius, length)
+%SHAFTSW Outputs data to solidworks for the arm
+%   SHAFTSW(radius) returns nothing
+
+SWBracFile = '2011-MOTOR-BRACKET4-EQUATIONS.txt';
+SWShaftFile = '2015-SHAFT.txt';
+SWPropFile = '2017-PROPELLER-ENCASEMENT-EQUATIONS.txt';
+SWMotFile = '2018-MOTOR-MOUNTING-PLATE-EQUATIONS.txt';
+SWIRaceFile = '2023.1-INNER_RACE-EQUATIONS.txt';
+SWORaceFile = '2023.2-OUTTER_RACE-EQUATIONS.txt';
+SWBallFile = '2023.3-BALL.txt';
+SWWashFile = '2024-WASHER2-EQUATIONS.txt';
+SWNutFile = '2025-NUT-EQUATIONS.txt';
+MATLABFolder = fullfile('../MATLAB');
+SWFolder = fullfile('../Solidworks/Equations');
+
+% write to the different solidworks files
+cd(SWFolder)
+fid = fopen(SWBracFile, 'w+t');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWShaftFile, 'w+t');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fprintf(fid, ['"LS1"= ' num2str(length*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWPropFile, 'a+');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWMotFile, 'w+t');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWIRaceFile, 'w+t');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWORaceFile, 'w+t');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWBallFile, 'w+t');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWWashFile, 'w+t');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWNutFile, 'w+t');
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+cd ..
+cd(MATLABFolder)
+
+disp('Thruster Shaft Parameterized in Solidworks');
 end

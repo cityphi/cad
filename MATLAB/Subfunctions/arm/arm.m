@@ -1,4 +1,4 @@
-function weight = arm(FT, thrustForceLoc, weight, airshipRad, material)
+function [weight, thrusterMass] = arm(FT, thrustForceLoc, weight, airshipRad, material)
 %ARM Thruster arm optimization.
 %   [R, D] = ARM(force, loc, rad, W, M) returns the reaction forces at 
 %   the worst pitch for the connector and the optimized dimensions of 
@@ -50,6 +50,7 @@ armLog(round(weight(end, 1)*2000/9.81, 1), n)
 weight = centreMass(weight);
 weight(3) = 0;
 weight(1) = weight(1)*2;
+thrusterMass = [weight(1)/9.81 weight(2:4)];
 
 %---SolidWorks
 armSW(dimensions(2), dimensions(3))

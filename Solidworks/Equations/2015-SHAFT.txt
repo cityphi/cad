@@ -1,2 +1,2 @@
-"rshaft"= 5mm
-"LS1"= 131.685mm
+"rshaft"= 4mm
+"LS1"= 79.615mm

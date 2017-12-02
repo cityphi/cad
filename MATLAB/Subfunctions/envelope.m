@@ -1,6 +1,6 @@
-function [ volume, weight, radius, CD ] = airship( l, FR )
-%AIRSHIP Summary of this function goes here
-%   Detailed explanation goes here
+function [ volume, mass, radius, CD ] = envelope( l, FR )
+%ENVELOPE Summary of this function goes here
+%   [V, m, r, CD] = envelope( l, FR ) returns properties of the envelope based on set restrictions and the parameters given as the input.
 
 % engineeringtoolbox - STP
 rhoH = 0.1664;
@@ -41,22 +41,20 @@ x(2, 1) = 0; % reference point
 x(3, 1) = -(a/2 + a*cos(alpha)/4 * (rf^2 + 2*rf*re + 3*rf^2)/(rf^2 + rf*re + rf^2));
 x(4, 1) = -(a/2 + a*cos(alpha) + 3/4*(2*r - h)^2/(3*r - h) + h - r);
 
-% SA to estiamte weight
+% SA to estiamte mass
 SA(1, 1) = 2*pi()*rf^2;
 SA(2, 1) = 2*pi()*rf*a;
 SA(3, 1) = pi()*(rf + re)*sqrt((rf - re)^2 + a*cos(alpha));
 SA(4, 1) = pi()*(re^2 + h^2);
 
-% original approximation of airship
+% original approximation of envelope
 SAOrig = 4*pi()*0.637 + 2*2*pi()*0.637;
-areaWeight = 0.525/SAOrig;
+areaMass = 0.525/SAOrig;
 
-heliumWeight = vol(:)*rhoH;
-plasticWeight = SA(:)*areaWeight;
+massHelium = vol(:)*rhoH;
+massPlastic = SA(:)*areaMass;
 
-weight = [ (heliumWeight + plasticWeight) x zeros(4, 1) zeros(4, 1)];
-
-%--LOG
+mass = [ (massHelium + massPlastic) x zeros(4, 1) zeros(4, 1)];
 
 %--OUTPUTS
 switch FR
@@ -71,45 +69,44 @@ switch FR
 end
 
 volume = sum(vol);
-weight = centreMass(weight);
+mass = centreMass(mass);
+% relat the CM to the thrusters
+mass(2) = mass(2) + 1 - a/2;
 radius = rf;
 
+%--LOG
+envelopeLog(l, FR, D, CD, volume, sum(massHelium), sum(massPlastic), mass(2))
+
 %--SOLIDWORKS
-airshipSW(radius, a)
+envelopeSW(radius, a)
 end
 
-function airshipLog(n, nReq, weight, thread)
-%SHAFTLOG Outputs useful data to the log file
-%   SHAFTLOG(n, nReq, weight, thread) returns nothing
+function envelopeLog(L, FR, D, CD, vol, massHelium, massPlastic, CM)
+%ENVELOPELOG Outputs useful data to the log file
+%   ENVELOPELOG(n, nReq, mass, thread) returns nothing
 
 logFile = 'groupRE3_LOG.txt';
 logFolder = fullfile('../Log');
 MATLABFolder = fullfile('../MATLAB');
 
 cd(logFolder)
-fid = fopen(logFile, 'a+');
+fid = fopen(logFile, 'w+t');
 
 % lines of the file
-fprintf(fid, '\n***Thruster Shaft***\n');
-fprintf(fid, ['Safety Factor: ' num2str(n) ]);
-
-% display a message if the safety factor couldn't be acheived
-if n < nReq
-    fprintf(fid, ' ****This does not meet safety Factor\n');
-else
-    fprintf(fid, '\n');
-end
-
-fprintf(fid, ['Weight:        ' num2str(weight) ' g\n']);
-fprintf(fid, ['Thread size:   M' num2str(thread) '\n']);
+fprintf(fid, '\n***Envelope***\n');
+fprintf(fid, ['Using a FR of ' num2str(FR) ' and L of ' num2str(L) 'm gives a D of ' num2str(D) 'm.\n']);
+fprintf(fid, ['This corresponds to a CD of ' num2str(CD) '.\n']);
+fprintf(fid, ['With a volume of ' num2str(vol) 'm^3 which is ' num2str(round(massHelium*1000, 1)) 'g of helium.\n']);
+fprintf(fid, ['Approximately ' num2str(round(massPlastic*1000, 1)) 'g of plastic.\n']);
+fprintf(fid, ['Centre of mass at ' num2str(round(CM*1000, 1)) 'mm (in x) from the centre of the thrusters\n']);
 
 fclose(fid);
 cd(MATLABFolder)
 end
 
-function airshipSW(radius, length)
-%AIRSHIPSW Outputs data to solidworks for the envelope
-%   AIRSHIPSW(radius, length) returns nothing
+function envelopeSW(radius, length)
+%ENVELOPESW Outputs data to solidworks for the envelope
+%   ENVELOPESW(radius, length) returns nothing
 
 SWEnvFile = '1001-ENVELOPE-EQUATIONS.txt';
 MATLABFolder = fullfile('../MATLAB');

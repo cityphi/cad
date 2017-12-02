@@ -1,1 +1,1 @@
-"rshaft"= 5mm
+"rshaft"= 4mm

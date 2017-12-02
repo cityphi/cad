@@ -1,2 +1,2 @@
 "tsupport"= 1.5mm
-"rblimp"= 428.5714mm
+"rblimp"= 333.3333mm

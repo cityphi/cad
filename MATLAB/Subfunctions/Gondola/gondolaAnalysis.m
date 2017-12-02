@@ -247,26 +247,29 @@ snapAngle = (180/pi)* snapAngle;
 %LOG Outputs useful data to the log file
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+cd
+
 logFile = 'groupRE3_LOG.txt';
-logFolder = fullfile('../Log');
-MATLABFolder = fullfile('../MATLAB');
+logFolder = ('../../../Log');
+gondFolder = ('../MATLAB/Subfunctions/Gondola');
+swEqnFolder = ('../../../Solidworks/Equations');
 
 % append to the file
 cd(logFolder)
 fid = fopen(logFile, 'a+');
-fprintf(fid, '\n***Gondola Analysis Outputs***\n');
+fprintf(fid, ['\n***Gondola Analysis Outputs***\n']);
 fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\n' ]);
 fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\n']);
 fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\n']);
 fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) ]);
 fclose(fid);
-cd(MATLABFolder)
+cd(gondFolder);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Write to text files for sw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% cd('..')
+
+% cd('swEqnFolder')
 % fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
 % fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
 % fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
@@ -276,5 +279,5 @@ cd(MATLABFolder)
 % fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
 % fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
 % fclose(fid);
-
+%cd('../../MATLAB/Subfunctions/Gondola');
 end 

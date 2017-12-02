@@ -1,0 +1,2 @@
+﻿"rblimp" = 636.61977237mm'The radius of the blimp hemisphere.
+"lblimpcylinder"= 1524mm'Length of the cylinder

@@ -1,0 +1,4 @@
+﻿"h"= 3.175mm'thickness of the thruster arm
+"k"= 50.8mm'witdh of thruster arm
+"tsupport"= 3mm'Thruster support thickness
+"rblimp"= 636.62mm'Radius of the airship hemisphere

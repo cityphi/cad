@@ -1,0 +1,1 @@
+﻿"rshaft"= 5mm'Thruster shaft radius

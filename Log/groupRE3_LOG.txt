@@ -29,6 +29,9 @@ Total Mass:    393.6 g
 Safety Factor: 5.4943
 
 ***Arm Connection to Keel***
-Connector Stress SF: 5.0586
-Connector Buckling SF: 305.0242
-Keel Piece SF: 146.9549
+Assuming the piece is made from Aluminum 6061
+The optimized thickness is 1.8mm
+This gives safety factors for the different failures:
+	Connector Stress: 5.0586
+	Connector Buckling: 305.0242
+	Keel Piece: 146.9549

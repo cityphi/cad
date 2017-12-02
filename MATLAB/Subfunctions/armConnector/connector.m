@@ -15,7 +15,7 @@ thrustForce = [0 0 0 FT*2 0 0 0 0 0 ]; % location and x force
 forces = [thrustForce; centreMass(weight, a)];
 
 % [ length width height ] - starting
-dimensions = [ 0.04 0.0005 0.033 ];
+dimensions = [ 0.04 0.0015 0.033 ];
 change = 0.0001;
 
 % location of analysis
@@ -75,10 +75,10 @@ stressTensor = keelTensor(reactionForces(2, :), keelDimensions);
 nKeel = cauchy(stressTensor, material);
 
 %--LOG File
-connectorLog(n, nBuck, nKeel, safetyFactor)
+connectorLog(n, nBuck, nKeel, safetyFactor, dimensions(2));
 
 %--Solidworks
-disp('CONNECTOR solidworks not done')
+connectorSW(dimensions(2), radius);
 end
 
 function [ tensor ] = connectorTensor(forces, dimensions)
@@ -165,9 +165,9 @@ tensor = [ Sx  txy txz;
            txz tyz Sz ];
 end
 
-function connectorLog(n, nBuck, nKeel, nReq)
+function connectorLog(n, nBuck, nKeel, nReq, thickness)
 %CONNECTORLOG Outputs useful data to the log file
-%   CONNECTORLOG(mass) returns nothing
+%   CONNECTORLOG(n, nBuck, nKeel, nReq) returns nothing
 
 logFile = 'groupRE3_LOG.txt';
 logFolder = fullfile('../Log');
@@ -177,21 +177,24 @@ MATLABFolder = fullfile('../MATLAB');
 cd(logFolder)
 fid = fopen(logFile, 'a+');
 fprintf(fid, '\n***Arm Connection to Keel***\n');
-fprintf(fid, ['Connector Stress SF: ' num2str(n)]);
+fprintf(fid, 'Assuming the piece is made from Aluminum 6061\n');
+fprintf(fid, ['The optimized thickness is ' num2str(thickness*1000) 'mm\n']);
+fprintf(fid, 'This gives safety factors for the different failures:\n');
+fprintf(fid, ['\tConnector Stress: ' num2str(n)]);
 % display a message if the safety factor couldn't be acheived
 if n < nReq
     fprintf(fid, ' ****This does not meet safety Factor\n');
 else
     fprintf(fid, '\n');
 end
-fprintf(fid, ['Connector Buckling SF: ' num2str(nBuck)]);
+fprintf(fid, ['\tConnector Buckling: ' num2str(nBuck)]);
 % display a message if the safety factor couldn't be acheived
 if nBuck < nReq
     fprintf(fid, ' ****This does not meet safety Factor\n');
 else
     fprintf(fid, '\n');
 end
-fprintf(fid, ['Keel Piece SF: ' num2str(nKeel)]);
+fprintf(fid, ['\tKeel Piece: ' num2str(nKeel)]);
 % display a message if the safety factor couldn't be acheived
 if nKeel < nReq
     fprintf(fid, ' ****This does not meet safety Factor\n');
@@ -200,4 +203,33 @@ else
 end
 fclose(fid);
 cd(MATLABFolder)
+end
+
+function connectorSW(thickness, radius)
+%CONNECTORSW Outputs data to solidworks for the connector
+%   CONNECTORSW(thickness, radius) returns nothing
+
+SWArmFile = '2005-THRUSTER-ARMS-EQUATIONS.txt';
+SWConFile = '2003-CONNECTOR-EQUATIONS.txt';
+SWSupFile = '2004-ENVELOPE-SUPPORT-EQUATIONS.txt';
+MATLABFolder = fullfile('../MATLAB');
+SWFolder = fullfile('../Solidworks/Equations');
+
+% write to the different solidworks files
+cd(SWFolder)
+fid = fopen(SWArmFile, 'a+');
+fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\n']);
+fprintf(fid, ['"rblimp"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWConFile, 'w+t');
+fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWSupFile, 'w+t');
+fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\n']);
+fprintf(fid, ['"rblimp"= ' num2str(radius*1000) 'mm\n']);
+fclose(fid);
+cd ..
+cd(MATLABFolder)
+
+disp('Connector Parameterized in Solidworks');
 end

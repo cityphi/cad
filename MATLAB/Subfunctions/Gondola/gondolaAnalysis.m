@@ -65,9 +65,6 @@ gondSpecs(1);
 %[ density Sut Suc Sy E brittle ] - information of the material
 nylon12 = [1130 38.5*10^6 6*10^6 28*10^6 1.138*10^9 1]; % matweb unrenforced
 steel = [8000 420*10^6 250*10^6 320*10^6 200*10^9 0];
-%%%%%%%%%%%%%%%%%%%%%INPUTS%%%%%%%%%%%%%%%%%%%
-
-maxThrust = 1;  %maximum possible acceleration from thust [n] INPUT FROM ALEX 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %slip prevention and required motor torque 
@@ -247,12 +244,10 @@ snapAngle = (180/pi)* snapAngle;
 %LOG Outputs useful data to the log file
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cd
-
 logFile = 'groupRE3_LOG.txt';
-logFolder = ('../../../Log');
-gondFolder = ('../MATLAB/Subfunctions/Gondola');
-swEqnFolder = ('../../../Solidworks/Equations');
+logFolder = ('../Log');
+MATLABFolder = ('../MATLAB');
+swEqnFolder = ('../Solidworks/Equations');
 
 % append to the file
 cd(logFolder)
@@ -269,15 +264,15 @@ cd(gondFolder);
 %Write to text files for sw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% cd('swEqnFolder')
-% fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
-% fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
-% fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
-% fprintf(fid, ['"cutangle"= ',num2str(snapAngle) '[mm]\n''cut angle of the snapfit']);
-% fclose(fid);
-% 
-% fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
-% fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
-% fclose(fid);
-%cd('../../MATLAB/Subfunctions/Gondola');
+cd('swEqnFolder')
+fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
+fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
+fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
+fprintf(fid, ['"cutangle"= ',num2str(snapAngle) '[mm]\n''cut angle of the snapfit']);
+fclose(fid);
+
+fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
+fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
+fclose(fid);
+cd('../../MATLAB');
 end 

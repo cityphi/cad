@@ -118,7 +118,7 @@ gondScrewReactionsWorst = [ -Ls La 0 1 1 1 2 3 0;
 gondScrewReactionsWorstSolved = forceSolver(motorForces, gondScrewReactionsWorst);
 
 Fbolt = sqrt(gondScrewReactionsWorstSolved(1,4)^2+gondScrewReactionsWorstSolved(1,5)^2)... 
-    /Muwasher + gondScrewReactionsWorstSolved(1,6)
+    /Muwasher + gondScrewReactionsWorstSolved(1,6);
 
 Ncompressive = 0;
 while Ncompressive < 3
@@ -232,10 +232,49 @@ nSnap = nylon12(2)/stressSnap;
         Lsnap = Lsnap+0.0001;
     end
 end
-%%%%%%%%%%outputs
 
+snapAngle = (Freq*Lsnap^2)/(2*nylon12(5)*Isnap);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Outputs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Dwashero = 1000*Dwashero;
+bearingArmDiameter = 2000*armRadius;
+Lsnap = 1000*Lsnap;
+snapAngle = (180/pi)* snapAngle;
 
-snapAngle = (180/pi)*(Freq*Lsnap^2)/(2*nylon12(5)*Isnap)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG Outputs useful data to the log file
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+logFile = 'groupRE3_LOG.txt';
+logFolder = fullfile('../Log');
+MATLABFolder = fullfile('../MATLAB');
+
+% append to the file
+cd(logFolder)
+fid = fopen(logFile, 'a+');
+fprintf(fid, '\n***Gondola Analysis Outputs***\n');
+fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\n' ]);
+fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\n']);
+fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\n']);
+fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) ]);
+fclose(fid);
+cd(MATLABFolder)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Write to text files for sw
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% cd('..')
+% fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
+% fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
+% fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
+% fprintf(fid, ['"cutangle"= ',num2str(snapAngle) '[mm]\n''cut angle of the snapfit']);
+% fclose(fid);
+% 
+% fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
+% fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
+% fclose(fid);
 
 end 

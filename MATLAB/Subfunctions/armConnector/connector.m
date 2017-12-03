@@ -224,9 +224,9 @@ fclose(fid);
 fid = fopen(SWConFile, 'w+t');
 fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\n']);
 fclose(fid);
-fid = fopen(SWSupFile, 'w+t');
-fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\n']);
-fprintf(fid, ['"rblimp"= ' num2str(radius*1000) 'mm\n']);
+fid = fopen(SWSupFile, 'a+');
+fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\r\n']);
+fprintf(fid, ['"rblimp"= ' num2str(radius*1000) 'mm']);
 fclose(fid);
 cd ..
 cd(MATLABFolder)

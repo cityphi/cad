@@ -237,6 +237,7 @@ function armSW(thickness, width)
 
 SWArmFile = '2005-THRUSTER-ARMS-EQUATIONS.txt';
 SWPlateFile = '2008-PLATE-FRONT-EQUATIONS.txt';
+SWSupFile = '2004-ENVELOPE-SUPPORT-EQUATIONS.txt';
 MATLABFolder = fullfile('../MATLAB');
 SWFolder = fullfile('../Solidworks/Equations');
 
@@ -248,6 +249,9 @@ fprintf(fid, ['"k"= ' num2str(width*1000) 'mm\n']);
 fclose(fid);
 fid = fopen(SWPlateFile, 'w+t');
 fprintf(fid, ['"k"= ' num2str(width*1000) 'mm\n']);
+fprintf(fid, ['"h"= ' num2str(thickness*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWSupFile, 'w+t');
 fprintf(fid, ['"h"= ' num2str(thickness*1000) 'mm\n']);
 fclose(fid);
 cd ..

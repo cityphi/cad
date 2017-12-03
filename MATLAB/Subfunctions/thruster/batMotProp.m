@@ -1,7 +1,7 @@
-function [ thrustMass, battMass, thrust, radius ] = batMotProp( required, dragValues )
+function [ thrustMass, battMass, thrust, radius, time, speed ] = batMotProp( required, dragValues )
 %BATMOTPROP Picks a battery, motor, and prop
 %   BATMOTPROP does the selection of the main thruster componenets and
-%   gives useful information back to the amin program
+%   gives useful information back to the main program
 
 % split the inputs into redable values
 reqSpeed  = required(1);
@@ -50,7 +50,7 @@ for i = 1:size(data, 1)
         nApprox = (1-0.1*reqSpeed/Vzero)*nm;
         
         % max speed based on the thrust line and drag curve
-        Vmax = airshipSpeed(D, P, nApprox, dragValues, V);
+        Vmax = airshipSpeed(D, P, nApprox, dragValues);
     
         % check if attained a max speed
         if Vmax < reqSpeed
@@ -143,30 +143,30 @@ names = [[int2str(propChoice(1)) 'x' int2str(propChoice(2))];
 
 %--OUTPUT
 % LOG file
-% get the top speed with this setup
-D = convlength(propChoice(1), 'in', 'm');
-P = convlength(propChoice(2), 'in', 'm');
-speed = airshipSpeed(D, P, motChoice(6)/60, dragValues, V);
-
 % setup the values that need to be in the log files
 propData = propChoice(3);
-motData  = [motChoice(12) motChoice(10) motChoice(5) motChoice(4) speed motChoice(7)];
+motData  = [motChoice(12) motChoice(10) motChoice(5) motChoice(4) motChoice(7)];
 battData = [battChoice(2) battChoice(3) battChoice(5) battChoice(6)];
 
 % write to the log file
 thrusterLog( names, propData, motData, battData );
 
-% passed back to main
+% MAIN returns
 thrustMass = motData(1) + propData(1);
 battMass = battData(1);
 thrust = motChoice(7);
 radius = convlength(propChoice(1) * 0.5, 'in', 'm');
+time = battChoice(2)*0.06/(motChoice(3)/motChoice(4));
+% get the top speed with this setup
+D = convlength(propChoice(1), 'in', 'm');
+P = convlength(propChoice(2), 'in', 'm');
+speed = airshipSpeed(D, P, motChoice(6)/60, dragValues);
 
 % write to the solidworks file
 thrusterSW(propChoice(1), battChoice(end), battChoice(end-2), battChoice(end-1));
 end
 
-function topSpeed = airshipSpeed(D, P, n, dragValues, V)
+function topSpeed = airshipSpeed(D, P, n, dragValues)
 %AIRSHIPSPEED gives the airships top speed
 %   speed = AIRSHIPSPEED(D, P, n) returns the intersect of the
 %   thrust curve with the drag curve (top speed)
@@ -180,13 +180,14 @@ rho = dragValues(2);
 vol = dragValues(3);
 
 % hard-coded drag function
-drag = 1.88 * CD * rho * vol^(2/3) * V^1.86;
+drag = @(V) 1.88 * CD * rho * vol^(2/3) * V^1.86;
 
 % thrust equation
-T = 0.20477*(pi*D^2)/4*(D/P)^1.5*((P * n)^2 - V*P * n)*2;
+T = @(V) 0.20477*(pi*D^2)/4*(D/P)^1.5*((P * n)^2 - V*P * n)*2;
     
 % max speed based on the thrust line and drag curve
-topSpeed = double(vpasolve(T == drag, V, [0, 20]));
+options = optimset('Display','off');
+topSpeed = fsolve(@(V) T(V) - drag(V), 2, options);
 end
 
 function thrusterLog( names, propChoice, motChoice, battChoice )
@@ -206,14 +207,9 @@ propName = char(names(1));
 motName  = char(names(2));
 battName = char(names(3));
 
-% value used in a calculation for flight time
-amps = motChoice(3)/motChoice(4);
-
 cd(logFolder)
 fid = fopen(logFile, 'a+');
 % lines of the file
-fprintf(fid, ['\nMax Speed   = ' num2str(motChoice(5)) ' m/s\n']);
-fprintf(fid, ['Flight Time = ' num2str(battChoice(2)*0.06/amps) 'minutes\n']);
 fprintf(fid, '\n***Thruster Selection***\n');
 fprintf(fid, ['Propeller - APC E ' propName '\n']);
 fprintf(fid, ['\tWeight: ' num2str(propChoice(1)) ' g\n']);

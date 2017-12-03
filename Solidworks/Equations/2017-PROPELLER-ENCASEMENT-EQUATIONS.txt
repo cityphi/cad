@@ -1,2 +1,2 @@
-"propdiameter"= 152.4mm
+"propdiameter"= 254mm
 "rshaft"= 4mm

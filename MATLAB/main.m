@@ -82,6 +82,42 @@ set(handles.figure1,'Name','Group RE3 // CADCAM 2017');
 % UIWAIT makes main wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
+% --- Executes on button press in generate.
+function generate_Callback(hObject, eventdata, handles)
+% hObject    handle to generate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if(isempty(handles))
+    Wrong_File();
+else
+    %Get the design parameters from the interface
+    
+    addpath(genpath(pwd));
+    
+    reqTime = get(handles.sliderReqTime, 'Value');
+    reqWeight = get(handles.sliderReqWeight, 'Value');
+    reqSpeed = get(handles.sliderReqSpeed, 'Value');
+    
+    airshipLength = str2double(get(handles.editLength, 'String'));
+    FRcontents = cellstr(get(handles.FR, 'String'));
+    finessRatio = str2double(FRcontents{get(handles.FR,'Value')});
+    
+    radius = airshipLength/finessRatio;
+    a = (airshipLength-radius)/(1+cos(15*pi()/180));
+    backRadius = (radius - a*sin(15*pi()/180))*1000;
+    
+    if isnan(airshipLength) || (airshipLength <=0) || (backRadius < 50)
+        msgbox('Shaft length and/or Fineness results in an invalid value.','Cannot generate!','error');
+        return;
+    end
+    
+    %The design calculations are done within this function. This function is in
+    %the file Design_code.m
+    
+    designCode([reqSpeed, reqTime, reqWeight], airshipLength, finessRatio);
+    
+end
+
 
 % --- Outputs from this function are returned to the command line.
 function varargout = main_OutputFcn(hObject, eventdata, handles) 
@@ -195,34 +231,6 @@ function editLength_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-% --- Executes on button press in generate.
-function generate_Callback(hObject, eventdata, handles)
-% hObject    handle to generate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-if(isempty(handles))
-    Wrong_File();
-else
-    %Get the design parameters from the interface
-    
-    addpath(genpath(pwd));
-    
-    reqTime = get(handles.sliderReqTime, 'Value');
-    reqWeight = get(handles.sliderReqWeight, 'Value');
-    reqSpeed = get(handles.sliderReqSpeed, 'Value');
-    
-    airshipLength = str2double(get(handles.editLength, 'String'));
-    FRcontents = cellstr(get(handles.FR, 'String'));
-    finessRatio = str2double(FRcontents{get(handles.FR,'Value')});
-    
-    %The design calculations are done within this function. This function is in
-    %the file Design_code.m
-    
-    designCode([reqSpeed, reqTime, reqWeight], airshipLength, finessRatio);
-end
-
 
 % --- Executes on selection change in FR.
 function FR_Callback(hObject, eventdata, handles)

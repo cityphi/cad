@@ -184,7 +184,7 @@ fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
 fclose(fid);
 fid = fopen(SWShaftFile, 'w+t');
 fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
-fprintf(fid, ['"LS1"= ' num2str(length*1000) 'mm\n']);
+fprintf(fid, ['"LS1"= ' num2str(length*1000-12.21666771) 'mm\n']);
 fclose(fid);
 fid = fopen(SWPropFile, 'a+');
 fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\r\n']);

@@ -6,9 +6,9 @@ function designCode( requirements, l, FR )
 carbon       = [1550 600*10^6 570*10^6 0        109*10^9   1]; % need Sy
 aluminum6061 = [2700 310*10^6 0        276*10^6 68.9*10^9  0]; % matweb
 nylon6       = [1130 69*10^6  44*10^6  63*10^6  2.33*10^9  1]; % matweb unrenforced
-
-%---INPUTS - TEMP
 rhoA = 1.225;
+
+% split the inputs to be more readable
 reqSpeed = requirements(1); %m/s
 reqTime = requirements(2)/60; %h
 reqWeight = requirements(3);
@@ -21,7 +21,7 @@ inputs = [reqSpeed reqTime reqWeight];
 dragValues = [CD rhoA vol*0.0283168466];
 
 % pick battery, motor, and propeller
-[thrusterMass, battMass, FTmax, propRadius] = batMotProp(inputs, dragValues);
+[thrusterMass, battMass, FTmax, propRadius, time, speed] = batMotProp(inputs, dragValues);
 
 % optimize the shaft
 [thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
@@ -36,8 +36,11 @@ connector(FTmax, thrusterWeight, airshipRad, aluminum6061);
 
 %---MASS
 [totalMass, fixedMass, gondolaMass] = airshipMass(thrusterMass, envMass, airshipRad);
+mass = vol*rhoA - totalMass;
 
 %---GONDOLA
 gondolaAnalysis(FTmax/totalMass);
 
+%---LOG
+finalLog(speed, time, mass)
 end

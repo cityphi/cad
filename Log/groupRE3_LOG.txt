@@ -1,51 +1,52 @@
 
 ***Envelope***
-Using a FR of 3.5 and L of 2m gives a D of 0.57143m.
+Using a FR of 3.5 and L of 5m gives a D of 1.4286m.
 This corresponds to a CD of 0.254.
-With a volume of 0.3562m^3 which is 59.3g of helium.
-Approximately 101.1g of plastic.
-Centre of mass at 402.7mm (in x) from the centre of the thrusters
-
-Max Speed   = 12.5945 m/s
-Flight Time = 15.0904minutes
+With a volume of 5.5654m^3 which is 926.1g of helium.
+Approximately 559.8g of plastic.
+Centre of mass at -378.4mm (in x) from the centre of the thrusters
 
 ***Thruster Selection***
-Propeller - APC E 6x4
-	Weight: 5.1 g
-Motor - KEDA TR2826/14
-	Weight: 48 g
-	Volts:  6.8 V
-	KV:     2315 RPM/V
-	Power:  73 W
-	Thrust: 12.5945 N
-Battery - ZIPPY Compact 2700mAh 2S 25C Lipo Pack
-	Weight:    157 g
+Propeller - APC E 10x7
+	Weight: 20.1 g
+Motor - AEM 28L-GTS
+	Weight: 57 g
+	Volts:  10.8 V
+	KV:     3960 RPM/V
+	Power:  282 W
+	Thrust: 12.1602 N
+Battery - ZIPPY Compact 2700mAh 3s 40c Lipo Pack
+	Weight:    235 g
 	Capacity:  2700 mAh
-	Voltage:   7.4 V
-	Discharge: 25 C
+	Voltage:   11.1 V
+	Discharge: 40 C
 
 ***Thruster Shaft***
-Safety Factor: 10.5166
-Weight:        4.5221 g
+Safety Factor: 5.4619
+Weight:        7.4797 g
 Thread size:   M8
 
 ***Thruster Assembly***
-Total Mass: 1309 g
+Total Mass: 1471 g
 
 ***Thruster Arms***
-Total Mass:    118.3 g
-Safety Factor: 6.3614
+Total Mass:    525.4 g
+Safety Factor: 6.1815
 
 ***Arm Connection to Keel***
 Assuming the piece is made from Aluminum 6061
-The optimized thickness is 1.5mm
+The optimized thickness is 2.3mm
 This gives safety factors for the different failures:
-	Connector Stress: 19.1604
-	Connector Buckling: 334.2315
-	Keel Piece: 512.1195
+	Connector Stress: 5.0934
+	Connector Buckling: 571.0559
+	Keel Piece: 120.722
 
 ***Gondola Analysis Outputs***
 Washer outter diamter in [mm]:7
 Bearing arm diameter in [mm]:5
 Snapfit cut depth [mm]:12.5
 Snapfit edge bevel angle:6.8755Adequate linear actuator force.
+***Achieved Parameters***
+Max Speed = 10.8m/s
+Flight Time = 21.8mins
+Carrying Capacity = 2731.7g

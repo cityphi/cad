@@ -263,15 +263,15 @@ swEqnFolder = ('../Solidworks/Equations');
 % append to the file
 cd(logFolder)
 fid = fopen(logFile, 'a+');
-fprintf(fid, '\n***Gondola Analysis Outputs***\n');
-fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\n' ]);
-fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\n']);
-fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\n']);
-fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) ]);
+fprintf(fid, '\n***Gondola Analysis Outputs***\r\n');
+fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\r\n' ]);
+fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\r\n']);
+fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\r\n']);
+fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) '\r\n']);
 if reqActuatorForce <= maxBrakeForce 
-    fprintf(fid, 'Adequate linear actuator force.');
+    fprintf(fid, 'Adequate linear actuator force.\r\n');
 else
-    fprintf(fid, ['Choose new linear actuator force greater than ' num2str(reqActuatorForce)]);
+    fprintf(fid, ['Choose new linear actuator force greater than ' num2str(reqActuatorForce) '\r\n']);
 end
 fclose(fid);
 cd(MATLABFolder);

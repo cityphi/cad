@@ -10,9 +10,9 @@ cd(logFolder)
 fid = fopen(logFile, 'a+');
 
 % lines of the file
-fprintf(fid, '\n***Achieved Parameters***\n');
-fprintf(fid, ['Max Speed = ' num2str(round(speed, 1)) 'm/s\n']);
-fprintf(fid, ['Flight Time = ' num2str(round(time, 1)) 'mins\n']);
+fprintf(fid, '\r\n***Achieved Parameters***\r\n');
+fprintf(fid, ['Max Speed = ' num2str(round(speed, 1)) 'm/s\r\n']);
+fprintf(fid, ['Flight Time = ' num2str(round(time, 1)) 'mins\r\n']);
 fprintf(fid, ['Carrying Capacity = ' num2str(round(mass*1000, 1)) 'g']);
 
 fclose(fid);

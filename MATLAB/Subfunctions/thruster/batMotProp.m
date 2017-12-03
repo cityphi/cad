@@ -210,23 +210,23 @@ battName = char(names(3));
 cd(logFolder)
 fid = fopen(logFile, 'a+');
 % lines of the file
-fprintf(fid, '\n***Thruster Selection***\n');
-fprintf(fid, ['Propeller - APC E ' propName '\n']);
-fprintf(fid, ['\tWeight: ' num2str(propChoice(1)) ' g\n']);
+fprintf(fid, '\n***Thruster Selection***\r\n');
+fprintf(fid, ['Propeller - APC E ' propName '\r\n']);
+fprintf(fid, ['\tWeight: ' num2str(propChoice(1)) ' g\r\n']);
 
 fprintf(fid, ['Motor - ' motName '\n']);
-fprintf(fid, ['\tWeight: ' num2str(motChoice(1)) ' g\n']);
-fprintf(fid, ['\tVolts:  ' num2str(motChoice(4)) ' V\n']);
-fprintf(fid, ['\tKV:     ' num2str(motChoice(2)) ' RPM/V\n']);
-fprintf(fid, ['\tPower:  ' num2str(motChoice(3)) ' W\n']);
-fprintf(fid, ['\tThrust: ' num2str(motChoice(5)) ' N\n']);
+fprintf(fid, ['\tWeight: ' num2str(motChoice(1)) ' g\r\n']);
+fprintf(fid, ['\tVolts:  ' num2str(motChoice(4)) ' V\r\n']);
+fprintf(fid, ['\tKV:     ' num2str(motChoice(2)) ' RPM/V\r\n']);
+fprintf(fid, ['\tPower:  ' num2str(motChoice(3)) ' W\r\n']);
+fprintf(fid, ['\tThrust: ' num2str(motChoice(5)) ' N\r\n']);
 
 
-fprintf(fid, ['Battery - ' battName '\n']);
-fprintf(fid, ['\tWeight:    ' num2str(battChoice(1)) ' g\n']);
-fprintf(fid, ['\tCapacity:  ' num2str(battChoice(2)) ' mAh\n']);
-fprintf(fid, ['\tVoltage:   ' num2str(battChoice(3)) ' V\n']);
-fprintf(fid, ['\tDischarge: ' num2str(battChoice(4)) ' C\n']);
+fprintf(fid, ['Battery - ' battName '\r\n']);
+fprintf(fid, ['\tWeight:    ' num2str(battChoice(1)) ' g\r\n']);
+fprintf(fid, ['\tCapacity:  ' num2str(battChoice(2)) ' mAh\r\n']);
+fprintf(fid, ['\tVoltage:   ' num2str(battChoice(3)) ' V\r\n']);
+fprintf(fid, ['\tDischarge: ' num2str(battChoice(4)) ' C\r\n']);
 fclose(fid);
 cd(MATLABFolder)
 

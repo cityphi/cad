@@ -1,2 +1,0 @@
-﻿"tsupport"= 3mm'Thruster support thickness
-"rblimp" = 636.62mm

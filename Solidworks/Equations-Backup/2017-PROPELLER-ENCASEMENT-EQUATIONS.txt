@@ -1,2 +1,0 @@
-﻿"propdiameter" = 177.80mm'diameter of the propeller
-"rshaft"= 5mm'thruster shaft radius

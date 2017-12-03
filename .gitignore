@@ -25,6 +25,7 @@
 *.log
 *.sql
 *.sqlite
+*.txt
 
 # OS generated files #
 ######################
@@ -45,4 +46,5 @@ Icon\r\r
 slprj/
 octave-workspace
 *.autosave
-Solidworks/Equations/Icon
+Solidworks/Equations/Icon
+

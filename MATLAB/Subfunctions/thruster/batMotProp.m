@@ -91,17 +91,10 @@ motChoice = possibleMot(1, :);
 %---BATTERY
 ampsNeeded = motChoice(:, 5)/motChoice(:, 4);
 battLife = ampsNeeded * reqTime * 1000;
-possibleBatt = zeros(size(battData, 1), size(battData, 2));
+possibleBatt = battData(:);
 
 % only include batteries with a high enough discharge rate
-for i = 1:size(battData, 1)
-    if battData(i, 4) > ampsNeeded
-        possibleBatt(i, :) = battData(i, :);
-    end
-end
-
-% remove any empty rows
-possibleBatt( ~any(possibleBatt, 2), : ) = [];
+possibleBatt(possibleBatt(:, 4) < ampsNeeded, :) = [];
 
 % remove any batteries that don't have the required voltage
 possibleBatt(possibleBatt(:, 5) < motChoice(:, 4), :) = [];
@@ -110,14 +103,8 @@ possibleBatt(possibleBatt(:, 5) < motChoice(:, 4), :) = [];
 possibleBatt = sortrows(possibleBatt, -3);
 battChoice = possibleBatt(1, :);
 
-for i = 1:size(possibleBatt, 1)
-    if possibleBatt(i, 3) < battLife
-        possibleBatt(i, :) = zeros(1, size(battData, 2));
-    end
-end
-
-% remove any empty rows
-possibleBatt(~any(possibleBatt, 2), :) = [];
+% remove any batteries with life that doesn't meet requirement
+possibleBatt(possibleBatt(:, 3) < battLife, :) = [];
 
 % if there was a battery with enough life, assign it
 if ~isempty(possibleBatt)

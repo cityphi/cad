@@ -16,6 +16,10 @@ battCSV = 'batteryData.csv';
 propData = csvread(propCSV, 1, 1);
 battData = csvread(battCSV, 1, 1);
 
+% remove any blank columns (sometimes reads csv incorrectly)
+propData(:, ~any(propData, 1)) = [];
+battData(:, ~any(battData, 1)) = [];
+
 % setup data array unique combinations of pitch and diameter
 pitchDiameters = unique(propData(:, 2:3), 'rows');
 

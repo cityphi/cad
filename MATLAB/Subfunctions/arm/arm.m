@@ -15,10 +15,10 @@ safetyFactor = 5; % hard coded value for the safety factor
 thrustForce = [thrustForceLoc FT 0 0 0 0 0 ];
 
 % find the pitch to do analysis of the arm
-aPitch = 90; %armWorstCase(thrustForce, weight, material);
+aPitch = 0; %armWorstCase(thrustForce, weight, material);
 
 % dimensions of the arm [ri thickness width]
-dimensions = [ airshipRad 0.005 0.01 ];
+dimensions = [ airshipRad 0.001 0.03 ];
 
 % expand the weight array to allow the arm weight to be added and changed
 weight(end+1, :) = zeros(1, 4);
@@ -38,7 +38,6 @@ while loop && iterations < maxIterations
     % safety factor check and iteration    
     if n < safetyFactor
         dimensions(2) = dimensions(2) + 0.001;
-        dimensions(3) = dimensions(3) + 0.001;
     else
         loop = 0;
     end
@@ -238,6 +237,7 @@ function armSW(thickness, width)
 
 SWArmFile = '2005-THRUSTER-ARMS-EQUATIONS.txt';
 SWPlateFile = '2008-PLATE-FRONT-EQUATIONS.txt';
+SWSupFile = '2004-ENVELOPE-SUPPORT-EQUATIONS.txt';
 MATLABFolder = fullfile('../MATLAB');
 SWFolder = fullfile('../Solidworks/Equations');
 
@@ -249,6 +249,9 @@ fprintf(fid, ['"k"= ' num2str(width*1000) 'mm\n']);
 fclose(fid);
 fid = fopen(SWPlateFile, 'w+t');
 fprintf(fid, ['"k"= ' num2str(width*1000) 'mm\n']);
+fprintf(fid, ['"h"= ' num2str(thickness*1000) 'mm\n']);
+fclose(fid);
+fid = fopen(SWSupFile, 'w+t');
 fprintf(fid, ['"h"= ' num2str(thickness*1000) 'mm\n']);
 fclose(fid);
 cd ..

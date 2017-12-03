@@ -5,29 +5,19 @@ function [ volume, mass, radius, CD ] = envelope( l, FR )
 % engineeringtoolbox - STP
 rhoH = 0.1664;
 
-alpha = 15*pi()/180;
+alpha = 10*pi()/180;
 
 % Diameter and radius of front
 D = l/FR;
 rf = D/2;
 
-a = 0.5;
-
-while 1
-    % values of the back hemisphere
-    re = rf - a*sin(alpha);
-    r = sqrt((re/tan(pi()/2-alpha))^2+re^2);
-    h = r*(1 - cos(pi()/2-alpha));
-    
-    approx = (rf + a*(1 + cos(alpha)) + h);
-    % length of the cylinder and cone
-    error = (l - approx)/l;
-    if abs(error) > 0.0001
-        a = a + error;
-    else
-        break
-    end
-end
+% get the dimensions
+L = @(a) rf - (-(rf - a*sin(alpha))^2/(sin(alpha)^2 - 1))^(1/2) ...
+    *(sin(alpha) - 1) + a*(cos(alpha) + 1); % used matlab to simplify
+a = fzero(@(a) L(a) - l, 0);
+re = rf - a*sin(alpha);
+r = sqrt((re/tan(pi()/2-alpha))^2+re^2);
+h = r*(1 - cos(pi()/2-alpha));
 
 % volume of the system
 vol(1, 1) = 2*pi()*rf^3 / 3;

@@ -8,9 +8,6 @@ reqSpeed  = required(1);
 reqTime   = required(2);
 reqWeight = required(3);
 
-syms V
-assume(V, 'real')
-
 % file names
 propCSV = 'propellerMotorData.csv';
 battCSV = 'batteryData.csv';
@@ -91,7 +88,7 @@ motChoice = possibleMot(1, :);
 %---BATTERY
 ampsNeeded = motChoice(:, 5)/motChoice(:, 4);
 battLife = ampsNeeded * reqTime * 1000;
-possibleBatt = battData(:);
+possibleBatt(:, :) = battData(:, :);
 
 % only include batteries with a high enough discharge rate
 possibleBatt(possibleBatt(:, 4) < ampsNeeded, :) = [];

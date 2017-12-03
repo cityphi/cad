@@ -22,7 +22,7 @@ function varargout = main(varargin)
 
 % Edit the above text to modify the response to help main
 
-% Last Modified by GUIDE v2.5 02-Dec-2017 12:43:14
+% Last Modified by GUIDE v2.5 03-Dec-2017 02:14:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -62,19 +62,23 @@ guidata(hObject, handles);
 %of default values as a starting point when the program launches.
 clc
 
-defaultSpeed  = 10;
+defaultSpeed  = 8;
 defaultWeight = 200;
 defaultTime   = 30;
+defaultLength = 3.5;
 
 % set sliders
 set(handles.sliderReqTime,'Value',defaultTime);
 set(handles.sliderReqWeight,'Value',defaultWeight);
 set(handles.sliderReqSpeed,'Value',defaultSpeed);
 
-% set values
+% set slider values
 set(handles.textTimeValue,'String',num2str(defaultTime));
 set(handles.textWeightValue,'String',num2str(defaultWeight));
 set(handles.textSpeedValue,'String',num2str(defaultSpeed));
+
+% set length
+set(handles.editLength, 'String', num2str(defaultLength));
 
 %Set the window title with the group identification:
 set(handles.figure1,'Name','Group RE3 // CADCAM 2017');
@@ -253,3 +257,12 @@ function FR_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in buttonWeight.
+function buttonWeight_Callback(hObject, eventdata, handles)
+% hObject    handle to buttonWeight (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of buttonWeight

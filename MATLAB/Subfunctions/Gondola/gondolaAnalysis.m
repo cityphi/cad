@@ -1,4 +1,4 @@
-function gondolaAnalysis (aThrust)
+function gondolaAnalysis (aThrust , massScenario , payLoadMass)
 %This function gives safty factors and dimension for the bearing arms,
 %torsion hinge to gondola washers, the required motor torque, the required
 %motor force, the required braking force, the required acceleration, 
@@ -10,9 +10,10 @@ function gondolaAnalysis (aThrust)
 %Format for forces/reactions arrays:[locX locY locZ Fx Fy Fz Mx My Mz]
 %M [ density Sut Suc Sy E brittle ] - information of the material
 %All lengths/distances are in [m] other units are specified
-
+aThrust = 1
+massScenario = 0
+payLoadMass = 0
 %%%%%%%%%%%%%%%%%%%%%%%% SET VARIABLES %%%%%%%%%%%%
-Tw = 0.01;          %motor torque [Nm]
 Ls = 0.08;          %distance from screw to center of torsion hinge 
 Lhd = 0.02185;      %distance in y from torsion hingle to friction wheel contact point 
 hingeAngle = pi/4;  %angle of torsion hinge [rads] yx 
@@ -32,9 +33,6 @@ Dwasheri = 0.003;   %inner gondola/hinge screw washer diameter
 Mu = 0.65;          %frictionwheel to keel coefficient of friction
 Muwasher = 0.2;     %washer to gondola coefficent of friction
 
-Scompressive = 6;  %The compressive yield strength of Nylon 12 3d [Mpa]
-g = -9.81;          %acceleration due to gravity [m/s^2]
-
 Lbearingx = 0.03682;%distance in x from bearing contact to gondola axle
 Lbearingy = 0.00328;%distance in y from bearing contact to center of gondola
 Hbearing = 0.03954; %height in z from bearing contact to surface of gondola
@@ -45,22 +43,40 @@ Larm = 0.03597;      %length of straigt section of bearing arm
 Lcurvez = 0.00919;   %length of cruved section of bearing arm in z
 Lcurvey = 0.00816;  %length of cruved section of bearing arm in y
 
+%available motor torques in Ozin
+motorTorques = [2 4 9 15 22 30 40 50 60 70 125];
+
+for i = 1:length(motorTorques) %convert torques to Nm
+motorTorques(i) = motorTorques(i)*0.0070615518333333;
+end
+
+Tw = motorTorques(1);
+
 gondSpecs = [
-0.066    %length in x of one gondola car
-0.046        %width in y of gondola 
-0.038        %height in z of gondola
--0.0405    %center of gravity in x of gondola 1
-0.0001      %center of gravity in y of gondola 1
--0.01997    %center of gravity in z of gondola 1
-0.03524     %center of gravity in x of gondola 2
--0.0003     %center of gravity in y of gondola 2
--0.01566     %center of gravity in z of gondola 2
-0.09777      %mass of gondola 1 in kg
-0.208      %mass of gondola 2 in kg
--0.07946    %position of brake in x  
-0.03259];     %height of brake in z   
+0.066    %1length in x of one gondola car
+0.046        %2width in y of gondola 
+0.038        %3height in z of gondola
+-0.0405    %4center of gravity in x of gondola 1
+0.0001      %5center of gravity in y of gondola 1
+-0.01997    %6center of gravity in z of gondola 1
+0.03524     %7center of gravity in x of gondola 2
+-0.0003     %8center of gravity in y of gondola 2
+-0.01566     %9center of gravity in z of gondola 2
+0.09777      %10mass of gondola 1 in kg
+0.208      %11mass of gondola 2 in kg
+-0.07946    %12position of brake in x  
+0.03259];     %13height of brake in z   
 
 gondSpecs(1);
+
+if massScenario == 0
+    gondSpecs(10) = gondSpecs(10) + payLoadMass/2;
+    gondSpecs(11) = gondSpecs(11) + payLoadMass/2;
+elseif massScenario == 1
+    gondSpecs(10) = gondSpecs(10) + payLoadMass;
+elseif massScenario == 2
+    gondSpecs(11) = gondSpecs(11) + payLoadMass;
+end
 
 %[ density Sut Suc Sy E brittle ] - information of the material
 nylon12 = [1130 38.5*10^6 6*10^6 28*10^6 1.138*10^9 1]; % matweb unrenforced
@@ -71,15 +87,16 @@ steel = [8000 420*10^6 250*10^6 320*10^6 200*10^9 0];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 worstCaseAcceleration = 0;
-
+i = 0;
 while worstCaseAcceleration >= 0;
     Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
     Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
     Fnfric =  -Fspring; % normal force of frction wheel equal to spring for
     worstCaseAcceleration = gondolaForces(gondSpecs, -pi/2, 0, 0, maxThrust, -Tw, Fnfric, 0,0);
     if worstCaseAcceleration >= 0;
-        Tw = Tw + 0.01;
+        i=i+1;
     end
+    Tw = motorTorques(i)
 end
 
 Fw = Tw/rFw; %driving force of motor
@@ -119,7 +136,7 @@ Fbolt = sqrt(gondScrewReactionsWorstSolved(1,4)^2+gondScrewReactionsWorstSolved(
 
 Ncompressive = 0;
 while Ncompressive < 3
-    Ncompressive = Scompressive*10^6/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2));
+    Ncompressive = nylon12(3)/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2));
     if Ncompressive < 3
         Dwashero = Dwashero + 0.001;
     end
@@ -212,7 +229,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rSnap =     0.003175;
-snapCut =   0.001;
+snapCut =   0.01;
 snapDef=    0.001;
 Lsnap =     0.005;
 theta =     acos((rSnap-snapCut)/rSnap);
@@ -244,35 +261,35 @@ snapAngle = (180/pi)* snapAngle;
 %LOG Outputs useful data to the log file
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-logFile = 'groupRE3_LOG.txt';
-logFolder = ('../Log');
-MATLABFolder = ('../MATLAB');
-swEqnFolder = ('../Solidworks/Equations');
-
-% append to the file
-cd(logFolder)
-fid = fopen(logFile, 'a+');
-fprintf(fid, ['\n***Gondola Analysis Outputs***\n']);
-fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\n' ]);
-fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\n']);
-fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\n']);
-fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) ]);
-fclose(fid);
-cd(gondFolder);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Write to text files for sw
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-cd('swEqnFolder')
-fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
-fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
-fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
-fprintf(fid, ['"cutangle"= ',num2str(snapAngle) '[mm]\n''cut angle of the snapfit']);
-fclose(fid);
-
-fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
-fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
-fclose(fid);
-cd('../../MATLAB');
+% logFile = 'groupRE3_LOG.txt';
+% logFolder = ('../Log');
+% MATLABFolder = ('../MATLAB');
+% swEqnFolder = ('../Solidworks/Equations');
+% 
+% % append to the file
+% cd(logFolder)
+% fid = fopen(logFile, 'a+');
+% fprintf(fid, ['\n***Gondola Analysis Outputs***\n']);
+% fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\n' ]);
+% fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\n']);
+% fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\n']);
+% fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) ]);
+% fclose(fid);
+% cd(gondFolder);
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %Write to text files for sw
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% cd('swEqnFolder')
+% fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
+% fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
+% fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
+% fprintf(fid, ['"cutangle"= ',num2str(snapAngle) '[mm]\n''cut angle of the snapfit']);
+% fclose(fid);
+% 
+% fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
+% fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
+% fclose(fid);
+% cd('../../MATLAB');
 end 

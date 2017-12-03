@@ -10,9 +10,7 @@ function gondolaAnalysis (aThrust , massScenario , payLoadMass)
 %Format for forces/reactions arrays:[locX locY locZ Fx Fy Fz Mx My Mz]
 %M [ density Sut Suc Sy E brittle ] - information of the material
 %All lengths/distances are in [m] other units are specified
-aThrust = 1
-massScenario = 0
-payLoadMass = 0
+
 %%%%%%%%%%%%%%%%%%%%%%%% SET VARIABLES %%%%%%%%%%%%
 Ls = 0.08;          %distance from screw to center of torsion hinge 
 Lhd = 0.02185;      %distance in y from torsion hingle to friction wheel contact point 
@@ -96,7 +94,7 @@ while worstCaseAcceleration >= 0;
     if worstCaseAcceleration >= 0;
         i=i+1;
     end
-    Tw = motorTorques(i)
+    Tw = motorTorques(i);
 end
 
 Fw = Tw/rFw; %driving force of motor

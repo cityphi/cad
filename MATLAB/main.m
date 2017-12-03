@@ -102,9 +102,13 @@ else
     FRcontents = cellstr(get(handles.FR, 'String'));
     finessRatio = str2double(FRcontents{get(handles.FR,'Value')});
     
-    radius = airshipLength/finessRatio;
-    a = (airshipLength-radius)/(1+cos(15*pi()/180));
-    backRadius = (radius - a*sin(15*pi()/180))*1000;
+    % check that the blimp geometry is sovleable.
+    rf = airshipLength/finessRatio/2;
+    alpha = 10*pi()/180;
+    L = @(a) rf - (-(rf - a*sin(alpha))^2/(sin(alpha)^2 - 1))^(1/2) ...
+        *(sin(alpha) - 1) + a*(cos(alpha) + 1); % used matlab to simplify
+    a = fzero(@(a) L(a) - airshipLength, 0);
+    backRadius = (rf - a*sin(alpha))*1000;
     
     if isnan(airshipLength) || (airshipLength <=0) || (backRadius < 50)
         msgbox('Shaft length and/or Fineness results in an invalid value.','Cannot generate!','error');

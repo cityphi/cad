@@ -144,18 +144,18 @@ cd(logFolder)
 fid = fopen(logFile, 'a+');
 
 % lines of the file
-fprintf(fid, '\n***Thruster Shaft***\n');
+fprintf(fid, '\r\n***Thruster Shaft***\r\n');
 fprintf(fid, ['Safety Factor: ' num2str(n) ]);
 
 % display a message if the safety factor couldn't be acheived
 if n < nReq
-    fprintf(fid, ' ****This does not meet safety Factor\n');
+    fprintf(fid, ' ****This does not meet safety Factor\r\n');
 else
-    fprintf(fid, '\n');
+    fprintf(fid, '\r\n');
 end
 
-fprintf(fid, ['Weight:        ' num2str(weight) ' g\n']);
-fprintf(fid, ['Thread size:   M' num2str(thread) '\n']);
+fprintf(fid, ['Weight:        ' num2str(weight) ' g\r\n']);
+fprintf(fid, ['Thread size:   M' num2str(thread) '\r\n']);
 
 fclose(fid);
 cd(MATLABFolder)
@@ -187,7 +187,7 @@ fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
 fprintf(fid, ['"LS1"= ' num2str(length*1000) 'mm\n']);
 fclose(fid);
 fid = fopen(SWPropFile, 'a+');
-fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
+fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\r\n']);
 fclose(fid);
 fid = fopen(SWMotFile, 'w+t');
 fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);

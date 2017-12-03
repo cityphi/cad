@@ -1,3 +1,0 @@
-﻿"batteryheighttwo"= 20mm'height of the battery
-"batterylengthtwo"= 137mm'length of the battery
-"batterywidthtwo"= 45mm'width of the battery

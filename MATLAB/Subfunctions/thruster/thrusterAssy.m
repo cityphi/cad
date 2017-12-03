@@ -34,8 +34,8 @@ MATLABFolder = fullfile('../MATLAB');
 % append to the file
 cd(logFolder)
 fid = fopen(logFile, 'a+');
-fprintf(fid, '\n***Thruster Assembly***\n');
-fprintf(fid, ['Total Mass: ' num2str(mass) ' g\n']);
+fprintf(fid, '\r\n***Thruster Assembly***\r\n');
+fprintf(fid, ['Total Mass: ' num2str(mass) ' g\r\n']);
 fclose(fid);
 cd(MATLABFolder)
 end

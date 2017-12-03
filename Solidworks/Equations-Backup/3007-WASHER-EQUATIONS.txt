@@ -1,1 +1,0 @@
-﻿"doWasher" = 7.5mm'The outside diameter of the washer

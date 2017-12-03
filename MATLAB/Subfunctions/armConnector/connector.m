@@ -176,30 +176,30 @@ MATLABFolder = fullfile('../MATLAB');
 % append to the file
 cd(logFolder)
 fid = fopen(logFile, 'a+');
-fprintf(fid, '\n***Arm Connection to Keel***\n');
-fprintf(fid, 'Assuming the piece is made from Aluminum 6061\n');
-fprintf(fid, ['The optimized thickness is ' num2str(thickness*1000) 'mm\n']);
-fprintf(fid, 'This gives safety factors for the different failures:\n');
+fprintf(fid, '\r\n***Arm Connection to Keel***\r\n');
+fprintf(fid, 'Assuming the piece is made from Aluminum 6061\r\n');
+fprintf(fid, ['The optimized thickness is ' num2str(thickness*1000) 'mm\r\n']);
+fprintf(fid, 'This gives safety factors for the different failures:\r\n');
 fprintf(fid, ['\tConnector Stress: ' num2str(n)]);
 % display a message if the safety factor couldn't be acheived
 if n < nReq
-    fprintf(fid, ' ****This does not meet safety Factor\n');
+    fprintf(fid, ' ****This does not meet safety Factor\r\n');
 else
-    fprintf(fid, '\n');
+    fprintf(fid, '\r\n');
 end
 fprintf(fid, ['\tConnector Buckling: ' num2str(nBuck)]);
 % display a message if the safety factor couldn't be acheived
 if nBuck < nReq
-    fprintf(fid, ' ****This does not meet safety Factor\n');
+    fprintf(fid, ' ****This does not meet safety Factor\r\n');
 else
-    fprintf(fid, '\n');
+    fprintf(fid, '\r\n');
 end
 fprintf(fid, ['\tKeel Piece: ' num2str(nKeel)]);
 % display a message if the safety factor couldn't be acheived
 if nKeel < nReq
-    fprintf(fid, ' ****This does not meet safety Factor\n');
+    fprintf(fid, ' ****This does not meet safety Factor\r\n');
 else
-    fprintf(fid, '\n');
+    fprintf(fid, '\r\n');
 end
 fclose(fid);
 cd(MATLABFolder)
@@ -218,8 +218,8 @@ SWFolder = fullfile('../Solidworks/Equations');
 % write to the different solidworks files
 cd(SWFolder)
 fid = fopen(SWArmFile, 'a+');
-fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\n']);
-fprintf(fid, ['"rblimp"= ' num2str(radius*1000) 'mm\n']);
+fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\r\n']);
+fprintf(fid, ['"rblimp"= ' num2str(radius*1000) 'mm\r\n']);
 fclose(fid);
 fid = fopen(SWConFile, 'w+t');
 fprintf(fid, ['"tsupport"= ' num2str(thickness*1000) 'mm\n']);

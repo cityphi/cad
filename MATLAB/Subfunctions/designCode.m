@@ -39,7 +39,7 @@ connector(FTmax, thrusterWeight, airshipRad, aluminum6061);
 mass = vol*rhoA - totalMass;
 
 %---GONDOLA
-gondolaAnalysis(FTmax/totalMass);
+gondolaAnalysis(FTmax/totalMass, 0 ,0.2); %TEMPORARY!#@$**&@#&
 
 %---LOG
 finalLog(speed, time, mass)

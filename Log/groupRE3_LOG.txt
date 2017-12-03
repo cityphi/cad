@@ -1,20 +1,20 @@
 
 ***Envelope***
-Using a FR of 3.5 and L of 5m gives a D of 1.4286m.
+Using a FR of 3.5 and L of 3m gives a D of 0.85714m.
 This corresponds to a CD of 0.254.
-With a volume of 5.5654m^3 which is 926.1g of helium.
-Approximately 559.8g of plastic.
-Centre of mass at -378.4mm (in x) from the centre of the thrusters
+With a volume of 1.2022m^3 which is 200g of helium.
+Approximately 214.4g of plastic.
+Centre of mass at 144.2mm (in x) from the centre of the thrusters
 
 ***Thruster Selection***
 Propeller - APC E 10x7
 	Weight: 20.1 g
-Motor - AEM 28L-GTS
-	Weight: 57 g
-	Volts:  10.8 V
-	KV:     3960 RPM/V
-	Power:  282 W
-	Thrust: 12.1602 N
+Motor - GPS C35-36-C
+	Weight: 102 g
+	Volts:  7.8 V
+	KV:     1110 RPM/V
+	Power:  120 W
+	Thrust: 7.9434 N
 Battery - ZIPPY Compact 2700mAh 3s 40c Lipo Pack
 	Weight:    235 g
 	Capacity:  2700 mAh
@@ -22,31 +22,31 @@ Battery - ZIPPY Compact 2700mAh 3s 40c Lipo Pack
 	Discharge: 40 C
 
 ***Thruster Shaft***
-Safety Factor: 5.4619
-Weight:        7.4797 g
-Thread size:   M8
+Safety Factor: 5.653
+Weight:        11.687 g
+Thread size:   M10
 
 ***Thruster Assembly***
-Total Mass: 1471 g
+Total Mass: 1479.4 g
 
 ***Thruster Arms***
-Total Mass:    525.4 g
-Safety Factor: 6.1815
+Total Mass:    219.1 g
+Safety Factor: 5.3812
 
 ***Arm Connection to Keel***
 Assuming the piece is made from Aluminum 6061
-The optimized thickness is 2.3mm
+The optimized thickness is 1.5mm
 This gives safety factors for the different failures:
-	Connector Stress: 5.0934
-	Connector Buckling: 571.0559
-	Keel Piece: 120.722
+	Connector Stress: 7.8543
+	Connector Buckling: 213.6724
+	Keel Piece: 243.6866
 
 ***Gondola Analysis Outputs***
-Washer outter diamter in [mm]:7
-Bearing arm diameter in [mm]:5
-Snapfit cut depth [mm]:12.5
-Snapfit edge bevel angle:6.8755Adequate linear actuator force.
+Washer outter diamter in [mm]:9
+Bearing arm diameter in [mm]:6
+Snapfit cut depth [mm]:40.1
+Snapfit edge bevel angle:2.1432+3.156e-16iAdequate linear actuator force.
 ***Achieved Parameters***
-Max Speed = 10.8m/s
-Flight Time = 21.8mins
-Carrying Capacity = 2731.7g
+Max Speed = 11.5m/s
+Flight Time = 15.7mins
+Carrying Capacity = -1244g

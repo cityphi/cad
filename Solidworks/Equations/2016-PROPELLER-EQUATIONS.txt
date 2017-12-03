@@ -1,1 +1,0 @@
-"propdiameter"= 254mm

@@ -1,2 +1,0 @@
-"doWasher"= 9[mm]
-'The outside diameter of the washer

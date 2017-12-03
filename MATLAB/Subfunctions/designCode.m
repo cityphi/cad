@@ -14,7 +14,7 @@ reqTime = requirements(2)/60; %h
 reqWeight = requirements(3);
 
 %---ENVELOPE
-[ vol, envWeight, airshipRad, CD ] = airship( l, FR );
+[vol, envMass, airshipRad, CD] = envelope(l, FR);
 
 %---THRUSTER
 inputs = [reqSpeed reqTime reqWeight];
@@ -28,12 +28,16 @@ dragValues = [CD rhoA vol*0.0283168466];
 thrustForceLoc = [ 0 thrusterDist+0.04572+airshipRad 0 ]; % relate to thrusters
 
 % get the total weight of one thruster assy relative to thrusters
-weight = thrusterAssy(thrusterWeight, battMass, airshipRad);
+thrusterWeight = thrusterAssy(thrusterWeight, battMass, airshipRad);
 
 %---ARM
-weight = arm(FTmax, thrustForceLoc, weight, airshipRad, carbon);
-connector(FTmax, weight, airshipRad, aluminum6061);
+[thrusterWeight, thrusterMass] = arm(FTmax, thrustForceLoc, thrusterWeight, airshipRad, carbon);
+connector(FTmax, thrusterWeight, airshipRad, aluminum6061);
 
-%---WEIGHT
+%---MASS
+[totalMass, fixedMass, gondolaMass] = airshipMass(thrusterMass, envMass, airshipRad);
+
+%---GONDOLA
+gondolaAnalysis(FTmax/totalMass);
 
 end

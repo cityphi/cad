@@ -210,9 +210,9 @@ battName = char(names(3));
 amps = motChoice(3)/motChoice(4);
 
 cd(logFolder)
-fid = fopen(logFile, 'w+t');
+fid = fopen(logFile, 'a+');
 % lines of the file
-fprintf(fid, ['Max Speed   = ' num2str(motChoice(5)) ' m/s\n']);
+fprintf(fid, ['\nMax Speed   = ' num2str(motChoice(5)) ' m/s\n']);
 fprintf(fid, ['Flight Time = ' num2str(battChoice(2)*0.06/amps) 'minutes\n']);
 fprintf(fid, '\n***Thruster Selection***\n');
 fprintf(fid, ['Propeller - APC E ' propName '\n']);
@@ -246,6 +246,7 @@ SWPropFile = '2016-PROPELLER-EQUATIONS.txt';
 SWPropCaseFile = '2017-PROPELLER-ENCASEMENT-EQUATIONS.txt';
 SWCovFile = '2013-COMPONENT-COVER-EQUATIONS.txt';
 SWDoorFile = '2014-COMPONENT-COVER-DOOR-EQUATIONS.txt';
+SWBattFile = '5006-BATTERY2-EQUATIONS.txt';
 MATLABFolder = fullfile('../MATLAB');
 SWFolder = fullfile('../Solidworks/Equations');
 
@@ -263,6 +264,11 @@ fprintf(fid, ['"batterylengthtwo"= ' num2str(battL) 'mm\n']);
 fprintf(fid, ['"batterywidthtwo"= ' num2str(battW) 'mm\n']);
 fclose(fid);
 fid = fopen(SWDoorFile, 'w+t');
+fprintf(fid, ['"batteryheighttwo"= ' num2str(battH) 'mm\n']);
+fprintf(fid, ['"batterylengthtwo"= ' num2str(battL) 'mm\n']);
+fprintf(fid, ['"batterywidthtwo"= ' num2str(battW) 'mm\n']);
+fclose(fid);
+fid = fopen(SWBattFile, 'w+t');
 fprintf(fid, ['"batteryheighttwo"= ' num2str(battH) 'mm\n']);
 fprintf(fid, ['"batterylengthtwo"= ' num2str(battL) 'mm\n']);
 fprintf(fid, ['"batterywidthtwo"= ' num2str(battW) 'mm\n']);

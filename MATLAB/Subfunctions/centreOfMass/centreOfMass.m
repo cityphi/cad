@@ -11,7 +11,7 @@ pos = gondola(loc, keelDist, radius);
 %Calculate the Centre of Mass
 CM  = [((M(1, 2) + pos(1))*M(1, 1) + M(2, 2)*M(2, 1))/MTotal, ...
        ((M(1, 3) + pos(2))*M(1, 1) + M(2, 3)*M(2, 1))/MTotal];
-
+end
 
 function [x, z] = gondola(loc, keelDist, radius)
 %Finds a x-z coordinate based on distance traveled along the keel
@@ -36,4 +36,5 @@ elseif loc > (2000 + arcLength);
 else
     x = 0; z = 0;
     
+end
 end

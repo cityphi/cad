@@ -1,37 +1,51 @@
-Max Speed   = 11.4919 m/s
-Flight Time = 10.53minutes
+
+***Envelope***
+Using a FR of 3.5 and L of 2m gives a D of 0.57143m.
+This corresponds to a CD of 0.254.
+With a volume of 0.3562m^3 which is 59.3g of helium.
+Approximately 101.1g of plastic.
+Centre of mass at 402.7mm (in x) from the centre of the thrusters
+
+Max Speed   = 12.5945 m/s
+Flight Time = 15.0904minutes
 
 ***Thruster Selection***
-Propeller - APC E 10x7
-	Weight: 20.1 g
-Motor - GPS C35-36-C
-	Weight: 102 g
-	Volts:  7.8 V
-	KV:     1110 RPM/V
-	Power:  120 W
-	Thrust: 11.4919 N
-Battery - ZIPPY Compact 2700mAh 3s 40c Lipo Pack
-	Weight:    235 g
+Propeller - APC E 6x4
+	Weight: 5.1 g
+Motor - KEDA TR2826/14
+	Weight: 48 g
+	Volts:  6.8 V
+	KV:     2315 RPM/V
+	Power:  73 W
+	Thrust: 12.5945 N
+Battery - ZIPPY Compact 2700mAh 2S 25C Lipo Pack
+	Weight:    157 g
 	Capacity:  2700 mAh
-	Voltage:   11.1 V
-	Discharge: 40 C
+	Voltage:   7.4 V
+	Discharge: 25 C
 
 ***Thruster Shaft***
-Safety Factor: 5.653
-Weight:        11.687 g
-Thread size:   M10
+Safety Factor: 10.5166
+Weight:        4.5221 g
+Thread size:   M8
 
 ***Thruster Assembly***
-Total Mass: 1479.4 g
+Total Mass: 1309 g
 
 ***Thruster Arms***
-Total Mass:    219.1 g
-Safety Factor: 5.3812
+Total Mass:    118.3 g
+Safety Factor: 6.3614
 
 ***Arm Connection to Keel***
 Assuming the piece is made from Aluminum 6061
 The optimized thickness is 1.5mm
 This gives safety factors for the different failures:
-	Connector Stress: 7.8543
-	Connector Buckling: 213.6724
-	Keel Piece: 243.6866
+	Connector Stress: 19.1604
+	Connector Buckling: 334.2315
+	Keel Piece: 512.1195
+
+***Gondola Analysis Outputs***
+Washer outter diamter in [mm]:7
+Bearing arm diameter in [mm]:5
+Snapfit cut depth [mm]:12.5
+Snapfit edge bevel angle:6.8755Adequate linear actuator force.

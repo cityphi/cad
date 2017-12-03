@@ -1,2 +1,2 @@
-"rblimp" = 428.5714mm
-"lblimpcylinder"= 1268.8018mm
+"rblimp" = 285.7143mm
+"lblimpcylinder"= 845.8748mm

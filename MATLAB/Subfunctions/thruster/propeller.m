@@ -1,10 +1,9 @@
 function [propChoice, motChoice, badness] = propeller (reqSpeed, dragValues, maxMass, maxPower)
 
-% file names
+% file
 propCSV = 'propellerMotorData.csv';
-
-% data loading
 propData = csvread(propCSV, 1, 1);
+propData(:, ~any(propData, 2)) = [];
 
 % remove data points with weights that are too large
 if maxMass
@@ -33,7 +32,7 @@ possibleSpeed = reqSpeed;
 while 1
 	% finding the required parameters for each pitch-diamter combination
 	Vzero = possibleSpeed + 5;
-	for i = 1:size(data, 1)
+    for i = 1:size(data, 1)
 	    % since it is sorted reduce the speed by 5 to accelerate the process
 	    Vzero = Vzero - 5;
 	    
@@ -41,7 +40,7 @@ while 1
 	    maxIterations = 100; iterations = 0;
 	    
 	    % increase the max velocity until it has enough force at desired speed
-	    while iterations < maxIterations
+        while iterations < maxIterations
 	        iterations = iterations + 1;
 	    
 	        % equations use m
@@ -58,7 +57,7 @@ while 1
 	        Vmax = airshipSpeed(D, P, nStart, dragValues);
 	    
 	        % check if attained a max speed
-	        if Vmax < possibleSpeed
+            if Vmax < possibleSpeed
 	            Vzero = Vzero + 1;
 	        else
 	            data(i, 3) = nStart * 60; % convert to RPM at start
@@ -82,7 +81,7 @@ while 1
 	possibleMot(~any(possibleMot, 2), :) = [];
 
 	% check if any combination was possible
-	if ~isempty(possibleMot)
+    if ~isempty(possibleMot)
 	    break
 	else
 		possibleSpeed = possibleSpeed - 0.5;

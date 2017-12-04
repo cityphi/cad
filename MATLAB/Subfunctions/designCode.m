@@ -1,6 +1,7 @@
 function designCode( requirements, l, FR )
 %DESIGNCODE Summary of this function goes here
 %   Detailed explanation goes here
+clc
 
 % M [ density Sut Suc Sy E brittle ] - information of the material
 carbon       = [1550 600*10^6 570*10^6 0        109*10^9   1]; % need Sy
@@ -12,35 +13,46 @@ rhoA = 1.225;
 reqSpeed = requirements(1); %m/s
 reqTime = requirements(2)/60; %h
 reqWeight = requirements(3);
+scenario = 1;
 
 %---ENVELOPE
 [vol, envMass, airshipRad, CD] = envelope(l, FR);
 
 %---THRUSTER
-inputs = [reqSpeed reqTime reqWeight];
-dragValues = [CD rhoA vol*0.0283168466];
+dragValues = [CD rhoA vol];
 
-% pick battery, motor, and propeller
-[thrusterMass, battMass, FTmax, propRadius, time, speed] = batMotProp(inputs, dragValues);
+switch scenario
+	% case 1-guarantee 
+	case 1
+		for i = 1:2
+			%propeller (reqSpeed, dragValues, maxAmps, maxMass)
+			[propChoice, motChoice, motBadness] = propeller(reqSpeed, dragValues, 0, 0);
+			%battery(reqTime, minAmps, minVolts, maxMass)
+			[battChoice, battBadness] = battery(reqTime, motChoice(5)/motChoice(4), 0, 0);
 
-% optimize the shaft
-[thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
-thrustForceLoc = [ 0 thrusterDist+0.04572+airshipRad 0 ]; % relate to thrusters
+			% returns useful data and writes to files
+			[thrusterMass, battMass, FTmax, propRadius, time, speed] = battMotPropData( propChoice, motChoice, battChoice, dragValues );
 
-% get the total weight of one thruster assy relative to thrusters
-thrusterWeight = thrusterAssy(thrusterWeight, battMass, airshipRad);
+			% optimize the shaft
+			[thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
+			thrustForceLoc = [ 0 thrusterDist+0.04572+airshipRad 0 ]; % relate to thrusters
 
-%---ARM
-[thrusterWeight, thrusterMass] = arm(FTmax, thrustForceLoc, thrusterWeight, airshipRad, carbon);
-connector(FTmax, thrusterWeight, airshipRad, aluminum6061);
+			% get the total weight of one thruster assy relative to thrusters
+			thrusterWeight = thrusterAssy(thrusterWeight, battMass, airshipRad);
 
-%---MASS
-[totalMass, fixedMass, gondolaMass] = airshipMass(thrusterMass, envMass, airshipRad);
-mass = vol*rhoA - totalMass;
+			%---ARM
+			[thrusterWeight, thrusterMass] = arm(FTmax, thrustForceLoc, thrusterWeight, airshipRad, carbon);
+			connector(FTmax, thrusterWeight, airshipRad, aluminum6061);
 
-%---GONDOLA
-gondolaAnalysis(FTmax/totalMass, 0 ,0.2); %TEMPORARY!#@$**&@#&
+			%---MASS
+			[totalMass, fixedMass, gondolaMass] = airshipMass(thrusterMass, envMass, airshipRad);
+			carryingMass = vol*rhoA - totalMass;
+			weightBadness = (reqWeight - carryingMass*1000)/reqWeight;
+
+			%---GONDOLA
+			gondolaAnalysis(FTmax/totalMass, 0, 0.2); %TEMPORARY!#@$**&@#&
+		end
 
 %---LOG
-finalLog(speed, time, mass)
+finalLog(speed, time, carryingMass)
 end

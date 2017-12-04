@@ -22,7 +22,7 @@ function varargout = main(varargin)
 
 % Edit the above text to modify the response to help main
 
-% Last Modified by GUIDE v2.5 03-Dec-2017 02:14:36
+% Last Modified by GUIDE v2.5 04-Dec-2017 14:13:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -60,7 +60,7 @@ guidata(hObject, handles);
 
 %Set the default values on the GUI. It is recommended to choose a valid set 
 %of default values as a starting point when the program launches.
-clc
+%clc
 
 defaultSpeed  = 8;
 defaultWeight = 200;
@@ -119,10 +119,12 @@ else
         return;
     end
     
+    scenario = get(handles.buttonWeight, 'Value') + get(handles.buttonSpeed, 'Value')*2 + get(handles.buttonTime, 'Value')*3;
+    
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    designCode([reqSpeed, reqTime, reqWeight], airshipLength, finessRatio);
+    designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio);
     
 end
 
@@ -251,8 +253,15 @@ function FR_Callback(hObject, eventdata, handles)
 
 
 % --- Executes during object creation, after setting all properties.
+function groupDriving_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to butttttton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+
+% --- Executes during object creation, after setting all properties.
 function FR_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to FR (see GCBO)
+% hObject    handle to popupmenu2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -261,12 +270,3 @@ function FR_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-% --- Executes on button press in buttonWeight.
-function buttonWeight_Callback(hObject, eventdata, handles)
-% hObject    handle to buttonWeight (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of buttonWeight

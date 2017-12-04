@@ -130,6 +130,4 @@ fprintf(fid, ['"batterywidthtwo"= ' num2str(battW) 'mm\n']);
 fclose(fid);
 cd ..
 cd(MATLABFolder)
-
-disp('Thruster Parameterized in Solidworks');
 end

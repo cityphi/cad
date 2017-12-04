@@ -144,7 +144,7 @@ while 1;
                 if indexPower ~= 1
                     powerLimitMot = motPowers(indexPower-1);
                 else
-                    disp('~~~~~')
+                    disp('~~~~~BAD')
                     break
                 end
             end

@@ -45,6 +45,9 @@ while 1
 	    break
 	end
 		possibleTime = possibleTime - 2/60;
+        if possibleTime <= 0
+            possibleTime = 0.1/60;
+        end
 		disp(['Reduced life to: ' num2str(possibleTime*60)])
 end
 

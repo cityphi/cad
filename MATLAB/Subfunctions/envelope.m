@@ -49,13 +49,13 @@ mass = [ (massHelium + massPlastic) x zeros(4, 1) zeros(4, 1)];
 %--OUTPUTS
 switch FR
 	case 3.5
-		CD = 0.254;
+		CD = 0.0254;
 	case 4
-		CD = 0.189;
+		CD = 0.0189;
 	case 4.5
-		CD = 0.159;
+		CD = 0.0159;
 	otherwise
-		CD = 0.254;
+		CD = 0.0254;
 end
 
 volume = sum(vol);

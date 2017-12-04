@@ -1,4 +1,4 @@
-function designCode( requirements, l, FR )
+function designCode( requirements, scenario, l, FR )
 %DESIGNCODE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -13,34 +13,144 @@ reqSpeed = requirements(1); %m/s
 reqTime = requirements(2)/60; %h
 reqWeight = requirements(3);
 
-%---ENVELOPE
-[vol, envMass, airshipRad, CD] = envelope(l, FR);
+% file
+battCSV = 'batteryData.csv';
+propCSV = 'propellerMotorData.csv';
+battData = csvread(battCSV, 1, 1);
+propData = csvread(propCSV, 1, 1);
 
-%---THRUSTER
-inputs = [reqSpeed reqTime reqWeight];
-dragValues = [CD rhoA vol*0.0283168466];
+battMasses = sort(unique(battData(:, 2)), 1);
+[uniqueVolts, ~, count] = unique(battData(:, 5));
+battMassVolts = zeros(max(count), 2);
+battVolts = [battData(:, 2) battData(:, 5)];
+for i = 1:max(count)
+    massVolts = battVolts(battVolts(:, 2) == uniqueVolts(i), :);
+    battMassVolts(i, :) = min(massVolts);
+end
+motMasses = sort(unique(propData(:, 9) + propData(:, 12)), 1);
+motPowers = sort(unique(propData(:, 5)), 1);
+massLimitBatt = 0;
+massLimitMot = 0;
+powerLimitMot = 0;
 
-% pick battery, motor, and propeller
-[thrusterMass, battMass, FTmax, propRadius, time, speed] = batMotProp(inputs, dragValues);
+while 1;
+    %---ENVELOPE
+    [vol, envMass, airshipRad, CD] = envelope(l, FR);
+    
+    %---THRUSTER
+    dragValues = [CD rhoA vol];
 
-% optimize the shaft
-[thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
-thrustForceLoc = [ 0 thrusterDist+0.04572+airshipRad 0 ]; % relate to thrusters
+    %propeller (reqSpeed, dragValues, maxAmps, maxMass)
+    [propChoice, motChoice, motBadness] = propeller(reqSpeed, dragValues, massLimitMot, powerLimitMot);
+    %battery(reqTime, minAmps, minVolts, maxMass)
+    [battChoice, battBadness] = battery(reqTime, motChoice(5)/motChoice(4), motChoice(4), massLimitBatt);
 
-% get the total weight of one thruster assy relative to thrusters
-thrusterWeight = thrusterAssy(thrusterWeight, battMass, airshipRad);
+    % returns useful data and writes to files
+    [thrusterMass, battMass, FTmax, propRadius, time, speed] = battMotPropData(propChoice, motChoice, battChoice, dragValues);
 
-%---ARM
-[thrusterWeight, thrusterMass] = arm(FTmax, thrustForceLoc, thrusterWeight, airshipRad, carbon);
-connector(FTmax, thrusterWeight, airshipRad, aluminum6061);
+    % optimize the shaft
+    [thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
+    thrustForceLoc = [ 0 thrusterDist+0.04572+airshipRad 0 ]; % relate to thrusters
 
-%---MASS
-[totalMass, fixedMass, gondolaMass] = airshipMass(thrusterMass, envMass, airshipRad);
-mass = vol*rhoA - totalMass;
+    % get the total weight of one thruster assy relative to thrusters
+    thrusterWeight = thrusterAssy(thrusterWeight, battMass, airshipRad);
 
-%---GONDOLA
-gondolaAnalysis(FTmax/totalMass, 0 ,0.2); %TEMPORARY!#@$**&@#&
+    %---ARM
+    [thrusterWeight, thrusterMass] = arm(FTmax, thrustForceLoc, thrusterWeight, airshipRad, carbon);
+    connector(FTmax, thrusterWeight, airshipRad, aluminum6061);
 
+    %---MASS
+    [totalMass, fixedMass, gondolaMass] = airshipMass(thrusterMass, envMass, airshipRad);
+    carryingMass = vol*rhoA - totalMass;
+    weightBadness = (reqWeight - carryingMass*1000)/reqWeight;
+    if weightBadness < 0
+        weightBadness = 0;
+    end
+    
+    %---GONDOLA
+    gondolaAnalysis(FTmax/totalMass, 0, 0.2); %TEMPORARY!#@$**&@#&
+    
+    %---OPTIMIZING
+    switch scenario
+        %WEIGHT
+        case 1
+            if weightBadness == 0
+				break
+            else
+                indexBatt = find(battMasses == battChoice(2));
+                indexMot = find(motMasses == (motChoice(9) + motChoice(12)));
+                if motBadness > battBadness
+                    if indexBatt ~= 1
+                        massLimitBatt = battMasses(indexBatt-1);
+                    else
+                        if indexMot ~= 1
+                            massLimitMot = motMasses(indexMot-1);
+                        else
+                            disp('~~~~~BAD')
+                            break
+                        end
+                    end
+                else
+                    if indexMot ~= 1
+                        massLimitMot = motMasses(indexMot-1);
+                    else
+                        if indexBatt ~= 1
+                            massLimitBatt = battMasses(indexBatt-1);
+                        else
+                            disp('~~~~~BAD')
+                            break
+                        end
+                    end
+                end
+            end
+        
+        %SPEED
+        case 2
+            if carryingMass < 0.2
+                indexBatt = find(battMasses == battChoice(2));
+                if indexBatt ~= 1
+                    massLimitBatt = battMasses(indexBatt-1);
+                    possibleBatt = battMassVolts;
+                    voltsCondition = battMassVolts(:, 2) < motChoice(4);
+                    possibleBatt(voltsCondition, :) = [];
+                    if massLimitBatt <= min(possibleBatt(:, 1))
+                        disp('~~~~~BAD: Couldn''t get a small enough battery to get caryring to 200g')
+                        break
+                    end
+                else
+                    disp('~~~~~BAD: Couldn''get a small enough battery to get caryring to 200g')
+                    break
+                end
+            else
+                if weightBadness <= battBadness
+                    break
+                else
+                    indexBatt = find(battMasses == battChoice(2));
+                    if indexBatt ~= 1
+                        massLimitBatt = battMasses(indexBatt-1);
+                    else
+                        disp('~~~~~BAD')
+                        break
+                    end
+                end
+            end
+            
+        %TIME     
+        case 3
+            if battBadness <= 0
+                break
+            else
+                indexPower = find(motPowers == motChoice(5));
+                if indexPower ~= 1
+                    powerLimitMot = motPowers(indexPower-1);
+                else
+                    disp('~~~~~BAD')
+                    break
+                end
+            end
+    end
+end
+disp('~~~SOLVED')
 %---LOG
-finalLog(speed, time, mass)
+finalLog(speed, time, carryingMass)
 end

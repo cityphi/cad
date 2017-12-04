@@ -1,4 +1,4 @@
-function [propChoice, motChoice, badness] = propeller (reqSpeed, dragValues, maxAmps, maxMass)
+function [propChoice, motChoice, badness] = propeller (reqSpeed, dragValues, maxMass)
 
 % file names
 propCSV = 'propellerMotorData.csv';
@@ -10,12 +10,6 @@ propData = csvread(propCSV, 1, 1);
 if maxMass
 	massCondition = propData(:, 9) + propData(:, 12) > maxMass;
 	propData(massCondition, :) = [];
-end
-
-% remove 
-if maxAmps
-	ampsCondition = propData(:, 5)./propData(:, 4) > maxAmps;
-	propData(ampsCondition, :) = [];
 end
 
 % check if there was no data that could match those inputs

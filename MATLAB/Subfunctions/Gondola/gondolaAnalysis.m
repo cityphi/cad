@@ -72,6 +72,8 @@ steel = [8000 420*10^6 250*10^6 320*10^6 200*10^9 0];
 
 worstCaseAcceleration = 0;
 i = 0;
+tcheck = 0;
+
 while worstCaseAcceleration >= 0;
     Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
     Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
@@ -79,6 +81,10 @@ while worstCaseAcceleration >= 0;
     worstCaseAcceleration = gondolaForces(gondSpecs, -pi/2, 0, 0, aThrust, -Tw, Fnfric, 0,0);
     if worstCaseAcceleration >= 0;
         i=i+1;
+    end
+    if i > length(motorTorques)
+        tchech = 1;
+        break;
     end
     Tw = motorTorques(i);
 end
@@ -270,7 +276,10 @@ elseif maxBrakeForce < reqActuatorForce
     fprintf(fid, ['Consider choosing linear actuator with force greater than ', num2str(reqActuatorForce) 'N\r\n']);
 end
 if nMotorShaft < 3
-    fprintf(fid, ['Gondola motor shaft has safety factor of', num2str(nMotorShaft) 'consider a larger shaft\r\n'])
+    fprintf(fid, ['Gondola motor shaft has safety factor of', num2str(nMotorShaft) 'consider a larger shaft\r\n']);
+end 
+if tcheck == 1
+    fprintf(fid, 'WARNING MOTOR TORQUE NOT SUFFICIENT');
 end 
 
 fclose(fid);

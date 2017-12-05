@@ -105,8 +105,6 @@ if(isempty(handles))
 else
     %Get the design parameters from the interface
     
-    set(handles.generate, 'String', 'Running...');
-    
     set(handles.logTxt,'String','');
     
     reqTime = get(handles.sliderReqTime, 'Value');
@@ -142,13 +140,22 @@ else
     set(handles.logTxt,'String',S); %write the string into the textbox
     set(handles.logPath,'String',[path '/' logFile]); %show the path of the log file 
     
-    set(handles.generate, 'String', 'Generate');
-    
     switch warning
-        case 3
-            msgbox('Could not meet the minimun carrying capacity of 200g. Try reducing the required speed to get a motor with running at a lower voltage. Increasing the size of the blimp will also help this.', 'Parameter not Achieved!', 'warn');
+        case 1
+            msgbox(['No battery or mtotor combination could achieve the' ...
+                'desired weight. Try reducing the desired weight or'...
+                'increasing the volume of ariship.'], 'Parameter not Achieved!', 'warn');
+        case 2
+            msgbox(['Could not meet the minimun carrying capacity of 200g.'...
+                'Try reducing the required speed or increasing the size of the blimp.'],...
+                'Parameter not Achieved!', 'warn');
+        case 4
+            msgbox(['Could not acheive the flight time. Need to add a '...
+                'larger battery or a smaller motor to the data files.'],...
+                'Parameter not Achieved!', 'warn');
         case 10
-            msgbox('Carrying capacity is negative, increase the volume of the envelope', 'Negative Carrying Capacity', 'error');
+            msgbox(['Carrying capacity is negative, increase the volume'...
+                'of the envelope'], 'Negative Carrying Capacity', 'error');
     end
 end
             
@@ -181,7 +188,8 @@ if isnan(L) || isnan(FR) || isnan(D)
     elseif ~isnan(FR) && ~isnan(D)
         set(handles.editLength, 'String', num2str(FR*D))
     else
-        msgbox('Enter atleast two of Length, Diameter, or Fineness Ratio.','Missing Inputs','error');
+        msgbox(['Enter atleast two of Length, Diameter, or Fineness Ratio.'],....
+            'Missing Inputs','error');
         kill = 1;
         return
     end
@@ -201,7 +209,8 @@ a = fzero(@(a) length(a) - L, 0);
 backRadius = (rf - a*sin(alpha))*1000;
     
 if backRadius < 50
-    msgbox('Invalid Dimensions. The dimenions cause the cone at the back of the airship to intersect itself.','Cannot generate!','error');
+    msgbox(['Invalid Dimensions. The dimenions cause the cone at the back of'...
+        'the airship to intersect itself.'],'Cannot generate!','error');
     kill = 1;
     return;
 
@@ -214,13 +223,16 @@ end
 set(handles.textSectionLength, 'String', ['Section Length: ' num2str(a) 'm'])
 if a > convlength(60, 'in', 'm')
     set(handles.textWarning, 'Visible', 'on');
-    set(handles.textWarningString, 'String', 'Section length larger then specified max of 90" (1524mm). Might result in strange results.');
+    set(handles.textWarningString, 'String', ['Section length larger then '...
+        'specified max of 90" (1524mm). Might result in strange results.']);
 elseif a < 1.092
     set(handles.textWarning, 'Visible', 'on');
-    set(handles.textWarningString, 'String', 'Section length too small and will result in build error. Analysis can still be done.');
+    set(handles.textWarningString, 'String', ['Section length too small and '...
+        'will result in build error. Analysis may still be able to be done.']);
 elseif FR > 3.5 || FR < 2.8
     set(handles.textWarning, 'Visible', 'on');
-    set(handles.textWarningString, 'String', 'Not recommened to have a FR outside of range (3-4)');
+    set(handles.textWarningString, 'String', ['Not recommened to have a'...
+        'FR outside of range (2.8-3.5)']);
 end
 
 function Wrong_File()

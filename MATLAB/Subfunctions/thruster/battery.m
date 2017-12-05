@@ -5,6 +5,9 @@ battCSV = 'batteryData.csv';
 battData = csvread(battCSV, 1, 1);
 battData(:, ~any(battData, 1)) = [];
 
+% command window
+needNewLine = 0;
+
 %--DATA LOADING
 % AMPS
 % remove batteries which can't output enough amps
@@ -43,22 +46,26 @@ while 1
 	% check if a battery met the specification
     if ~isempty(possibleBatt)
 	    break
-    end
-    if possibleTime == reqTime;
-        possibleTime = 0.1/60;
-        if possibleTime <= 0
-            possibleTime = 0.1/60;
-        end
-        fprintf(['Reduced life to: ' num2str(possibleTime*60)]);
     else
-        possibleTime = possibleTime - 2/60;
-        if possibleTime <= 0
-            possibleTime = 0.1/60;
+        needNewLine = 1;
+        if possibleTime == reqTime;
+            possibleTime = possibleTime - 2/60;
+            if possibleTime <= 0
+                possibleTime = 0.1/60;
+            end
+            fprintf(['Reduced life to: ' num2str(possibleTime*60)]);
+        else
+            possibleTime = possibleTime - 2/60;
+            if possibleTime <= 0
+                possibleTime = 0.1/60;
+            end
+            fprintf([' -- ' num2str(possibleTime*60)]);
         end
-        fprintf([' -- ' num2str(possibleTime*60)]);
     end
 end
-fprintf('\n');
+if needNewLine
+    fprintf('\n');
+end
 
 %--OUTPUT
 % sort and return the best battery and the badness

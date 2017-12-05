@@ -13,6 +13,8 @@ reqSpeed = requirements(1); %m/s
 reqTime = requirements(2)/60; %h
 reqWeight = requirements(3);
 
+fprintf('\n\n~~~STARTING~~~\n');
+
 % file
 battCSV = 'batteryData.csv';
 propCSV = 'propellerMotorData.csv';
@@ -74,6 +76,9 @@ while 1;
     end
     if carryingMass < 0
     	carryingMassGondola = 0;
+        
+    elseif carryingMass > 0.5;
+        carryingMassGondola = 0.5;
     else
         carryingMassGondola = carryingMass;
     end
@@ -97,9 +102,7 @@ while 1;
                         if indexMot ~= 1
                             massLimitMot = motMasses(indexMot-1);
                         else
-                            fprintf('~~WARNING: Criteria NOT met\n');
-                            fprintf('No battery or mtotor combination could achieve the desired weight.\n');
-                            fpritnf('Try reducing the desired weight or increasing the volume of ariship.\n');
+                            warningMessage = 1;
                             break
                         end
                     end
@@ -110,9 +113,7 @@ while 1;
                         if indexBatt ~= 1
                             massLimitBatt = battMasses(indexBatt-1);
                         else
-                            fprintf('~~WARNING: Criteria NOT met\n');
-                            fprintf('No battery or mtotor combination could achieve the desired weight.\n');
-                            fprintf('Try reducing the desired weight or increasing the volume of ariship.\n');
+                            warningMessage = 1;
                             break
                         end
                     end
@@ -134,13 +135,11 @@ while 1;
                     voltsCondition = battMassVolts(:, 2) < motChoice(4);
                     possibleBatt(voltsCondition, :) = [];
                     if massLimitBatt <= min(possibleBatt(:, 1))
-                        warningMessage = 3;
+                        warningMessage = 2;
                         break
                     end
                 else
-                    fprintf('~~WARNING: Criteria NOT met\n');
-                    fprintf('Could not meet the minimun carrying capacity of 200g.\n');
-                    fprintf('Try increasing the size of the blimp or changing the required speed.\n');
+                    warningMessage = 2;
                     break
                 end
             else
@@ -151,7 +150,6 @@ while 1;
                     if indexBatt ~= 1
                         massLimitBatt = battMasses(indexBatt-1);
                     else
-                        fprintf('~~WARNING: Criteria NOT met\n');
                         break
                     end
                 end
@@ -166,7 +164,7 @@ while 1;
                 if indexPower ~= 1
                     powerLimitMot = motPowers(indexPower-1);
                 else
-                    disp('~~~~~BAD')
+                    warningMessage = 4;
                     break
                 end
             end

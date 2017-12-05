@@ -66,6 +66,7 @@ defaultSpeed  = 8;
 defaultWeight = 200;
 defaultTime   = 30;
 defaultLength = 3.5;
+defaultFR = 3;
 
 % set sliders
 set(handles.sliderReqTime,'Value',defaultTime);
@@ -77,8 +78,14 @@ set(handles.textTimeValue,'String',num2str(defaultTime));
 set(handles.textWeightValue,'String',num2str(defaultWeight));
 set(handles.textSpeedValue,'String',num2str(defaultSpeed));
 
-% set length
+% set envelope values
 set(handles.editLength, 'String', num2str(defaultLength));
+set(handles.editFinenessRatio, 'String', num2str(defaultFR));
+
+% set warning to be hideen
+set(handles.textWarning, 'Visible', 'off');
+set(handles.textWarningString, 'String', '');
+
 
 %Set the window title with the group identification:
 set(handles.figure1,'Name','Group RE3 // CADCAM 2017');
@@ -98,6 +105,8 @@ else
     
     addpath(genpath(pwd));
     
+    set(handles.logTxt,'String','');
+    
     reqTime = get(handles.sliderReqTime, 'Value');
     reqWeight = get(handles.sliderReqWeight, 'Value');
     reqSpeed = get(handles.sliderReqSpeed, 'Value');
@@ -109,19 +118,6 @@ else
     
     airshipLength = str2double(get(handles.editLength, 'String'));
     finessRatio = str2double(get(handles.editFinenessRatio,'String'));
-    
-    % check that the blimp geometry is sovleable.
-    rf = airshipLength/finessRatio/2;
-    alpha = 10*pi()/180;
-    L = @(a) rf - (-(rf - a*sin(alpha))^2/(sin(alpha)^2 - 1))^(1/2) ...
-        *(sin(alpha) - 1) + a*(cos(alpha) + 1); % used matlab to simplify
-    a = fzero(@(a) L(a) - airshipLength, 0);
-    backRadius = (rf - a*sin(alpha))*1000;
-    
-    if isnan(airshipLength) || (airshipLength <=0) || (backRadius < 50)
-        msgbox('Shaft length and/or Fineness results in an invalid value.','Cannot generate!','error');
-        return;
-    end
     
     scenario = get(handles.buttonWeight, 'Value') + get(handles.buttonSpeed, 'Value')*2 + get(handles.buttonTime, 'Value')*3;
     
@@ -153,10 +149,18 @@ function kill = calculate_Callback(hObject, eventdata, handles)
 % kill       value to pass back to generate if there are issues
 
 kill = 0;
+set(handles.textWarning, 'Visible', 'off');
+set(handles.textWarningString, 'String', '');
 
 L = str2double(get(handles.editLength, 'String'));
 FR = str2double(get(handles.editFinenessRatio,'String'));
 D = str2double(get(handles.editDiameter, 'String'));
+
+if L < 0 || FR < 0 || D < 0
+    msgbox('Negative value in envelope dimensions','Cannot generate!','error');
+    kill = 1;
+    return
+end
 
 if isnan(L) || isnan(FR) || isnan(D)
     if ~isnan(L) && ~isnan(FR)
@@ -183,14 +187,25 @@ alpha = 10*pi()/180;
 length = @(a) rf - (-(rf - a*sin(alpha))^2/(sin(alpha)^2 - 1))^(1/2) ...
     *(sin(alpha) - 1) + a*(cos(alpha) + 1); % used matlab to simplify
 a = fzero(@(a) length(a) - L, 0);
+backRadius = (rf - a*sin(alpha))*1000;
+    
+if (backRadius < 50)
+    msgbox('Invalid Dimensions. The dimenions cause the cone at the back of the airship to intersect itself.','Cannot generate!','error');
+    kill = 1;
+    return;
+end
+
 
 set(handles.textSectionLength, 'String', ['Section Length: ' num2str(a) 'm'])
 if a > convlength(60, 'in', 'm')
-    msgbox('Section length greater than specified maximum of 60" (1524mm). Can still generate, but may have some issues or incorrect values','Envelope Dimensions out of Range','warn');
-elseif a < 1.093
-    msgbox('Section length too small. SolidWorks will have a build error. Analysis may still work depending on the values.','Section Length too Small','error');
-elseif FR > 4 || FR < 3.4
-    msgbox('Fineness Ratio outside of range (3.4 - 4). Drag data is not specified outside this range and there may be issues with volume', 'Fineness Ratio out of range', 'warn');
+    set(handles.textWarning, 'Visible', 'on');
+    set(handles.textWarningString, 'String', 'Section length larger then specified max of 90" (1524mm). Might result in strange results.');
+elseif a < 1.092
+    set(handles.textWarning, 'Visible', 'on');
+    set(handles.textWarningString, 'String', 'Section length too small and will result in build error. Analysis can still be done.');
+elseif FR > 3.5 || FR < 2.8
+    set(handles.textWarning, 'Visible', 'on');
+    set(handles.textWarningString, 'String', 'Not recommened to have a FR outside of range (3-4)');
 end
 
 function Wrong_File()

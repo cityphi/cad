@@ -10,7 +10,7 @@ function [weight, thrusterDist] = thrusterShaft(thrust, thrustMass, ...
 %   M [ density Sut Suc Sy E brittle ] - information of the material
 
 % hard-coded values
-safetyFactor = 5;
+safetyFactor = 3;
 aPitch = 90;
 a = aPitch*pi()/180; % easier to read deg
 bore = 0.0038; % radius needed for screw needed for the screw

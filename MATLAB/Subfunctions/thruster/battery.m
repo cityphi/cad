@@ -3,7 +3,7 @@ function [battChoice, badness] = battery( reqTime, minAmps, minVolts, maxMass )
 % file
 battCSV = 'batteryData.csv';
 battData = csvread(battCSV, 1, 1);
-battData(:, ~any(battData, 2)) = [];
+battData(:, ~any(battData, 1)) = [];
 
 %--DATA LOADING
 % AMPS

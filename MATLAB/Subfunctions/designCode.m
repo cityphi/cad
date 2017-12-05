@@ -1,4 +1,4 @@
-function designCode( requirements, scenario, l, FR )
+function designCode( requirements, scenario, l, FR, scenarioGondola, handles )
 %DESIGNCODE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -19,6 +19,7 @@ propCSV = 'propellerMotorData.csv';
 battData = csvread(battCSV, 1, 1);
 propData = csvread(propCSV, 1, 1);
 
+% optimization
 battMasses = sort(unique(battData(:, 2)), 1);
 [uniqueVolts, ~, count] = unique(battData(:, 5));
 battMassVolts = zeros(max(count), 2);
@@ -35,7 +36,7 @@ powerLimitMot = 0;
 
 while 1;
     %---ENVELOPE
-    [vol, envMass, airshipRad, CD] = envelope(l, FR);
+    [vol, envMass, airshipRad, CD, CV] = envelope(l, FR);
     
     %---THRUSTER
     dragValues = [CD rhoA vol];
@@ -68,7 +69,7 @@ while 1;
     end
     
     %---GONDOLA
-    gondolaAnalysis(FTmax/totalMass, 0, 0.2); %TEMPORARY!#@$**&@#&
+    gondolaAnalysis(FTmax/totalMass, scenarioGondola, carryingMass);
     
     %---OPTIMIZING
     switch scenario
@@ -151,6 +152,24 @@ while 1;
     end
 end
 disp('~~~SOLVED')
+%---PLOTS
+axes(handles.axes1);
+D = convlength(propChoice(1), 'in', 'm');
+P = convlength(propChoice(2), 'in', 'm');
+n = motChoice(6)/60;
+Vp = 0:0.1:round(speed+3);
+Tp = 0.20477*(pi*D^2)/4*(D/P)^1.5*((P * n)^2 - Vp*P * n)*2;
+dragp = 2.420294 * CD * rhoA * vol^(2/3) * Vp.^1.86;
+plot(Vp, Tp, Vp, dragp);
+title('Drag and Thrust with changing velocity')
+xlabel('Velocity of airship (m/2)');
+ylabel('Force (N)');
+legend('Thrust','Drag')
+
+axes(handles.axes2);
+gondolaMass(1) = gondolaMass(1) + carryingMass;
+pitches = pitchPlot(fixedMass, gondolaMass, CV, airshipRad);
+
 %---LOG
-finalLog(speed, time, carryingMass)
+finalLog(speed, time, carryingMass, pitches)
 end

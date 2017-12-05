@@ -10,8 +10,8 @@ function [weight, thrusterDist] = thrusterShaft(thrust, thrustMass, ...
 %   M [ density Sut Suc Sy E brittle ] - information of the material
 
 % hard-coded values
-safetyFactor = 5;
-aPitch = 0;
+safetyFactor = 3;
+aPitch = 90;
 a = aPitch*pi()/180; % easier to read deg
 bore = 0.0038; % radius needed for screw needed for the screw
 bearingOffset = 0.01532; % distance from end of shaft to bearing
@@ -57,8 +57,7 @@ weights(end+1, :) = [0 0 (shaftEnd - bearingOffset)/2 0];
 
 % build the forces array
 forces = zeros(2, 9);
-forces(1, :) = [0 thrusterDist-bearingOffset 0 thrust*sin(a) ...
-    -thrust*cos(a) 0 0 0 0 ];
+forces(1, :) = [0 thrusterDist-bearingOffset 0 thrust 0 0 0 0 0 ];
 
 for i = 1:size(thread, 1)
     % values for dimensions
@@ -113,14 +112,14 @@ bore  = dimensions(1); % size needed for the screw
 minor = dimensions(2); % bottom of thread
 
 % split the forces array for use in equations
-Mx  = forces(7);
+Mz  = forces(9);
 
 % moment of inertia of a hollow circle
 Ix = pi/4 * (minor^4 - bore^4);
 
 % assume that max occurs on top surface
 Sx  = 0;
-Sy  = Mx * minor/Ix; % bending of the shaft
+Sy  = Mz * minor/Ix; % bending of the shaft
 Sz  = 0;
 txy = 0;
 txz = 0;
@@ -209,6 +208,4 @@ fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
 fclose(fid);
 cd ..
 cd(MATLABFolder)
-
-disp('Thruster Shaft Parameterized in Solidworks');
 end

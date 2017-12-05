@@ -136,7 +136,7 @@ Ncompressive = 0;
 while Ncompressive < 3
     Ncompressive = nylon12(3)/ (Fbolt/(pi*(0.5*(Dwashero-Dwasheri))^2));
     if Ncompressive < 3
-        Dwashero = Dwashero + 0.001;
+        Dwashero = Dwashero + 0.0005;
     end
 end 
 
@@ -268,6 +268,8 @@ fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\r\n' ]);
 fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\r\n']);
 fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\r\n']);
 fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) '\r\n']);
+fprintf(fid, ['The required spring torque of the torsion spring is :'...
+    , num2str(Tspring) '[Nm] \r\n']);
 if reqActuatorForce <= maxBrakeForce 
     fprintf(fid, 'Adequate linear actuator force.\r\n');
 else
@@ -283,12 +285,12 @@ cd(MATLABFolder);
 cd(swEqnFolder)
 fid = fopen('3001-GONDOLA1-EQUATIONS.txt', 'w+t');
 fprintf(fid, ['"BArmDia"= ',num2str(bearingArmDiameter) '[mm]''Bearing arm diameter\n']);
-fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]\n''depth of the bearing snap fit cut']);
-fprintf(fid, ['"cutangle"= ',num2str(snapAngle) '[mm]\n''cut angle of the snapfit']);
+fprintf(fid, ['"bearingcutdepth"= ',num2str(Lsnap) '[mm]''depth of the bearing snap fit cut\n']);
+fprintf(fid, ['"cutangle"= ',num2str(snapAngle) '[mm]''cut angle of the snapfit\n']);
 fclose(fid);
 
 fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
-fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]\n''The outside diameter of the washer']);
+fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]''The outside diameter of the washer\n']);
 fclose(fid);
 cd('../../MATLAB');
 

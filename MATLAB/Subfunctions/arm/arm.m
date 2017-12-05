@@ -131,9 +131,7 @@ h   = dimensions(2);
 k   = dimensions(3);
 
 % split the forces array for use in equations
-Fx  = forces(4);
 Fy  = forces(5);
-Fz  = forces(6);
 Mx  = forces(7);
 My  = forces(8);
 Mz  = forces(9);

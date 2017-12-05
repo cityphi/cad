@@ -50,7 +50,7 @@ while 1;
     [thrusterMass, battMass, FTmax, propRadius, time, speed] = battMotPropData(propChoice, motChoice, battChoice, dragValues);
 
     % optimize the shaft
-    [thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, nylon6);
+    [thrusterWeight, thrusterDist] = thrusterShaft(FTmax, thrusterMass, propRadius, aluminum6061);
     thrustForceLoc = [ 0 thrusterDist+0.04572+airshipRad 0 ]; % relate to thrusters
 
     % get the total weight of one thruster assy relative to thrusters
@@ -159,11 +159,15 @@ axes(handles.axes1);
 D = convlength(propChoice(1), 'in', 'm');
 P = convlength(propChoice(2), 'in', 'm');
 n = motChoice(6)/60;
-Vp = 0:0.1:20;
+Vp = 0:0.1:round(reqSpeed+3);
 Tp = 0.20477*(pi*D^2)/4*(D/P)^1.5*((P * n)^2 - Vp*P * n)*2;
 dragp = 2.420294 * CD * rhoA * vol^(2/3) * Vp.^1.86;
 plot(Vp, Tp, Vp, dragp);
+title('Drag and Thrust with changing velocity')
+xlabel('Velocity of airship (m/2)');
+ylabel('Force (N)');
 
 axes(handles.axes2);
+gondolaMass(1) = gondolaMass(1) + carryingMass;
 pitchPlot(fixedMass, gondolaMass, CV, airshipRad)
 end

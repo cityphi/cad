@@ -51,9 +51,10 @@ CD = 0.00092642*FR^2 - 0.010134*FR + 0.040569;
 
 volume = sum(vol);
 mass = centreMass(mass);
-CV = mass(2);
+
 % relat the CM to the thrusters
 mass(2) = mass(2) + 1 - a/2;
+CV = mass(2);
 radius = rf;
 
 %--LOG

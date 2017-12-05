@@ -17,7 +17,7 @@ for i = 1:(points+1);
     gondolaMass(2:4) = gondola(loc, keelDist, radius, CV, gondolaReference, airshipRad);
     CG = centreMass([fixedMass; gondolaMass]);
 
-    pitch = atan(CG(1)/CG(2)) * 180/pi; % Use CV and CG to get pitch
+    pitch = atan(CG(2)/CG(4)) * 180/pi; % Use CV and CG to get pitch
 
     % Fix for if angle greater than -90
     if i > 1
@@ -32,6 +32,9 @@ end
 
 % Information to output
 scatter(data(:,1), data(:,2), 'h');
+title('Pitch angle relative to the gondola')
+xlabel('Distance along the Keel (m)');
+ylabel('Pitch angle (deg)');
 end
 
 function pos = gondola(loc, keelDist, radius, CV, gondolaReference, airshipRad)
@@ -40,12 +43,12 @@ function pos = gondola(loc, keelDist, radius, CV, gondolaReference, airshipRad)
 % flat section of the keel
 if loc <= 2
     x = loc - 1;
-    z = -(radius+keelDist);
+    z = -(airshipRad+keelDist);
 
 % curved section of the keel
 elseif loc > 2
     x = 1 + radius*sin((loc-2)/radius);
-    z = -(radius*cos((loc-2)/radius) + keelDist);
+    z = -(radius*cos((loc-2)/radius) + keelDist) + radius - airshipRad;
     
 % incase of weird scenario
 else
@@ -54,6 +57,6 @@ end
 
 x = x - CV + gondolaReference(1);
 y = gondolaReference(2);
-z = z + gondolaReference(3) - airshipRad + radius;
+z = z + gondolaReference(3);
 pos = [x, y, z];
 end

@@ -102,10 +102,6 @@ shaftTensor(1,3) = (-2*Tw)/(pi*rMs^3);
 shaftTensor(3,1) = shaftTensor(1,3);
 nMotorShaft = cauchy(shaftTensor,steel);
 
-if nMotorShaft < 3
-    disp('we goin need a beefier motor shaft');
-end 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calculating screw forces and compressive safety factor for screw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -279,6 +275,9 @@ elseif maxBrakeForce < reqActuatorForce
     fprintf(fid, 'Linear actuator force may not be sufficient\r\n');
     fprintf(fid, ['Consider choosing linear actuator with force greater than ', num2str(reqActuatorForce) 'N\r\n']);
 end
+if nMotorShaft < 3
+    fprintf(fid, ['Gondola motor shaft has safety factor of', num2str(nMotorShaft) 'consider a larger shaft\r\n'])
+end 
 
 fclose(fid);
 cd(MATLABFolder);

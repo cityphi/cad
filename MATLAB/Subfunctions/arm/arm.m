@@ -15,7 +15,7 @@ safetyFactor = 5; % hard coded value for the safety factor
 thrustForce = [thrustForceLoc FT 0 0 0 0 0 ];
 
 % find the pitch to do analysis of the arm
-aPitch = 0; %armWorstCase(thrustForce, weight, material);
+aPitch = 90;
 
 % dimensions of the arm [ri thickness width]
 dimensions = [ airshipRad 0.001 0.03 ];
@@ -31,7 +31,7 @@ while loop && iterations < maxIterations
     
     % analysis of the arm
     weight(end, :) = armWeight(dimensions, material(1));
-    [~, halfReactions] = armForces(weight, thrustForce, aPitch);
+    [~, halfReactions] = armForces(weight, thrustForce, aPitch, airshipRad);
     stressTensor = armTensor(halfReactions, dimensions);
     n = cauchy(stressTensor, material);
     
@@ -43,7 +43,7 @@ while loop && iterations < maxIterations
     end
 end
 %---LOG file
-armLog(round(weight(end, 1)*2000/9.81, 1), n)
+armLog(round(weight(end, 1)*2000/9.81, 1), n, dimensions(2))
 
 %---OUTPUT
 weight = centreMass(weight);
@@ -83,7 +83,7 @@ locZ = -locY;
 weight = [ mag, locX, locY, locZ ];
 end
 
-function [reactions, halfReactions] = armForces(weight, inForces, aPitch)
+function [reactions, halfReactions] = armForces(weight, inForces, aPitch, airshipRad)
 %ARMFORCES Reaction forces of the arm.
 %   [R, hR] = ARMFORCES(W, F, a) returns the total reactions and half 
 %   reactions at the connector. Half reactions is used to optimize
@@ -100,7 +100,7 @@ function [reactions, halfReactions] = armForces(weight, inForces, aPitch)
 a = aPitch*pi()/180;
 
 % reaction force location
-connectorReact = [ 0 0 -0.637 1 1 1 1 1 1 ];
+connectorReact = [ 0 0 -airshipRad 1 1 1 1 1 1 ];
 
 % build forces array for weight
 forces = centreMass(weight, a);
@@ -163,8 +163,8 @@ Sx  = 0;
 Sy  = Mx*z/(e*A*ri) + Mz*x/Iz + Fy/A; % two plane stress
 Sz  = 0;
 txy = 0;
-txz = 0; 
-tyz = My/(b*c^2)*(3+1.8*c/b); % torsional sheer
+txz = My/(b*c^2)*(3+1.8*c/b);
+tyz = 0; % torsional sheer
 
 % cauchy stress tensor
 tensor = [ Sx  txy txz;
@@ -172,46 +172,7 @@ tensor = [ Sx  txy txz;
            txz tyz Sz ];
 end
 
-function [ worstCase ] = armWorstCase( inForces, weights, material )
-%ARMWORSTCASE Evaluates the worst pitch angle for the arm.
-%   a = armWorstCase(F, W, M) returns the worst angle for the stress in the
-%   arm. This is run before doing the optimization so optimization is done
-%   for only one location.
-%   
-%   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - thrust force
-%   W [ weight locX locY locZ ] - weight of components held by the arm
-%   M [ density Sut Suc E brittle ] - information of the material
-
-% dimensions of the arm [ri thickness width]
-h = 0.005;
-k = 0.01;
-dimensions = [ 0.637 h k ];
-
-% add the weight of the arm based on dimensions
-weights(end+1, :) = armWeight(dimensions, material(1));
-
-% iterations to find the lowest safety factor
-minAngle = -60;
-maxAngle = 90;
-data = zeros(maxAngle-minAngle, 2);
-i = 1;
-
-for aPitch = minAngle:1:maxAngle
-    % find the safety factor at current conditions
-    [~, halfReactions] = armForces(weights, inForces, aPitch);
-    stressTensor = armTensor(halfReactions, dimensions);
-    n = cauchy(stressTensor, material);
-
-    % store data
-    data(i, :) = [aPitch n];
-    i = i + 1;
-end
-% find and return the worst case pitch
-[~, ind] = min(data(:, 2));
-worstCase = data(ind, 1:end-1);
-end
-
-function armLog(mass, n)
+function armLog(mass, n, thickness)
 %THRUSTERASSYLOG Outputs useful data to the log file
 %   THRUSTERASSYLOG(mass) returns nothing
 
@@ -225,6 +186,7 @@ fid = fopen(logFile, 'a+');
 fprintf(fid, '\r\n***Thruster Arms***\r\n');
 fprintf(fid, ['Total Mass:    ' num2str(mass) ' g\r\n']);
 fprintf(fid, ['Safety Factor: ' num2str(n) '\r\n']);
+fprintf(fid, ['Thickness:     ' num2str(thickness) 'mm\r\n']);
 fclose(fid);
 cd(MATLABFolder)
 end
@@ -254,6 +216,4 @@ fprintf(fid, ['"h"= ' num2str(thickness*1000) 'mm\n']);
 fclose(fid);
 cd ..
 cd(MATLABFolder)
-
-disp('Arm Parameterized in Solidworks');
 end

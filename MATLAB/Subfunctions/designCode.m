@@ -1,4 +1,4 @@
-function designCode( requirements, scenario, l, FR )
+function warningMessage = designCode( requirements, scenario, l, FR, handles )
 %DESIGNCODE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -13,29 +13,37 @@ reqSpeed = requirements(1); %m/s
 reqTime = requirements(2)/60; %h
 reqWeight = requirements(3);
 
+fprintf('\n\n~~~STARTING~~~\n');
+
 % file
 battCSV = 'batteryData.csv';
 propCSV = 'propellerMotorData.csv';
 battData = csvread(battCSV, 1, 1);
 propData = csvread(propCSV, 1, 1);
 
+% optimization
 battMasses = sort(unique(battData(:, 2)), 1);
 [uniqueVolts, ~, count] = unique(battData(:, 5));
 battMassVolts = zeros(max(count), 2);
 battVolts = [battData(:, 2) battData(:, 5)];
+
 for i = 1:max(count)
     massVolts = battVolts(battVolts(:, 2) == uniqueVolts(i), :);
     battMassVolts(i, :) = min(massVolts);
 end
+
 motMasses = sort(unique(propData(:, 9) + propData(:, 12)), 1);
 motPowers = sort(unique(propData(:, 5)), 1);
 massLimitBatt = 0;
 massLimitMot = 0;
 powerLimitMot = 0;
 
+% warning message case
+warningMessage = 0;
+
 while 1;
     %---ENVELOPE
-    [vol, envMass, airshipRad, CD] = envelope(l, FR);
+    [vol, envMass, airshipRad, CD, CV] = envelope(l, FR);
     
     %---THRUSTER
     dragValues = [CD rhoA vol];
@@ -66,9 +74,17 @@ while 1;
     if weightBadness < 0
         weightBadness = 0;
     end
+    if carryingMass < 0
+    	carryingMassGondola = 0;
+        
+    elseif carryingMass > 0.5;
+        carryingMassGondola = 0.5;
+    else
+        carryingMassGondola = carryingMass;
+    end
     
     %---GONDOLA
-    gondolaAnalysis(FTmax/totalMass, 0, 0.2); %TEMPORARY!#@$**&@#&
+    gondolaAnalysis(FTmax/totalMass, carryingMassGondola);
     
     %---OPTIMIZING
     switch scenario
@@ -86,7 +102,7 @@ while 1;
                         if indexMot ~= 1
                             massLimitMot = motMasses(indexMot-1);
                         else
-                            disp('~~~~~BAD')
+                            warningMessage = 1;
                             break
                         end
                     end
@@ -97,7 +113,7 @@ while 1;
                         if indexBatt ~= 1
                             massLimitBatt = battMasses(indexBatt-1);
                         else
-                            disp('~~~~~BAD')
+                            warningMessage = 1;
                             break
                         end
                     end
@@ -106,19 +122,24 @@ while 1;
         
         %SPEED
         case 2
+        	% need atleast 200g of carrying capacity
             if carryingMass < 0.2
+            	% find the weight of the battery currently
                 indexBatt = find(battMasses == battChoice(2));
+
+                % only run if the battery is not already at the smallest size
                 if indexBatt ~= 1
-                    massLimitBatt = battMasses(indexBatt-1);
+                	% set the max mass for the battery choice
+                    massLimitBatt = battMasses(indexBatt - 1);
                     possibleBatt = battMassVolts;
                     voltsCondition = battMassVolts(:, 2) < motChoice(4);
                     possibleBatt(voltsCondition, :) = [];
                     if massLimitBatt <= min(possibleBatt(:, 1))
-                        disp('~~~~~BAD: Couldn''t get a small enough battery to get caryring to 200g')
+                        warningMessage = 2;
                         break
                     end
                 else
-                    disp('~~~~~BAD: Couldn''get a small enough battery to get caryring to 200g')
+                    warningMessage = 2;
                     break
                 end
             else
@@ -129,7 +150,6 @@ while 1;
                     if indexBatt ~= 1
                         massLimitBatt = battMasses(indexBatt-1);
                     else
-                        disp('~~~~~BAD')
                         break
                     end
                 end
@@ -144,13 +164,43 @@ while 1;
                 if indexPower ~= 1
                     powerLimitMot = motPowers(indexPower-1);
                 else
-                    disp('~~~~~BAD')
+                    warningMessage = 4;
                     break
                 end
             end
     end
 end
-disp('~~~SOLVED')
+if carryingMass < 0
+    warningMessage = 10;
+end
+
+%---PLOTS
+axes(handles.axes1);
+D = convlength(propChoice(1), 'in', 'm');
+P = convlength(propChoice(2), 'in', 'm');
+n = motChoice(6)/60;
+Vp = 0:0.1:round(speed+3);
+Tp = 0.20477*(pi*D^2)/4*(D/P)^1.5*((P * n)^2 - Vp*P * n)*2;
+dragp = 2.420294 * CD * rhoA * vol^(2/3) * Vp.^1.86;
+plot(Vp, Tp, Vp, dragp);
+title('Drag and Thrust with changing velocity')
+xlabel('Velocity of airship (m/2)');
+ylabel('Force (N)');
+legend('Thrust','Drag')
+
+axes(handles.axes2);
+gondolaMass(1) = gondolaMass(1) + carryingMassGondola;
+pitches = pitchPlot(fixedMass, gondolaMass, CV, airshipRad);
+
 %---LOG
-finalLog(speed, time, carryingMass)
+finalLog(speed, time, carryingMass, pitches)
+
+%---DISPLAY
+set(handles.textCarryMass, 'String', ['Carrying Mass: ' num2str(round(carryingMass*1000, 1)) 'g']);
+set(handles.textMaxSpeed, 'String', ['Max Speed: ' num2str(round(speed, 1)) 'm/s']);
+set(handles.textFlightTime, 'String', ['Flight Time: ' num2str(round(time, 1)) 'mins']);
+set(handles.textPitchUp, 'String', ['Max Pitch Up: ' num2str(round(pitches(2), 1)) '°']);
+set(handles.textPitchDown , 'String', ['Max Pitch Down: ' num2str(round(pitches(1), 1)) '°']);
+fprintf('\n~~Design code finished. Solidworks and Log files have been updated.\n');
+
 end

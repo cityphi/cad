@@ -230,6 +230,4 @@ fprintf(fid, ['"rblimp"= ' num2str(radius*1000) 'mm']);
 fclose(fid);
 cd ..
 cd(MATLABFolder)
-
-disp('Connector Parameterized in Solidworks');
 end

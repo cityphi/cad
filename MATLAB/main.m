@@ -22,7 +22,7 @@ function varargout = main(varargin)
 
 % Edit the above text to modify the response to help main
 
-% Last Modified by GUIDE v2.5 04-Dec-2017 17:16:29
+% Last Modified by GUIDE v2.5 04-Dec-2017 19:52:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,6 +55,8 @@ function main_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for main
 handles.output = hObject;
 
+addpath(genpath(pwd));
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -63,9 +65,10 @@ guidata(hObject, handles);
 %clc
 
 defaultSpeed  = 8;
-defaultWeight = 200;
+defaultWeight = 300;
 defaultTime   = 30;
 defaultLength = 3.5;
+defaultFR = 3;
 
 % set sliders
 set(handles.sliderReqTime,'Value',defaultTime);
@@ -77,8 +80,14 @@ set(handles.textTimeValue,'String',num2str(defaultTime));
 set(handles.textWeightValue,'String',num2str(defaultWeight));
 set(handles.textSpeedValue,'String',num2str(defaultSpeed));
 
-% set length
+% set envelope values
 set(handles.editLength, 'String', num2str(defaultLength));
+set(handles.editFinenessRatio, 'String', num2str(defaultFR));
+
+% set warning to be hideen
+set(handles.textWarning, 'Visible', 'off');
+set(handles.textWarningString, 'String', '');
+
 
 %Set the window title with the group identification:
 set(handles.figure1,'Name','Group RE3 // CADCAM 2017');
@@ -96,7 +105,7 @@ if(isempty(handles))
 else
     %Get the design parameters from the interface
     
-    addpath(genpath(pwd));
+    set(handles.logTxt,'String','');
     
     reqTime = get(handles.sliderReqTime, 'Value');
     reqWeight = get(handles.sliderReqWeight, 'Value');
@@ -110,28 +119,48 @@ else
     airshipLength = str2double(get(handles.editLength, 'String'));
     finessRatio = str2double(get(handles.editFinenessRatio,'String'));
     
-    % check that the blimp geometry is sovleable.
-    rf = airshipLength/finessRatio/2;
-    alpha = 10*pi()/180;
-    L = @(a) rf - (-(rf - a*sin(alpha))^2/(sin(alpha)^2 - 1))^(1/2) ...
-        *(sin(alpha) - 1) + a*(cos(alpha) + 1); % used matlab to simplify
-    a = fzero(@(a) L(a) - airshipLength, 0);
-    backRadius = (rf - a*sin(alpha))*1000;
-    
-    if isnan(airshipLength) || (airshipLength <=0) || (backRadius < 50)
-        msgbox('Shaft length and/or Fineness results in an invalid value.','Cannot generate!','error');
-        return;
-    end
-    
-    scenario = get(handles.buttonWeight, 'Value') + get(handles.buttonSpeed, 'Value')*2 + get(handles.buttonTime, 'Value')*3;
+    scenario = get(handles.buttonWeight, 'Value') + get(handles.buttonSpeed, ...
+        'Value')*2 + get(handles.buttonTime, 'Value')*3;
     
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio);
+    warning = designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, ...
+        finessRatio, handles);
     
-end
+    %Show the results on the GUI.
+    logFolder = '../Log';
+    MATLABFolder = '../MATLAB';
+    logFile = 'groupRE3_Log.txt';
+    cd(logFolder)
+    path = fullfile(pwd);
+    fid = fopen(logFile,'r'); %Open the log file for reading
+    S=char(fread(fid)'); %Read the file into a string
+    fclose(fid);
+    cd(MATLABFolder)
 
+    set(handles.logTxt,'String',S); %write the string into the textbox
+    set(handles.logPath,'String',[path '/' logFile]); %show the path of the log file 
+    
+    switch warning
+        case 1
+            msgbox(['No battery or mtotor combination could achieve the' ...
+                'desired weight. Try reducing the desired weight or'...
+                'increasing the volume of ariship.'], 'Parameter not Achieved!', 'warn');
+        case 2
+            msgbox(['Could not meet the minimun carrying capacity of 200g.'...
+                'Try reducing the required speed or increasing the size of the blimp.'],...
+                'Parameter not Achieved!', 'warn');
+        case 4
+            msgbox(['Could not acheive the flight time. Need to add a '...
+                'larger battery or a smaller motor to the data files.'],...
+                'Parameter not Achieved!', 'warn');
+        case 10
+            msgbox(['Carrying capacity is negative, increase the volume'...
+                'of the envelope'], 'Negative Carrying Capacity', 'error');
+    end
+end
+            
 % --- Executes on button press in calculate.
 function kill = calculate_Callback(hObject, eventdata, handles)
 % hObject    handle to calculate (see GCBO)
@@ -140,10 +169,18 @@ function kill = calculate_Callback(hObject, eventdata, handles)
 % kill       value to pass back to generate if there are issues
 
 kill = 0;
+set(handles.textWarning, 'Visible', 'off');
+set(handles.textWarningString, 'String', '');
 
 L = str2double(get(handles.editLength, 'String'));
 FR = str2double(get(handles.editFinenessRatio,'String'));
 D = str2double(get(handles.editDiameter, 'String'));
+
+if L < 0 || FR < 0 || D < 0
+    msgbox('Negative value in envelope dimensions','Cannot generate!','error');
+    kill = 1;
+    return
+end
 
 if isnan(L) || isnan(FR) || isnan(D)
     if ~isnan(L) && ~isnan(FR)
@@ -153,12 +190,13 @@ if isnan(L) || isnan(FR) || isnan(D)
     elseif ~isnan(FR) && ~isnan(D)
         set(handles.editLength, 'String', num2str(FR*D))
     else
-        msgbox('Enter atleast two of Length, Diameter, or Fineness Ratio.','Missing Inputs','error');
+        msgbox('Enter atleast two of Length, Diameter, or Fineness Ratio.',....
+            'Missing Inputs','error');
         kill = 1;
         return
     end
 else
-    set(handles.editFinenessRatio, 'String', num2str(L/D))
+    set(handles.editDiameter, 'String', num2str(L/FR))
 end
 
 L = str2double(get(handles.editLength, 'String'));
@@ -170,15 +208,50 @@ alpha = 10*pi()/180;
 length = @(a) rf - (-(rf - a*sin(alpha))^2/(sin(alpha)^2 - 1))^(1/2) ...
     *(sin(alpha) - 1) + a*(cos(alpha) + 1); % used matlab to simplify
 a = fzero(@(a) length(a) - L, 0);
+backRadius = (rf - a*sin(alpha))*1000;
+    
+if backRadius < 50
+    msgbox(['Invalid Dimensions. The dimenions cause the cone at the back of'...
+        'the airship to intersect itself.'],'Cannot generate!','error');
+    kill = 1;
+    return;
+
+elseif a < 0
+    msgbox('Negative section Length','Invalid Length','error');
+    kill = 1;
+    return;
+end
 
 set(handles.textSectionLength, 'String', ['Section Length: ' num2str(a) 'm'])
 if a > convlength(60, 'in', 'm')
-    msgbox('Section length greater than specified maximum of 60" (1524mm). Can still generate, but may have some issues or incorrect values','Envelope Dimensions out of Range','warn');
-elseif a < 1.093
-    msgbox('Section length too small. SolidWorks will have a build error. Analysis may still work depending on the values.','Section Length too Small','error');
-elseif FR > 4 || FR < 3.4
-    msgbox('Fineness Ratio outside of range (3.4 - 4). Drag data is not specified outside this range and there may be issues with volume', 'Fineness Ratio out of range', 'warn');
+    set(handles.textWarning, 'Visible', 'on');
+    set(handles.textWarningString, 'String', ['Section length larger then '...
+        'specified max of 90" (1524mm). Might result in strange results.']);
+elseif a < 1.092
+    set(handles.textWarning, 'Visible', 'on');
+    set(handles.textWarningString, 'String', ['Section length too small and '...
+        'will result in build error. Analysis may still be able to be done.']);
+elseif FR > 3.5 || FR < 2.8
+    set(handles.textWarning, 'Visible', 'on');
+    set(handles.textWarningString, 'String', ['Not recommened to have a'...
+        'FR outside of range (2.8-3.5)']);
 end
+
+function Wrong_File()
+clc
+h = msgbox('You cannot run the MAIN.fig file directly. Please run the program from the Main.m file directly.','Cannot run the figure...','error','modal');
+uiwait(h);
+disp('You must run the MAIN.m file. Not the MAIN.fig file.');
+disp('To run the MAIN.m file, open it in the editor and press ');
+disp('the green "PLAY" button, or press "F5" on the keyboard.');
+close gcf
+
+% =========================================================================
+% =========================================================================
+% The functions below are created by the GUI. Do not delete any of them! 
+% Adding new buttons and inputs will add more callbacks and createfcns.
+% =========================================================================
+% =========================================================================
 
 % --- Outputs from this function are returned to the command line.
 function varargout = main_OutputFcn(hObject, eventdata, handles) 
@@ -336,3 +409,26 @@ function editFinenessRatio_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of editDiameter as text
 %        str2double(get(hObject,'String')) returns contents of editDiameter as a double
+
+
+% --- Executes on selection change in logTxt.
+function logTxt_Callback(hObject, eventdata, handles)
+% hObject    handle to logTxt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns logTxt contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from logTxt
+
+
+% --- Executes during object creation, after setting all properties.
+function logTxt_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to logTxt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

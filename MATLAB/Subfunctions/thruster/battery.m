@@ -3,7 +3,10 @@ function [battChoice, badness] = battery( reqTime, minAmps, minVolts, maxMass )
 % file
 battCSV = 'batteryData.csv';
 battData = csvread(battCSV, 1, 1);
-battData(:, ~any(battData, 2)) = [];
+battData(:, ~any(battData, 1)) = [];
+
+% command window
+needNewLine = 0;
 
 %--DATA LOADING
 % AMPS
@@ -28,7 +31,7 @@ end
 
 % end the function if battery data didn't meet inputs
 if isempty(battData)
-    error('BatteryData.InvalidInputs');%, 'No matching BATTERY based on inputs\n\nTry re-running with different inputs\n\nIf problem persists there might be an issue with the csvs of the program.');
+    error('BatteryData.InvalidInputs');
 end
     
 %--LIFE
@@ -41,14 +44,27 @@ while 1
 	possibleBatt(possibleBatt(:, 3) < battLife, :) = [];
 
 	% check if a battery met the specification
-	if ~isempty(possibleBatt)
+    if ~isempty(possibleBatt)
 	    break
-	end
-		possibleTime = possibleTime - 2/60;
-        if possibleTime <= 0
-            possibleTime = 0.1/60;
+    else
+        needNewLine = 1;
+        if possibleTime == reqTime;
+            possibleTime = possibleTime - 2/60;
+            if possibleTime <= 0
+                possibleTime = 0.1/60;
+            end
+            fprintf(['Reduced life to: ' num2str(possibleTime*60)]);
+        else
+            possibleTime = possibleTime - 2/60;
+            if possibleTime <= 0
+                possibleTime = 0.1/60;
+            end
+            fprintf([' -- ' num2str(possibleTime*60)]);
         end
-		disp(['Reduced life to: ' num2str(possibleTime*60)])
+    end
+end
+if needNewLine
+    fprintf('\n');
 end
 
 %--OUTPUT

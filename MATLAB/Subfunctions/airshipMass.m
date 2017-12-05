@@ -7,7 +7,7 @@ fixedData = csvread('weightData.csv', 1);
 references = fixedData(:, 5) == 5;
 fixedData(~references, :) = [];
 fixedData(:) = fixedData(:)/1000;
-fixedData(fixedData(:, 5) == 5, 4) = fixedData(fixedData(:, 5) == 5, 4) + radius;
+fixedData(:, 4) = fixedData(:, 4) + radius;
 fixedMass = fixedData(:, 1:4);
 fixedMass = [fixedMass; thrusterMass; envMass];
 

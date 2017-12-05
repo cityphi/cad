@@ -15,7 +15,7 @@ safetyFactor = 5; % hard coded value for the safety factor
 thrustForce = [thrustForceLoc FT 0 0 0 0 0 ];
 
 % find the pitch to do analysis of the arm
-aPitch = 0; %armWorstCase(thrustForce, weight, material);
+aPitch = 90;
 
 % dimensions of the arm [ri thickness width]
 dimensions = [ airshipRad 0.001 0.03 ];
@@ -43,7 +43,7 @@ while loop && iterations < maxIterations
     end
 end
 %---LOG file
-armLog(round(weight(end, 1)*2000/9.81, 1), n)
+armLog(round(weight(end, 1)*2000/9.81, 1), n, dimensions(2))
 
 %---OUTPUT
 weight = centreMass(weight);
@@ -172,46 +172,7 @@ tensor = [ Sx  txy txz;
            txz tyz Sz ];
 end
 
-function [ worstCase ] = armWorstCase( inForces, weights, material )
-%ARMWORSTCASE Evaluates the worst pitch angle for the arm.
-%   a = armWorstCase(F, W, M) returns the worst angle for the stress in the
-%   arm. This is run before doing the optimization so optimization is done
-%   for only one location.
-%   
-%   F [ locX locY locZ Fx Fy Fz Mx My Mz ] - thrust force
-%   W [ weight locX locY locZ ] - weight of components held by the arm
-%   M [ density Sut Suc E brittle ] - information of the material
-
-% dimensions of the arm [ri thickness width]
-h = 0.005;
-k = 0.01;
-dimensions = [ 0.637 h k ];
-
-% add the weight of the arm based on dimensions
-weights(end+1, :) = armWeight(dimensions, material(1));
-
-% iterations to find the lowest safety factor
-minAngle = -60;
-maxAngle = 90;
-data = zeros(maxAngle-minAngle, 2);
-i = 1;
-
-for aPitch = minAngle:1:maxAngle
-    % find the safety factor at current conditions
-    [~, halfReactions] = armForces(weights, inForces, aPitch);
-    stressTensor = armTensor(halfReactions, dimensions);
-    n = cauchy(stressTensor, material);
-
-    % store data
-    data(i, :) = [aPitch n];
-    i = i + 1;
-end
-% find and return the worst case pitch
-[~, ind] = min(data(:, 2));
-worstCase = data(ind, 1:end-1);
-end
-
-function armLog(mass, n)
+function armLog(mass, n, thickness)
 %THRUSTERASSYLOG Outputs useful data to the log file
 %   THRUSTERASSYLOG(mass) returns nothing
 
@@ -225,6 +186,7 @@ fid = fopen(logFile, 'a+');
 fprintf(fid, '\r\n***Thruster Arms***\r\n');
 fprintf(fid, ['Total Mass:    ' num2str(mass) ' g\r\n']);
 fprintf(fid, ['Safety Factor: ' num2str(n) '\r\n']);
+fprintf(fid, ['Thickness:     ' num2str(thickness) 'mm\r\n']);
 fclose(fid);
 cd(MATLABFolder)
 end
@@ -254,6 +216,4 @@ fprintf(fid, ['"h"= ' num2str(thickness*1000) 'mm\n']);
 fclose(fid);
 cd ..
 cd(MATLABFolder)
-
-disp('Arm Parameterized in Solidworks');
 end

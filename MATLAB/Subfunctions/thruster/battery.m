@@ -41,15 +41,24 @@ while 1
 	possibleBatt(possibleBatt(:, 3) < battLife, :) = [];
 
 	% check if a battery met the specification
-	if ~isempty(possibleBatt)
+    if ~isempty(possibleBatt)
 	    break
-	end
-		possibleTime = possibleTime - 2/60;
+    end
+    if possibleTime == reqTime;
+        possibleTime = 0.1/60;
         if possibleTime <= 0
             possibleTime = 0.1/60;
         end
-		disp(['Reduced life to: ' num2str(possibleTime*60)])
+        fprintf(['Reduced life to: ' num2str(possibleTime*60)]);
+    else
+        possibleTime = possibleTime - 2/60;
+        if possibleTime <= 0
+            possibleTime = 0.1/60;
+        end
+        fprintf([' -- ' num2str(possibleTime*60)]);
+    end
 end
+fprintf('\n');
 
 %--OUTPUT
 % sort and return the best battery and the badness

@@ -83,12 +83,18 @@ while 1
 	% check if any combination was possible
     if ~isempty(possibleMot)
 	    break
-	else
-		possibleSpeed = possibleSpeed - 0.5;
-		disp(['Reduced required speed to: ' num2str(possibleSpeed)])
+    else
+        if possibleSpeed == reqSpeed
+			possibleSpeed = possibleSpeed - 0.5;
+			fprintf(['Reduced required speed to: ' num2str(possibleSpeed)]);
+		else
+			possibleSpeed = possibleSpeed - 0.5;
+			fprintf([' -- ' num2str(possibleSpeed)]);
+        end
     end
 end
 
+fprintf('\n');
 % sort the motor based on the watts required to get the best
 possibleMot = sortrows(possibleMot, 5);
 

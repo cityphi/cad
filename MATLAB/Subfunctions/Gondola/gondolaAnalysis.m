@@ -16,25 +16,17 @@ Ls = 0.08;          %distance from screw to center of torsion hinge
 Lhd = 0.02185;      %distance in y from torsion hingle to friction wheel contact point 
 hingeAngle = pi/4;  %angle of torsion hinge [rads] yx 
 Hdrive = 0.021125;  %height of friction wheel contact point above face of gond
-Ldrivex = 0.05;     %distance in x from drive to gondola axle
-Ldrivey = 0.00362;  %distance in y from drive to center of gondola
 rFw = 0.0127;       %friction wheel radius
 rMs = 0.00147;      %motor shaft radius
 Lrx = 0.00925;      %motor shaft length
 
 La = 0.005;         %length in y from torsion hinge to gondola screw a 
 Lb = 0.021;         %length in y from torsion hinge to gondola screw b
-Dscrew = 0.003;     %gondola/hinge screw diameter 
 Dwashero = 0.004;   %outer gondola/hinge screw washer diameter
 Dwasheri = 0.003;   %inner gondola/hinge screw washer diameter
 
 Mu = 0.65;          %frictionwheel to keel coefficient of friction
 Muwasher = 0.2;     %washer to gondola coefficent of friction
-
-Lbearingx = 0.03682;%distance in x from bearing contact to gondola axle
-Lbearingy = 0.00328;%distance in y from bearing contact to center of gondola
-Hbearing = 0.03954; %height in z from bearing contact to surface of gondola
-muBrake = 0.65;     %coefficient of friction for brake (same ruber as fricwheel)
 
 Larm = 0.03597;      %length of straigt section of bearing arm 
 Lcurvez = 0.00919;   %length of cruved section of bearing arm in z
@@ -66,8 +58,6 @@ gondSpecs = [
 0.208      %11mass of gondola 2 in kg
 -0.07946    %12position of brake in x  
 0.03259];     %13height of brake in z   
-
-gondSpecs(1);
 
 if massScenario == 0
     gondSpecs(10) = gondSpecs(10) + payLoadMass/2;
@@ -155,11 +145,11 @@ maxBrakeForce = 0;
 i = 1;
 
 while maxBrakeForce < reqActuatorForce 
-    maxBrakeForce = holdingForces(i)
-    if maxBrakeForce < reqActuatorForce || i == 4
+    maxBrakeForce = holdingForces(i);
+    if maxBrakeForce > reqActuatorForce || i == 4
         break;
     else
-        i = i+1
+        i = i+1;
     end
 end
 
@@ -277,18 +267,17 @@ swEqnFolder = ('../Solidworks/Equations');
 cd(logFolder)
 fid = fopen(logFile, 'a+');
 fprintf(fid, '\n***Gondola Analysis Outputs***\r\n');
-fprintf(fid, ['Washer outter diamter in [mm]:' , num2str(Dwashero) '\r\n' ]);
-fprintf(fid, ['Bearing arm diameter in [mm]:' , num2str(bearingArmDiameter) '\r\n']);
-fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\r\n']);
-fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) '\r\n']);
-fprintf(fid, ['The required spring torque of the torsion spring is :'...
-    , num2str(Tspring) '[Nm] \r\n']);
-fprintf(fid, ['Linear actuator force [N]:', num2str(maxBrakeForce) '\r\n']);
+fprintf(fid, ['Washer outter diamter: ' , num2str(Dwashero) 'mm\r\n' ]);
+fprintf(fid, ['Bearing arm diameter: ' , num2str(bearingArmDiameter) 'mm\r\n']);
+fprintf(fid, ['Snapfit cut depth: ' , num2str(Lsnap) 'mm\r\n']);
+fprintf(fid, ['Snapfit edge bevel angle: ', num2str(snapAngle) '°\r\n']);
+fprintf(fid, ['The required spring torque of the torsion spring is: ', num2str(Tspring) 'Nm\r\n']);
+fprintf(fid, ['Linear actuator force: ', num2str(maxBrakeForce) 'N\r\n']);
 if maxBrakeForce == 80
-    fprintf(fid, 'linear actuator force of 80[N] must be constantly supplied power while holding position\r\n');
+    fprintf(fid, 'Linear actuator force of 80N must be constantly supplied power while holding position\r\n');
 elseif maxBrakeForce < reqActuatorForce 
     fprintf(fid, 'Linear actuator force may not be sufficient\r\n');
-    fprintf(fid, ['Consider choosing linear actuator with force greater than', num2str(reqActuatorForce) '\r\n']);
+    fprintf(fid, ['Consider choosing linear actuator with force greater than ', num2str(reqActuatorForce) 'N\r\n']);
 end
 
 fclose(fid);
@@ -309,6 +298,4 @@ fid = fopen('3007-WASHER-EQUATIONS.txt', 'w+t');
 fprintf(fid, ['"doWasher"= ',num2str(Dwashero) '[mm]''The outside diameter of the washer\n']);
 fclose(fid);
 cd('../../MATLAB');
-
-disp('Gondola Parameterized in SolidWorks');
 end 

@@ -152,8 +152,6 @@ while 1;
     end
 end
 disp('~~~SOLVED')
-%---LOG
-finalLog(speed, time, carryingMass)
 %---PLOTS
 axes(handles.axes1);
 D = convlength(propChoice(1), 'in', 'm');
@@ -170,5 +168,8 @@ legend('Thrust','Drag')
 
 axes(handles.axes2);
 gondolaMass(1) = gondolaMass(1) + carryingMass;
-pitchPlot(fixedMass, gondolaMass, CV, airshipRad)
+pitches = pitchPlot(fixedMass, gondolaMass, CV, airshipRad);
+
+%---LOG
+finalLog(speed, time, carryingMass, pitches)
 end

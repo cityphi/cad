@@ -1,4 +1,4 @@
-function pitchPlot(fixedMass, gondolaMass, CV, airshipRad)
+function pitches = pitchPlot(fixedMass, gondolaMass, CV, airshipRad)
 %PITCHPLOT Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -29,6 +29,8 @@ for i = 1:(points+1);
     % Record the results from each pass
     data(i,:) = [loc pitch];
 end
+
+pitches = [min(data(:, 2)) max(data(:, 2))];
 
 % Information to output
 scatter(data(:,1), data(:,2), 'h');

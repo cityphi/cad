@@ -208,6 +208,4 @@ fprintf(fid, ['"rshaft"= ' num2str(radius*1000) 'mm\n']);
 fclose(fid);
 cd ..
 cd(MATLABFolder)
-
-disp('Thruster Shaft Parameterized in Solidworks');
 end

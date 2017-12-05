@@ -103,6 +103,4 @@ fprintf(fid, ['"lblimpcylinder"= ' num2str(length*1000) 'mm\n']);
 fclose(fid);
 cd ..
 cd(MATLABFolder)
-
-disp('Envelope Parameterized in Solidworks');
 end

@@ -35,7 +35,6 @@ Lbearingx = 0.03682;%distance in x from bearing contact to gondola axle
 Lbearingy = 0.00328;%distance in y from bearing contact to center of gondola
 Hbearing = 0.03954; %height in z from bearing contact to surface of gondola
 muBrake = 0.65;     %coefficient of friction for brake (same ruber as fricwheel)
-maxBrakeForce = 45; %max force that can be appluied by linear actuator [N]
 
 Larm = 0.03597;      %length of straigt section of bearing arm 
 Lcurvez = 0.00919;   %length of cruved section of bearing arm in z
@@ -43,6 +42,9 @@ Lcurvey = 0.00816;  %length of cruved section of bearing arm in y
 
 %available motor torques in Ozin
 motorTorques = [2 4 9 15 22 30 40 50 60 70 125];
+
+%available linear actuator holding force [N]
+holdingForces = [12 22 45 80];
 
 for i = 1:length(motorTorques) %convert torques to Nm
 motorTorques(i) = motorTorques(i)*0.0070615518333333;
@@ -149,6 +151,16 @@ end
 [~,~,brakeForce] = gondolaForces(gondSpecs, -pi/2, 0, 0, aThrust, 0, Fnfric, -reqAc,0);
 reqActuatorForce = abs(brakeForce(6));
 
+i = 1;
+
+while maxBrakeForce < reqActuatorForce 
+    maxBrakeForce = holdingForces(i)
+    if maxBrakeForce < reqActuatorForce || i == 4
+        break;
+    else
+        i = i+1
+    end
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -270,11 +282,14 @@ fprintf(fid, ['Snapfit cut depth [mm]:' , num2str(Lsnap) '\r\n']);
 fprintf(fid, ['Snapfit edge bevel angle:', num2str(snapAngle) '\r\n']);
 fprintf(fid, ['The required spring torque of the torsion spring is :'...
     , num2str(Tspring) '[Nm] \r\n']);
-if reqActuatorForce <= maxBrakeForce 
-    fprintf(fid, 'Adequate linear actuator force.\r\n');
-else
-    fprintf(fid, ['Choose new linear actuator force greater than ' num2str(reqActuatorForce) '\r\n']);
+fprintf(fid, ['Linear actuator force [N]:', num2str(maxBrakeForce) '\r\n']);
+if maxBrakeForce == 80
+    fprintf(fid, 'linear actuator force of 80[N] must be constantly supplied power while holding position\r\n');
+elseif maxBrakeForce < reqActuatorForce 
+    fprintf(fid, 'Linear actuator force may not be sufficient\r\n');
+    fprintf(fid, ['Consider choosing linear actuator with force greater than', num2str(reqActuatorForce) '\r\n']);
 end
+
 fclose(fid);
 cd(MATLABFolder);
 

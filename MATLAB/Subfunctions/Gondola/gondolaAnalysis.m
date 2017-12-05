@@ -151,6 +151,7 @@ end
 [~,~,brakeForce] = gondolaForces(gondSpecs, -pi/2, 0, 0, aThrust, 0, Fnfric, -reqAc,0);
 reqActuatorForce = abs(brakeForce(6));
 
+maxBrakeForce = 0;
 i = 1;
 
 while maxBrakeForce < reqActuatorForce 

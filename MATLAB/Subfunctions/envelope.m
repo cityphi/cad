@@ -46,15 +46,22 @@ massPlastic = SA(:)*areaMass;
 
 mass = [ (massHelium + massPlastic) x zeros(4, 1) zeros(4, 1)];
 
+%---FINS
+densityFoam = 36;
+xFin = -(a/2 + a*cos(alpha)*2/3);
+massFin = 2*a^2*cos(alpha)*sin(alpha)*0.003*densityFoam;
+
 %--OUTPUTS
 CD = 0.00092642*FR^2 - 0.010134*FR + 0.040569;
 
 volume = sum(vol);
 mass = centreMass(mass);
+CV = mass(2) + 1 - a/2;
+mass(end+1,:) = [massFin xFin 0 0];
 
-% relat the CM to the thrusters
+% relate the CM to the thrusters
+mass = centreMass(mass);
 mass(2) = mass(2) + 1 - a/2;
-CV = mass(2);
 radius = rf;
 
 %--LOG

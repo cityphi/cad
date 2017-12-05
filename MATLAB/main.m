@@ -119,12 +119,14 @@ else
     airshipLength = str2double(get(handles.editLength, 'String'));
     finessRatio = str2double(get(handles.editFinenessRatio,'String'));
     
-    scenario = get(handles.buttonWeight, 'Value') + get(handles.buttonSpeed, 'Value')*2 + get(handles.buttonTime, 'Value')*3;
+    scenario = get(handles.buttonWeight, 'Value') + get(handles.buttonSpeed, ...
+        'Value')*2 + get(handles.buttonTime, 'Value')*3;
     
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    warning = designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio, handles);
+    warning = designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, ...
+        finessRatio, handles);
     
     %Show the results on the GUI.
     logFolder = '../Log';
@@ -188,7 +190,7 @@ if isnan(L) || isnan(FR) || isnan(D)
     elseif ~isnan(FR) && ~isnan(D)
         set(handles.editLength, 'String', num2str(FR*D))
     else
-        msgbox(['Enter atleast two of Length, Diameter, or Fineness Ratio.'],....
+        msgbox('Enter atleast two of Length, Diameter, or Fineness Ratio.',....
             'Missing Inputs','error');
         kill = 1;
         return

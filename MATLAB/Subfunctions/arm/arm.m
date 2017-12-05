@@ -163,8 +163,8 @@ Sx  = 0;
 Sy  = Mx*z/(e*A*ri) + Mz*x/Iz + Fy/A; % two plane stress
 Sz  = 0;
 txy = 0;
-txz = 0; 
-tyz = My/(b*c^2)*(3+1.8*c/b); % torsional sheer
+txz = My/(b*c^2)*(3+1.8*c/b);
+tyz = 0; % torsional sheer
 
 % cauchy stress tensor
 tensor = [ Sx  txy txz;

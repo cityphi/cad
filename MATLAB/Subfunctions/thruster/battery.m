@@ -28,7 +28,7 @@ end
 
 % end the function if battery data didn't meet inputs
 if isempty(battData)
-    error('BatteryData.InvalidInputs');%, 'No matching BATTERY based on inputs\n\nTry re-running with different inputs\n\nIf problem persists there might be an issue with the csvs of the program.');
+    error('BatteryData.InvalidInputs');
 end
     
 %--LIFE

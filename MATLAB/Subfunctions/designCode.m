@@ -1,4 +1,4 @@
-function designCode( requirements, scenario, l, FR, scenarioGondola, handles )
+function warningMessage = designCode( requirements, scenario, l, FR, handles )
 %DESIGNCODE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -36,6 +36,9 @@ massLimitBatt = 0;
 massLimitMot = 0;
 powerLimitMot = 0;
 
+% warning message case
+warningMessage = 0;
+
 while 1;
     %---ENVELOPE
     [vol, envMass, airshipRad, CD, CV] = envelope(l, FR);
@@ -70,11 +73,13 @@ while 1;
         weightBadness = 0;
     end
     if carryingMass < 0
-    	carryingMass = 0;
+    	carryingMassGondola = 0;
+    else
+        carryingMassGondola = carryingMass;
     end
     
     %---GONDOLA
-    gondolaAnalysis(FTmax/totalMass, scenarioGondola, carryingMass);
+    gondolaAnalysis(FTmax/totalMass, carryingMassGondola);
     
     %---OPTIMIZING
     switch scenario
@@ -128,13 +133,8 @@ while 1;
                     possibleBatt = battMassVolts;
                     voltsCondition = battMassVolts(:, 2) < motChoice(4);
                     possibleBatt(voltsCondition, :) = [];
-
-                    % check that 
                     if massLimitBatt <= min(possibleBatt(:, 1))
-                        fprintf('~~WARNING: Criteria NOT met\n');
-                        fprintf('Could not meet the minimun carrying capacity of 200g.\n');
-                    	fprintf('Try reducing the required speed to get a motor with running at a lower voltage.\n');
-                    	fprintf('Increasing the size of the blimp will also help this.\n')
+                        warningMessage = 3;
                         break
                     end
                 else
@@ -172,6 +172,10 @@ while 1;
             end
     end
 end
+if carryingMass < 0
+    warningMessage = 10;
+end
+
 %---PLOTS
 axes(handles.axes1);
 D = convlength(propChoice(1), 'in', 'm');
@@ -187,12 +191,18 @@ ylabel('Force (N)');
 legend('Thrust','Drag')
 
 axes(handles.axes2);
-gondolaMass(1) = gondolaMass(1) + carryingMass;
+gondolaMass(1) = gondolaMass(1) + carryingMassGondola;
 pitches = pitchPlot(fixedMass, gondolaMass, CV, airshipRad);
 
 %---LOG
 finalLog(speed, time, carryingMass, pitches)
 
+%---DISPLAY
+set(handles.textCarryMass, 'String', ['Carrying Mass: ' num2str(round(carryingMass*1000, 1)) 'g']);
+set(handles.textMaxSpeed, 'String', ['Max Speed: ' num2str(round(speed, 1)) 'm/s']);
+set(handles.textFlightTime, 'String', ['Flight Time: ' num2str(round(time, 1)) 'mins']);
+set(handles.textPitchUp, 'String', ['Max Pitch Up: ' num2str(round(pitches(2), 1)) '°']);
+set(handles.textPitchDown , 'String', ['Max Pitch Down: ' num2str(round(pitches(1), 1)) '°']);
 fprintf('\n~~Design code finished. Solidworks and Log files have been updated.\n');
 
 end

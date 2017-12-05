@@ -55,6 +55,8 @@ function main_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for main
 handles.output = hObject;
 
+addpath(genpath(pwd));
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -103,7 +105,7 @@ if(isempty(handles))
 else
     %Get the design parameters from the interface
     
-    addpath(genpath(pwd));
+    set(handles.generate, 'String', 'Running...');
     
     set(handles.logTxt,'String','');
     
@@ -120,13 +122,11 @@ else
     finessRatio = str2double(get(handles.editFinenessRatio,'String'));
     
     scenario = get(handles.buttonWeight, 'Value') + get(handles.buttonSpeed, 'Value')*2 + get(handles.buttonTime, 'Value')*3;
-    scenarioGondola = get(handles.buttonMid, 'Value') + get(handles.buttonBack, 'Value')*2 + get(handles.buttonFront, 'Value')*3;
-    scenarioGondola = scenarioGondola - 1;
     
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio, scenarioGondola, handles);
+    warning = designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio, handles);
     
     %Show the results on the GUI.
     logFolder = '../Log';
@@ -141,8 +141,17 @@ else
 
     set(handles.logTxt,'String',S); %write the string into the textbox
     set(handles.logPath,'String',[path '/' logFile]); %show the path of the log file 
+    
+    set(handles.generate, 'String', 'Generate');
+    
+    switch warning
+        case 3
+            msgbox('Could not meet the minimun carrying capacity of 200g. Try reducing the required speed to get a motor with running at a lower voltage. Increasing the size of the blimp will also help this.', 'Parameter not Achieved!', 'warn');
+        case 10
+            msgbox('Carrying capacity is negative, increase the volume of the envelope', 'Negative Carrying Capacity', 'error');
+    end
 end
-
+            
 % --- Executes on button press in calculate.
 function kill = calculate_Callback(hObject, eventdata, handles)
 % hObject    handle to calculate (see GCBO)

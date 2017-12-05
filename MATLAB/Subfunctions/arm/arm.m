@@ -31,7 +31,7 @@ while loop && iterations < maxIterations
     
     % analysis of the arm
     weight(end, :) = armWeight(dimensions, material(1));
-    [~, halfReactions] = armForces(weight, thrustForce, aPitch);
+    [~, halfReactions] = armForces(weight, thrustForce, aPitch, airshipRad);
     stressTensor = armTensor(halfReactions, dimensions);
     n = cauchy(stressTensor, material);
     
@@ -83,7 +83,7 @@ locZ = -locY;
 weight = [ mag, locX, locY, locZ ];
 end
 
-function [reactions, halfReactions] = armForces(weight, inForces, aPitch)
+function [reactions, halfReactions] = armForces(weight, inForces, aPitch, airshipRad)
 %ARMFORCES Reaction forces of the arm.
 %   [R, hR] = ARMFORCES(W, F, a) returns the total reactions and half 
 %   reactions at the connector. Half reactions is used to optimize
@@ -100,7 +100,7 @@ function [reactions, halfReactions] = armForces(weight, inForces, aPitch)
 a = aPitch*pi()/180;
 
 % reaction force location
-connectorReact = [ 0 0 -0.637 1 1 1 1 1 1 ];
+connectorReact = [ 0 0 -airshipRad 1 1 1 1 1 1 ];
 
 % build forces array for weight
 forces = centreMass(weight, a);

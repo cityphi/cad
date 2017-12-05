@@ -1,4 +1,4 @@
-function gondolaAnalysis (aThrust , massScenario , payLoadMass)
+function gondolaAnalysis (aThrust, payLoadMass)
 %This function gives safty factors and dimension for the bearing arms,
 %torsion hinge to gondola washers, the required motor torque, the required
 %motor force, the required braking force, the required acceleration, 
@@ -59,14 +59,8 @@ gondSpecs = [
 -0.07946    %12position of brake in x  
 0.03259];     %13height of brake in z   
 
-if massScenario == 0
-    gondSpecs(10) = gondSpecs(10) + payLoadMass/2;
-    gondSpecs(11) = gondSpecs(11) + payLoadMass/2;
-elseif massScenario == 1
-    gondSpecs(10) = gondSpecs(10) + payLoadMass;
-elseif massScenario == 2
-    gondSpecs(11) = gondSpecs(11) + payLoadMass;
-end
+gondSpecs(10) = gondSpecs(10) + payLoadMass/2;
+gondSpecs(11) = gondSpecs(11) + payLoadMass/2;
 
 %[ density Sut Suc Sy E brittle ] - information of the material
 nylon12 = [1130 38.5*10^6 6*10^6 28*10^6 1.138*10^9 1]; % matweb unrenforced

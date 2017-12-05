@@ -1,4 +1,4 @@
-function designCode( requirements, scenario, l, FR )
+function designCode( requirements, scenario, l, FR, handles )
 %DESIGNCODE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -19,6 +19,7 @@ propCSV = 'propellerMotorData.csv';
 battData = csvread(battCSV, 1, 1);
 propData = csvread(propCSV, 1, 1);
 
+% optimization
 battMasses = sort(unique(battData(:, 2)), 1);
 [uniqueVolts, ~, count] = unique(battData(:, 5));
 battMassVolts = zeros(max(count), 2);
@@ -35,7 +36,7 @@ powerLimitMot = 0;
 
 while 1;
     %---ENVELOPE
-    [vol, envMass, airshipRad, CD] = envelope(l, FR);
+    [vol, envMass, airshipRad, CD, CV] = envelope(l, FR);
     
     %---THRUSTER
     dragValues = [CD rhoA vol];
@@ -153,4 +154,16 @@ end
 disp('~~~SOLVED')
 %---LOG
 finalLog(speed, time, carryingMass)
+%---PLOTS
+axes(handles.axes1);
+D = convlength(propChoice(1), 'in', 'm');
+P = convlength(propChoice(2), 'in', 'm');
+n = motChoice(6)/60;
+Vp = 0:0.1:20;
+Tp = 0.20477*(pi*D^2)/4*(D/P)^1.5*((P * n)^2 - Vp*P * n)*2;
+dragp = 2.420294 * CD * rhoA * vol^(2/3) * Vp.^1.86;
+plot(Vp, Tp, Vp, dragp);
+
+axes(handles.axes2);
+pitchPlot(fixedMass, gondolaMass, CV, airshipRad)
 end

@@ -22,7 +22,7 @@ function varargout = main(varargin)
 
 % Edit the above text to modify the response to help main
 
-% Last Modified by GUIDE v2.5 04-Dec-2017 17:16:29
+% Last Modified by GUIDE v2.5 04-Dec-2017 19:52:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -128,8 +128,21 @@ else
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio);
+    designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio, handles);
     
+    %Show the results on the GUI.
+    logFolder = '../Log';
+    MATLABFolder = '../MATLAB';
+    logFile = 'groupRE3_Log.txt';
+    cd(logFolder)
+    path = fullfile(pwd);
+    fid = fopen(logFile,'r'); %Open the log file for reading
+    S=char(fread(fid)'); %Read the file into a string
+    fclose(fid);
+    cd(MATLABFolder)
+
+    set(handles.logTxt,'String',S); %write the string into the textbox
+    set(handles.logPath,'String',[path '/' logFile]); %show the path of the log file 
 end
 
 % --- Executes on button press in calculate.
@@ -179,6 +192,22 @@ elseif a < 1.093
 elseif FR > 4 || FR < 3.4
     msgbox('Fineness Ratio outside of range (3.4 - 4). Drag data is not specified outside this range and there may be issues with volume', 'Fineness Ratio out of range', 'warn');
 end
+
+function Wrong_File()
+clc
+h = msgbox('You cannot run the MAIN.fig file directly. Please run the program from the Main.m file directly.','Cannot run the figure...','error','modal');
+uiwait(h);
+disp('You must run the MAIN.m file. Not the MAIN.fig file.');
+disp('To run the MAIN.m file, open it in the editor and press ');
+disp('the green "PLAY" button, or press "F5" on the keyboard.');
+close gcf
+
+% =========================================================================
+% =========================================================================
+% The functions below are created by the GUI. Do not delete any of them! 
+% Adding new buttons and inputs will add more callbacks and createfcns.
+% =========================================================================
+% =========================================================================
 
 % --- Outputs from this function are returned to the command line.
 function varargout = main_OutputFcn(hObject, eventdata, handles) 
@@ -336,3 +365,26 @@ function editFinenessRatio_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of editDiameter as text
 %        str2double(get(hObject,'String')) returns contents of editDiameter as a double
+
+
+% --- Executes on selection change in logTxt.
+function logTxt_Callback(hObject, eventdata, handles)
+% hObject    handle to logTxt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns logTxt contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from logTxt
+
+
+% --- Executes during object creation, after setting all properties.
+function logTxt_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to logTxt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

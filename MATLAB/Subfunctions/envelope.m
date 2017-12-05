@@ -1,4 +1,4 @@
-function [ volume, mass, radius, CD ] = envelope( l, FR )
+function [ volume, mass, radius, CD, CV ] = envelope( l, FR )
 %ENVELOPE Summary of this function goes here
 %   [V, m, r, CD] = envelope( l, FR ) returns properties of the envelope based on set restrictions and the parameters given as the input.
 
@@ -47,19 +47,11 @@ massPlastic = SA(:)*areaMass;
 mass = [ (massHelium + massPlastic) x zeros(4, 1) zeros(4, 1)];
 
 %--OUTPUTS
-switch FR
-	case 3.5
-		CD = 0.0254;
-	case 4
-		CD = 0.0189;
-	case 4.5
-		CD = 0.0159;
-	otherwise
-		CD = 0.0254;
-end
+CD = 0.00092642*FR^2 - 0.010134*FR + 0.040569;
 
 volume = sum(vol);
 mass = centreMass(mass);
+CV = mass(2);
 % relat the CM to the thrusters
 mass(2) = mass(2) + 1 - a/2;
 radius = rf;
@@ -83,7 +75,7 @@ cd(logFolder)
 fid = fopen(logFile, 'w+t');
 
 % lines of the file
-fprintf(fid, '\n***Envelope***\n');
+fprintf(fid, '***Envelope***\n');
 fprintf(fid, ['Using a FR of ' num2str(FR) ' and L of ' num2str(L) 'm gives a D of ' num2str(D) 'm.\n']);
 fprintf(fid, ['This corresponds to a CD of ' num2str(CD) '.\n']);
 fprintf(fid, ['With a volume of ' num2str(vol) 'm^3 which is ' num2str(round(massHelium*1000, 1)) 'g of helium.\n']);

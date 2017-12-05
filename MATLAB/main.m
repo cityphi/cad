@@ -63,7 +63,7 @@ guidata(hObject, handles);
 %clc
 
 defaultSpeed  = 8;
-defaultWeight = 200;
+defaultWeight = 300;
 defaultTime   = 30;
 defaultLength = 3.5;
 defaultFR = 3;
@@ -175,7 +175,7 @@ if isnan(L) || isnan(FR) || isnan(D)
         return
     end
 else
-    set(handles.editFinenessRatio, 'String', num2str(L/D))
+    set(handles.editDiameter, 'String', num2str(L/FR))
 end
 
 L = str2double(get(handles.editLength, 'String'));

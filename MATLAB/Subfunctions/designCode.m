@@ -1,4 +1,4 @@
-function designCode( requirements, scenario, l, FR, handles )
+function designCode( requirements, scenario, l, FR, scenarioGondola, handles )
 %DESIGNCODE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -69,7 +69,7 @@ while 1;
     end
     
     %---GONDOLA
-    gondolaAnalysis(FTmax/totalMass, 0, 0.2); %TEMPORARY!#@$**&@#&
+    gondolaAnalysis(FTmax/totalMass, scenarioGondola, carryingMass);
     
     %---OPTIMIZING
     switch scenario

@@ -120,11 +120,13 @@ else
     finessRatio = str2double(get(handles.editFinenessRatio,'String'));
     
     scenario = get(handles.buttonWeight, 'Value') + get(handles.buttonSpeed, 'Value')*2 + get(handles.buttonTime, 'Value')*3;
+    scenarioGondola = get(handles.buttonMid, 'Value') + get(handles.buttonBack, 'Value')*2 + get(handles.buttonFront, 'Value')*3;
+    scenarioGondola = scenarioGondola - 1;
     
     %The design calculations are done within this function. This function is in
     %the file Design_code.m
     
-    designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio, handles);
+    designCode([reqSpeed, reqTime, reqWeight], scenario, airshipLength, finessRatio, scenarioGondola, handles);
     
     %Show the results on the GUI.
     logFolder = '../Log';
@@ -189,12 +191,16 @@ length = @(a) rf - (-(rf - a*sin(alpha))^2/(sin(alpha)^2 - 1))^(1/2) ...
 a = fzero(@(a) length(a) - L, 0);
 backRadius = (rf - a*sin(alpha))*1000;
     
-if (backRadius < 50)
+if backRadius < 50
     msgbox('Invalid Dimensions. The dimenions cause the cone at the back of the airship to intersect itself.','Cannot generate!','error');
     kill = 1;
     return;
-end
 
+elseif a < 0
+    msgbox('Negative section Length','Invalid Length','error');
+    kill = 1;
+    return;
+end
 
 set(handles.textSectionLength, 'String', ['Section Length: ' num2str(a) 'm'])
 if a > convlength(60, 'in', 'm')

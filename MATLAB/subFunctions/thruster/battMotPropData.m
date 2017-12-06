@@ -39,7 +39,8 @@ thrustMass = motData(1) + propData(1);
 battMass = battData(1);
 thrust = motChoice(7);
 radius = convlength(propChoice(1) * 0.5, 'in', 'm');
-time = battChoice(2)/(motChoice(5)/motChoice(4));
+amps = motChoice(5)/motChoice(4)*1000;
+time = battChoice(3)/amps*60;
 % get the top speed with this setup
 D = convlength(propChoice(1), 'in', 'm');
 P = convlength(propChoice(2), 'in', 'm');

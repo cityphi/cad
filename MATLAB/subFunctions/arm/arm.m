@@ -131,10 +131,8 @@ h   = dimensions(2);
 k   = dimensions(3);
 
 % split the forces array for use in equations
-Fy  = forces(5);
 Mx  = forces(7);
 My  = forces(8);
-Mz  = forces(9);
 
 % find outer radius (ro) centre radius (rbar) and neutral axis radius (r)
 ro  = ri + h;
@@ -146,25 +144,24 @@ e   = rbar - r;
 
 % area of the x-z cross-section
 A   = h*k;
-Iz  = k^3*h/12;
 
 % for the stress calculations
-z = h/2 - e; x = k/2;
+z = h/2 - e;
 
 % for the torsion calcualtions
 b = k; c = h;
 
 % assume that max occurs at top right corner
 %         k          ^
-% -->.--------      z|-->
-%    |        |h       x
+%     ----.---      z|-->
+%    |    ^   |h       x
 %     --------
 Sx  = 0;
-Sy  = Mx*z/(e*A*ri) + Mz*x/Iz + Fy/A; % two plane stress
+Sy  = Mx*z/(e*A*ri); % stress at middle
 Sz  = 0;
 txy = 0;
-txz = My/(b*c^2)*(3+1.8*c/b);
-tyz = 0; % torsional sheer
+txz = My/(b*c^2)*(3+1.8*c/b); % torsional sheer
+tyz = 0;
 
 % cauchy stress tensor
 tensor = [ Sx  txy txz;
@@ -186,7 +183,7 @@ fid = fopen(logFile, 'a+');
 fprintf(fid, '\r\n***Thruster Arms***\r\n');
 fprintf(fid, ['Total Mass:    ' num2str(mass) ' g\r\n']);
 fprintf(fid, ['Safety Factor: ' num2str(n) '\r\n']);
-fprintf(fid, ['Thickness:     ' num2str(thickness) 'mm\r\n']);
+fprintf(fid, ['Thickness:     ' num2str(thickness*1000) 'mm\r\n']);
 fclose(fid);
 cd(MATLABFolder)
 end

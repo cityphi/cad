@@ -5,6 +5,7 @@ function [ volume, mass, radius, CD, CV ] = envelope( l, FR )
 % engineeringtoolbox - STP
 rhoH = 0.1664;
 
+% angle of the cone at back of blimp
 alpha = 10*pi()/180;
 
 % Diameter and radius of front

@@ -1,4 +1,4 @@
-function gondolaAnalysis (aThrust, payLoadMass)
+function gondolaAnalysis (aThrust, payLoadMass, steel, nylon12)
 %This function gives safty factors and dimension for the bearing arms,
 %torsion hinge to gondola washers, the required motor torque, the required
 %motor force, the required braking force, the required acceleration, 
@@ -62,10 +62,6 @@ gondSpecs = [
 gondSpecs(10) = gondSpecs(10) + payLoadMass/2;
 gondSpecs(11) = gondSpecs(11) + payLoadMass/2;
 
-%[ density Sut Suc Sy E brittle ] - information of the material
-nylon12 = [1130 38.5*10^6 6*10^6 28*10^6 1.138*10^9 1]; % matweb unrenforced
-steel = [8000 420*10^6 250*10^6 320*10^6 200*10^9 0];
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %slip prevention and required motor torque 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,7 +79,6 @@ while worstCaseAcceleration >= 0;
         i=i+1;
     end
     if i > length(motorTorques)
-        tchech = 1;
         break;
     end
     Tw = motorTorques(i);

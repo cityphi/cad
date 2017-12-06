@@ -66,7 +66,7 @@ guidata(hObject, handles);
 
 defaultSpeed  = 8;
 defaultWeight = 300;
-defaultTime   = 30;
+defaultTime   = 18;
 defaultLength = 3.5;
 defaultFR = 3;
 
@@ -151,13 +151,13 @@ else
             msgbox(['Could not meet the minimun carrying capacity of 200g.'...
                 'Try reducing the required speed or increasing the size of the blimp.'],...
                 'Parameter not Achieved!', 'warn');
-        case 4
-            msgbox(['Could not acheive the flight time. Need to add a '...
-                'larger battery or a smaller motor to the data files.'],...
+        case 3
+            msgbox(['Could not acheive the flight time. Need to increase '...
+                'the airship volume.'],...
                 'Parameter not Achieved!', 'warn');
         case 10
             msgbox(['Carrying capacity is negative, increase the volume'...
-                'of the envelope'], 'Negative Carrying Capacity', 'error');
+                ' of the envelope'], 'Negative Carrying Capacity', 'error');
     end
 end
             
@@ -239,7 +239,8 @@ end
 
 function Wrong_File()
 clc
-h = msgbox('You cannot run the MAIN.fig file directly. Please run the program from the Main.m file directly.','Cannot run the figure...','error','modal');
+h = msgbox(['You cannot run the MAIN.fig file directly. Please run the program'...
+    ' from the Main.m file directly.'],'Cannot run the figure...','error','modal');
 uiwait(h);
 disp('You must run the MAIN.m file. Not the MAIN.fig file.');
 disp('To run the MAIN.m file, open it in the editor and press ');

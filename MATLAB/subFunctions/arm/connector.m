@@ -44,13 +44,6 @@ while loop && iterations < maxIterations;
     end
 end
 
-%--CHECK for Buckling
-thrustForce = [0 0 0 0 0 -FT*2 0 0 0 ]; % location and z force
-forces = [thrustForce; centreMass(weight, 0)];
-
-Pcr = (1.2)*pi()^2*material(5)* dimensions(2)^3/(12*dimensions(3));
-nBuck = -Pcr/sum(forces(:, 6));
-
 %--CHECK other part of the connector
 % dimensions of the base connector
 l  = 0.06;
@@ -75,7 +68,7 @@ stressTensor = keelTensor(reactionForces(2, :), keelDimensions);
 nKeel = cauchy(stressTensor, material);
 
 %--LOG File
-connectorLog(n, nBuck, nKeel, safetyFactor, dimensions(2));
+connectorLog(n, nKeel, safetyFactor, dimensions(2));
 
 %--Solidworks
 connectorSW(dimensions(2), radius);
@@ -165,7 +158,7 @@ tensor = [ Sx  txy txz;
            txz tyz Sz ];
 end
 
-function connectorLog(n, nBuck, nKeel, nReq, thickness)
+function connectorLog(n, nKeel, nReq, thickness)
 %CONNECTORLOG Outputs useful data to the log file
 %   CONNECTORLOG(n, nBuck, nKeel, nReq) returns nothing
 
@@ -183,13 +176,6 @@ fprintf(fid, 'This gives safety factors for the different failures:\r\n');
 fprintf(fid, ['\tConnector Stress: ' num2str(n)]);
 % display a message if the safety factor couldn't be acheived
 if n < nReq
-    fprintf(fid, ' ****This does not meet safety Factor\r\n');
-else
-    fprintf(fid, '\r\n');
-end
-fprintf(fid, ['\tConnector Buckling: ' num2str(nBuck)]);
-% display a message if the safety factor couldn't be acheived
-if nBuck < nReq
     fprintf(fid, ' ****This does not meet safety Factor\r\n');
 else
     fprintf(fid, '\r\n');

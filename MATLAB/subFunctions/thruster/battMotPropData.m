@@ -38,12 +38,12 @@ thrusterLog( names, propData, motData, battData );
 thrustMass = motData(1) + propData(1);
 battMass = battData(1);
 thrust = motChoice(7);
-radius = convlength(propChoice(1) * 0.5, 'in', 'm');
+radius = propChoice(1) * 0.5 * 0.0254;
 amps = motChoice(5)/motChoice(4)*1000;
 time = battChoice(3)/amps*60;
 % get the top speed with this setup
-D = convlength(propChoice(1), 'in', 'm');
-P = convlength(propChoice(2), 'in', 'm');
+D = propChoice(1) * 0.0254;
+P = propChoice(2) * 0.0254;
 speed = airshipSpeed(D, P, motChoice(6)/60, dragValues);
 
 % write to the solidworks file
@@ -96,7 +96,7 @@ function thrusterSW(diameter, battH, battL, battW)
 %THRUSTERSW Outputs data to solidworks for the arm
 %   THRUSTERSW(diameter, battH, battL, battW) returns nothing
 
-diameter = convlength(diameter, 'in', 'm')*1000;
+diameter = diameter * 0.0254 * 1000;
 
 SWPropFile = '2016-PROPELLER-EQUATIONS.txt';
 SWPropCaseFile = '2017-PROPELLER-ENCASEMENT-EQUATIONS.txt';

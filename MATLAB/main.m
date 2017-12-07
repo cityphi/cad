@@ -144,7 +144,7 @@ else
     
     switch warning
         case 1
-            msgbox(['No battery or mtotor combination could achieve the' ...
+            msgbox(['No battery or mtotor combination could achieve the ' ...
                 'desired weight. Try reducing the desired weight or'...
                 'increasing the volume of ariship.'], 'Parameter not Achieved!', 'warn');
         case 2
@@ -223,7 +223,7 @@ elseif a < 0
 end
 
 set(handles.textSectionLength, 'String', ['Section Length: ' num2str(a) 'm'])
-if a > convlength(60, 'in', 'm')
+if a > 1.524
     set(handles.textWarning, 'Visible', 'on');
     set(handles.textWarningString, 'String', ['Section length larger then '...
         'specified max of 90" (1524mm). Might result in strange results.']);

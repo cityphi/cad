@@ -52,8 +52,8 @@ while 1
 	        iterations = iterations + 1;
 	    
 	        % equations use m
-	        D = convlength(data(i, 1), 'in', 'm');
-	        P = convlength(data(i, 2), 'in', 'm');
+	        D = data(i, 1) * 0.0254;
+	        P = data(i, 2) * 0.0254;
 	        
 	        % the max rotations is when thrust is 0
 	        nm = Vzero/(0.2*D+0.74*P);

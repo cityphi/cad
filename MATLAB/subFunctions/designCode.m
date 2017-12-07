@@ -204,8 +204,8 @@ end
 %---PLOTS
 % drag speed plot
 axes(handles.axes1);
-D = convlength(propChoice(1), 'in', 'm');
-P = convlength(propChoice(2), 'in', 'm');
+D = propChoice(1)*0.0254;
+P = propChoice(2)*0.0254;
 n = motChoice(6)/60;
 Vp = 0:0.1:round(speed+3);
 Tp = 0.20477*(pi*D^2)/4*(D/P)^1.5*((P * n)^2 - Vp*P * n)*2;

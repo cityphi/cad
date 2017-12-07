@@ -1,16 +1,21 @@
-function [propChoice, motChoice, badness] = propeller (reqSpeed, dragValues, maxMass, maxPower)
+function [propChoice, motChoice, badness] = propeller (reqSpeed, dragValues, maxPower)
+%PROPELLER Chooses a propeller motor combinatio based on inputs
+%   PROPELLER returns the propeller size and weight, all the parameters
+%   about the motor, and the 'badness' of the choice.
+%   Badness is a percentage off from the required value
+%
+%   INPUTS
+%   reqSpeed - the desired speed of the airship
+%   dragValues [ CD rho vol ] - values used for drag
+%   maxMass - a limit on the mass of the motor and propeller
+%   maxPower - a limit of the watts used by the motor
 
 % file
 propCSV = 'propellerMotorData.csv';
 propData = csvread(propCSV, 1, 1);
 propData(:, ~any(propData, 2)) = [];
 
-% remove data points with weights that are too large
-if maxMass
-	massCondition = propData(:, 9) + propData(:, 12) > maxMass;
-	propData(massCondition, :) = [];
-end
-
+% remove data points with power that are too large
 if maxPower
 	powerCondition = propData(:, 5) > maxPower;
 	propData(powerCondition, :) = [];

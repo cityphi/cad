@@ -39,7 +39,8 @@ thrustMass = motData(1) + propData(1);
 battMass = battData(1);
 thrust = motChoice(7);
 radius = convlength(propChoice(1) * 0.5, 'in', 'm');
-time = battChoice(2)/(motChoice(5)/motChoice(4));
+amps = motChoice(5)/motChoice(4)*1000;
+time = battChoice(3)/amps*60;
 % get the top speed with this setup
 D = convlength(propChoice(1), 'in', 'm');
 P = convlength(propChoice(2), 'in', 'm');
@@ -104,6 +105,11 @@ SWDoorFile = '2014-COMPONENT-COVER-DOOR-EQUATIONS.txt';
 SWBattFile = '5006-BATTERY2-EQUATIONS.txt';
 MATLABFolder = fullfile('../MATLAB');
 SWFolder = fullfile('../Solidworks/Equations');
+
+% incase a battery is less wide than the other components in the case
+if battW < 24
+    battW = 24;
+end
 
 % write to the different solidworks files
 cd(SWFolder)

@@ -106,6 +106,11 @@ SWBattFile = '5006-BATTERY2-EQUATIONS.txt';
 MATLABFolder = fullfile('../MATLAB');
 SWFolder = fullfile('../Solidworks/Equations');
 
+% incase a battery is less wide than the other components in the case
+if battW < 24
+    battW = 24;
+end
+
 % write to the different solidworks files
 cd(SWFolder)
 fid = fopen(SWPropFile, 'w+t');

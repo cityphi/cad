@@ -144,11 +144,11 @@ else
     
     switch warning
         case 1
-            msgbox(['No battery or mtotor combination could achieve the' ...
-                'desired weight. Try reducing the desired weight or'...
+            msgbox(['No battery or mtotor combination could achieve the ' ...
+                'desired weight. Try reducing the desired weight or '...
                 'increasing the volume of ariship.'], 'Parameter not Achieved!', 'warn');
         case 2
-            msgbox(['Could not meet the minimun carrying capacity of 200g.'...
+            msgbox(['Could not meet the minimun carrying capacity of 200g. '...
                 'Try reducing the required speed or increasing the size of the blimp.'],...
                 'Parameter not Achieved!', 'warn');
         case 3
@@ -211,7 +211,7 @@ a = fzero(@(a) length(a) - L, 0);
 backRadius = (rf - a*sin(alpha))*1000;
     
 if backRadius < 50
-    msgbox(['Invalid Dimensions. The dimenions cause the cone at the back of'...
+    msgbox(['Invalid Dimensions. The dimenions cause the cone at the back of '...
         'the airship to intersect itself.'],'Cannot generate!','error');
     kill = 1;
     return;
@@ -223,7 +223,7 @@ elseif a < 0
 end
 
 set(handles.textSectionLength, 'String', ['Section Length: ' num2str(a) 'm'])
-if a > convlength(60, 'in', 'm')
+if a > 1.524
     set(handles.textWarning, 'Visible', 'on');
     set(handles.textWarningString, 'String', ['Section length larger then '...
         'specified max of 90" (1524mm). Might result in strange results.']);
@@ -233,7 +233,7 @@ elseif a < 1.092
         'will result in build error. Analysis may still be able to be done.']);
 elseif FR > 3.5 || FR < 2.8
     set(handles.textWarning, 'Visible', 'on');
-    set(handles.textWarningString, 'String', ['Not recommened to have a'...
+    set(handles.textWarningString, 'String', ['Not recommened to have a '...
         'FR outside of range (2.8-3.5)']);
 end
 

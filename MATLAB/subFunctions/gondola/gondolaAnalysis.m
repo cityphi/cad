@@ -251,10 +251,10 @@ snapDef=    0.001;      %required snapfit deflection
 Lsnap =     0.01;       %inital cut depth for itteration
 
 %snap fit geometry
-theta =     acos((rSnap-snapCut)/rSnap);
+theta =     acos((rSnap-snapDef)/rSnap);
 Isnap =     (rSnap^4)/8*(theta-sin(theta)+2*sin(theta)*(sin(theta/2))^2);
 c =         rSnap - 4/3 * rSnap * ((sin(theta/2))^3)/(theta-sin(theta))...
-            +snapCut;  
+            +snapDef;  
         
 %initial safety factor for itteration        
 nSnap = 0;

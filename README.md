@@ -1,6 +1,3 @@
-#############################################
-	GROUP RE3: WILDCAT DESIGN
-#############################################	
 # DESCRIPTION
 This code takes inputs for a small unmanned airship and parameterizes the 3D CAD files to work with the desired inputs.
 

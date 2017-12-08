@@ -4,8 +4,12 @@
 # DESCRIPTION
 This code takes inputs for a small unmanned airship and parameterizes the 3D CAD files to work with the desired inputs.
 
+# REQUIREMENTS
+Matlab R2016a
+SolidWorks 2017
+
 # RUN
-To run the code simply launch main.m in Matlab R2016a
+To run the code simply launch main.m in 
 Ensure that the Matlab current folder is the MATLAB folder where main.m is located, otherwise errors will occur when writing to the log and SolidWorks files.
 
 1. Enter two of Length, Width, or Fineness Ratio into the envelope dimensions section

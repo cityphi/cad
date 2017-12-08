@@ -155,7 +155,7 @@ while 1;
                     break
                 end
             else
-                if speedBadness <= 0
+                if motBadness <= 0
                     break
                 else
                     if weightBadness <= battBadness

@@ -155,14 +155,19 @@ while 1;
                     break
                 end
             else
-                if weightBadness <= battBadness
+                if speedBadness <= 0
                     break
                 else
-                    indexBatt = find(battMasses == battChoice(2));
-                    if indexBatt ~= 1
-                        massLimitBatt = battMasses(indexBatt-1);
-                    else
+                    if weightBadness <= battBadness
                         break
+                    else
+                        indexBatt = find(battMasses == battChoice(2));
+                        if indexBatt ~= 1
+                            massLimitBatt = battMasses(indexBatt-1);
+                        else
+                            warningMessage = 3;
+                            break
+                        end
                     end
                 end
             end

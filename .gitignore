@@ -26,7 +26,6 @@
 *.sql
 *.sqlite
 *.txt
-!README.txt
 
 # OS generated files #
 ######################
@@ -49,3 +48,4 @@ octave-workspace
 *.autosave
 Solidworks/Equations/Icon
 
+!README.txt

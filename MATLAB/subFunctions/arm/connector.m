@@ -55,16 +55,15 @@ a2 = 0.008;
 % l a w h(main) a(smaller)
 keelDimensions = [ l a1 w1 h1 a2 ];
 
-keelReactions = [ -l/2 0 -h1 0 0 1 0 0 0;
-                   l/2 0  h1 1 0 1 0 0 0];
+keelReactions = [ 0 0 h1 0 0 1 0 0 0];
 
-thrustForce = [0 0 0 FT*2 0 0 0 0 0 ];
-forces = [thrustForce; centreMass(weight, pi()/2)];
+thrustForce = [0 0 0 0 0 -FT*2 0 0 0 ];
+forces = [thrustForce; centreMass(weight, 0)];
 forces(:, 3) = forces(:, 3) + radius + dimensions(3);
 reactionForces = forceSolver(forces, keelReactions);
 
 % build a stress tensor and use cauchy to solve for safety factor
-stressTensor = keelTensor(reactionForces(2, :), keelDimensions);
+stressTensor = keelTensor(reactionForces(1, :), keelDimensions);
 nKeel = cauchy(stressTensor, material);
 
 %--LOG File
@@ -137,11 +136,9 @@ w   = dimensions(3);
 h   = dimensions(4);
 
 % split the forces array for use in equations
-Fx  = forces(4);
 Fz  = forces(6);
 
 % area of the z-y cross-section
-A  = a^2;
 I  = a^4/12;
 
 % for shear stress
@@ -153,12 +150,12 @@ b = w;
 %        ^
 %   /\  z|-->
 %   \/     y
-Sx  = Fx/A;
+Sx  = 0;
 Sy  = 0;
 Sz  = 0;
 txy = 0;
-txz = -V*Q/(I*b);
-tyz = 0;
+txz = 0;
+tyz = -V*Q/(I*b);
 
 % layout of the cauchy stress tensor
 tensor = [ Sx  txy txz;

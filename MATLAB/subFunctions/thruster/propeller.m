@@ -4,7 +4,6 @@ function [propChoice, motChoice, badness] = propeller (reqSpeed, dragValues, max
 %   about the motor, and the 'badness' of the choice.
 %   Badness is a percentage off from the required value
 %
-%   INPUTS
 %   reqSpeed - the desired speed of the airship
 %   dragValues [ CD rho vol ] - values used for drag
 %   maxMass - a limit on the mass of the motor and propeller

@@ -1,3 +1,19 @@
+% =========================================================================
+% =========================================================================
+%                              WILDCAT DESIGN     
+% =========================================================================
+% =========================================================================
+
+% Developed by: Alex Pennell, Isaak Goldenberg, Sawyer Woodside, Joey Kane
+% GROUP: RE3
+% University of Ottawa
+% Mechanical Engineering
+% Latest Revision: 08/12/2017
+
+% =========================================================================
+% Analyses and parameterises components of an airship based on inputs
+% =========================================================================
+
 function varargout = main(varargin)
 % MAIN MATLAB code for main.fig
 %      MAIN, by itself, creates a new MAIN or raises the existing
@@ -152,6 +168,10 @@ else
                 'Try reducing the required speed or increasing the size of the blimp.'],...
                 'Parameter not Achieved!', 'warn');
         case 3
+            msgbox(['Could not acheive the required speed. Need to lower the '...
+                'speed or blimp volume.'],...
+                'Parameter not Achieved!', 'warn');
+        case 4
             msgbox(['Could not acheive the flight time. Need to increase '...
                 'the airship volume.'],...
                 'Parameter not Achieved!', 'warn');

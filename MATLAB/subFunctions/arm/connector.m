@@ -74,6 +74,10 @@ connectorLog(n, nKeel, safetyFactor, dimensions(2));
 connectorSW(dimensions(2), radius);
 end
 
+%-------------------------------------
+%   TENSOR
+%-------------------------------------
+
 function [ tensor ] = connectorTensor(forces, dimensions)
 %CONNECTORTENSOR Cauchy stress tensor of the connector
 %   tensor = connectorTensor(F, D) returns a 3x3 matrix which is used by
@@ -118,6 +122,10 @@ tensor = [ Sx  txy txz;
            txz tyz Sz ];
 end
 
+%-------------------------------------
+%   TENSOR
+%-------------------------------------
+
 function [ tensor ] = keelTensor(forces, dimensions)
 %KEELTENSOR Cauchy stress tensor of the keel section of the connector
 %   tensor = connectorTensor(F, D) returns a 3x3 matrix which is used by
@@ -158,6 +166,10 @@ tensor = [ Sx  txy txz;
            txz tyz Sz ];
 end
 
+%-------------------------------------
+%   LOG
+%-------------------------------------
+
 function connectorLog(n, nKeel, nReq, thickness)
 %CONNECTORLOG Outputs useful data to the log file
 %   CONNECTORLOG(n, nBuck, nKeel, nReq) returns nothing
@@ -190,6 +202,10 @@ end
 fclose(fid);
 cd(MATLABFolder)
 end
+
+%-------------------------------------
+%   SOLIDWORKS
+%-------------------------------------
 
 function connectorSW(thickness, radius)
 %CONNECTORSW Outputs data to solidworks for the connector

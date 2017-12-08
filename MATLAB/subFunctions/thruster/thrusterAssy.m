@@ -1,6 +1,10 @@
 function [ weight ] = thrusterAssy( thrusterWeight, battMass, radius )
 %THRUSTERASSY Get total weight of thruster assy
 %   THRUSTERASSY returns the CG of the thruster assembly
+%   
+%   thrusterWeight - is the weight of thruster
+%   battMass - mass of the battery
+%   radius - radius of the propeller
 
 % get the mass dat from the file
 massData = csvread('weightData.csv', 1);
@@ -22,6 +26,10 @@ weight(3) = weight(3) + radius;
 % LOG file
 thrusterAssyLog(round(weight(1)*2*1000/9.81, 1));
 end
+
+%--------------------------------------------------
+%   LOG
+%--------------------------------------------------
 
 function thrusterAssyLog(mass)
 %THRUSTERASSYLOG Outputs useful data to the log file

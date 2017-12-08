@@ -94,7 +94,7 @@ gondReactions(3:4,:) = rotate(gondReactions(3:4,:), gondAngle, 0, 1, 2);
 %%%%%%%%%%%%%% Acceleration %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 gondReactionsSolved = forceSolver(gondForces, gondReactions, [1 gondAngle]);
 
-gondAcceleration = (-gondReactionsSolved(5,4))/(abs(gondReactionsSolved(5,4)))...
+gondAcceleration = (gondReactionsSolved(5,4))/(abs(gondReactionsSolved(5,4)))...
     *sqrt((gondReactionsSolved(5,4)^2)+(gondReactionsSolved(5,6)^2))/(m1+m2);
 
 %%%%%%%%%finding max arm force%%%%%%%%%

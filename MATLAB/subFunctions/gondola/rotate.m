@@ -94,9 +94,9 @@ if scenario == 5
                 rotated(i,2) = cos(yz)*temp(i,2) + sin(yz)*temp(i,3);
                 rotated(i,3) = cos(yz)*temp(i,3) + sin(yz)*temp(i,2);
                 rotated(i,5) = cos(yz)*temp(i,5) + sin(yz)*temp(i,6);
-                rotated(i,6) = cos(yz)*temp(i,6) + sin(yz)*temp(i,4);
+                rotated(i,6) = cos(yz)*temp(i,6) + sin(yz)*temp(i,5);
                 rotated(i,8) = cos(yz)*temp(i,8) + sin(yz)*temp(i,9);
-                rotated(i,9) = cos(yz)*temp(i,9) + sin(yz)*temp(i,7);
+                rotated(i,9) = cos(yz)*temp(i,9) + sin(yz)*temp(i,8);
             end
         end
     end

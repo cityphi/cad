@@ -70,12 +70,12 @@ worstCaseAcceleration = 0;
 i = 0;
 tcheck = 0;
 
-while worstCaseAcceleration >= 0;
+while worstCaseAcceleration <= 0;
     Tspring = 1.5 * (Tw * sqrt(Lhd^2+Hdrive^2))/(rFw * Mu); %motor torsion spring torque
     Fspring =  Tspring /(sqrt(Lhd^2+Hdrive^2)); %force of spring acting on friction wheel
     Fnfric =  -Fspring; % normal force of frction wheel equal to spring for
     worstCaseAcceleration = gondolaForces(gondSpecs, -pi/2, 0, 0, aThrust, -Tw, Fnfric, 0,0);
-    if worstCaseAcceleration >= 0;
+    if worstCaseAcceleration <= 0;
         i=i+1;
     end
     if i > length(motorTorques)

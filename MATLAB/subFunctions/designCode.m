@@ -156,8 +156,6 @@ while 1;
                 end
             else
                 if motBadness <= 0
-                    break
-                else
                     if weightBadness <= battBadness
                         break
                     else
@@ -165,10 +163,12 @@ while 1;
                         if indexBatt ~= 1
                             massLimitBatt = battMasses(indexBatt-1);
                         else
-                            warningMessage = 3;
                             break
                         end
                     end
+                else
+                    warningMessage = 3;
+                    break
                 end
             end
         case 3 % time

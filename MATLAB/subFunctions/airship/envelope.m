@@ -1,6 +1,10 @@
 function [ volume, mass, radius, CD, CV ] = envelope( l, FR )
-%ENVELOPE Summary of this function goes here
-%   [V, m, r, CD] = envelope( l, FR ) returns properties of the envelope based on set restrictions and the parameters given as the input.
+%ENVELOPE Calculates the dimensions of the envelope
+%   [V, m, r, CD] = envelope( l, FR ) returns properties of the envelope
+%   based on set restrictions and the parameters given as the input.
+%   
+%   l - length of the airship
+%   FR - fineness ratio
 
 % engineeringtoolbox - STP
 rhoH = 0.1664;
@@ -72,6 +76,10 @@ envelopeLog(l, FR, D, CD, volume, sum(massHelium), sum(massPlastic), mass(2))
 envelopeSW(radius, a)
 end
 
+%----------------------------------------
+%   LOG
+%----------------------------------------
+
 function envelopeLog(L, FR, D, CD, vol, massHelium, massPlastic, CM)
 %ENVELOPELOG Outputs useful data to the log file
 %   ENVELOPELOG(n, nReq, mass, thread) returns nothing
@@ -94,6 +102,10 @@ fprintf(fid, ['Centre of mass at ' num2str(round(CM*1000, 1)) 'mm (in x) from th
 fclose(fid);
 cd(MATLABFolder)
 end
+
+%----------------------------------------
+%   SOLIDWORKS
+%----------------------------------------
 
 function envelopeSW(radius, length)
 %ENVELOPESW Outputs data to solidworks for the envelope

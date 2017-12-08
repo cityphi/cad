@@ -1,4 +1,12 @@
 function [battChoice, badness] = battery( reqTime, minAmps, minVolts, maxMass )
+%BATTERY Chooses a battery based on the inputs
+%   BATTERY( reqTime, minAmps, minVolts, maxMass ) returns a parameterises
+%   battery to be used in the analysis
+%
+%   reqTime - required flying time
+%   minAmps - minimum discharge amps of the battery
+%   minVolts - minimum voltage of the battery
+%   maxMass - maximum mass of the battery
 
 % file
 battCSV = 'batteryData.csv';

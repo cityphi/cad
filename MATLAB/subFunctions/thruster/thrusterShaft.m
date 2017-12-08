@@ -100,6 +100,10 @@ shaftSW(dimensions(3), shaftEnd)
 weight = centreMass(weights(end, :));
 end
 
+%--------------------------------------------------
+%   TENSOR
+%--------------------------------------------------
+
 function [tensor] = shaftTensor(forces, dimensions)
 %SHAFTTENSOR Cauchy stress tensor of the arm.
 %   tensor = SHAFTTENSOR(F, D) returns a 3x3 matrix which is used by
@@ -131,6 +135,10 @@ tensor = [ Sx  txy txz;
            txz tyz Sz ];
 end
 
+%--------------------------------------------------
+%   LOG
+%--------------------------------------------------
+
 function shaftLog(n, nReq, weight, thread)
 %SHAFTLOG Outputs useful data to the log file
 %   SHAFTLOG(n, nReq, weight, thread) returns nothing
@@ -159,6 +167,10 @@ fprintf(fid, ['Thread size:   M' num2str(thread) '\r\n']);
 fclose(fid);
 cd(MATLABFolder)
 end
+
+%--------------------------------------------------
+%   SOLIDWORKS
+%--------------------------------------------------
 
 function shaftSW(radius, length)
 %SHAFTSW Outputs data to solidworks for the arm

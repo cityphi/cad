@@ -55,6 +55,10 @@ thrusterMass = [weight(1)/9.81 weight(2:4)];
 armSW(dimensions(2), dimensions(3))
 end
 
+%-------------------------------------
+%   WEIGHT
+%-------------------------------------
+
 function [ weight ] = armWeight( dimensions, rho )
 %ARMWEIGHT Weight and centre of mass of arm.
 %   W = ARMWEIGHT(D, p) returns a vector with the weight and the
@@ -82,6 +86,10 @@ locZ = -locY;
 % build the array to return
 weight = [ mag, locX, locY, locZ ];
 end
+
+%-------------------------------------
+%   FORCES
+%-------------------------------------
 
 function [reactions, halfReactions] = armForces(weight, inForces, aPitch, airshipRad)
 %ARMFORCES Reaction forces of the arm.
@@ -116,6 +124,10 @@ forces = [forces; forces];
 forces(numForces+1:end, 2) = -forces(numForces+1, 2);
 reactions = forceSolver(forces, connectorReact);
 end
+
+%-------------------------------------
+%   TENSOR
+%-------------------------------------
 
 function [tensor] = armTensor(forces, dimensions)
 %ARMTENSOR Cauchy stress tensor of the arm.
@@ -169,6 +181,10 @@ tensor = [ Sx  txy txz;
            txz tyz Sz ];
 end
 
+%-------------------------------------
+%   LOG
+%-------------------------------------
+
 function armLog(mass, n, thickness)
 %THRUSTERASSYLOG Outputs useful data to the log file
 %   THRUSTERASSYLOG(mass) returns nothing
@@ -187,6 +203,10 @@ fprintf(fid, ['Thickness:     ' num2str(thickness*1000) 'mm\r\n']);
 fclose(fid);
 cd(MATLABFolder)
 end
+
+%-------------------------------------
+%   SOLIDWORKS
+%-------------------------------------
 
 function armSW(thickness, width)
 %ARMSW Outputs data to solidworks for the arm

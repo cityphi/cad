@@ -50,6 +50,10 @@ speed = airshipSpeed(D, P, motChoice(6)/60, dragValues);
 thrusterSW(propChoice(1), battChoice(end), battChoice(end-2), battChoice(end-1));
 end
 
+%--------------------------------------------------
+%   LOG
+%--------------------------------------------------
+
 function thrusterLog( names, propChoice, motChoice, battChoice )
 %THRUSTERLOG writes to the log files of the program
 %   THRUSTERLOG(names, mot, prop, batt) does not return anything
@@ -91,6 +95,10 @@ fclose(fid);
 cd(MATLABFolder)
 
 end
+
+%--------------------------------------------------
+%   SOLIDWORKS
+%--------------------------------------------------
 
 function thrusterSW(diameter, battH, battL, battW)
 %THRUSTERSW Outputs data to solidworks for the arm

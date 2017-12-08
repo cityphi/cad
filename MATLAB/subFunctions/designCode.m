@@ -1,6 +1,13 @@
 function warningMessage = designCode( requirements, scenario, l, FR, handles )
-%DESIGNCODE Summary of this function goes here
-%   Detailed explanation goes here
+%DESIGNCODE Runs the analysis of the airship
+%   DESIGNCODE(requirements, scenario, l, FR, handles) returns a warning
+%   message for the GUI to output if needed.
+%
+%   requirements [ reqSpeed reqTime reqWeight ] - required from main
+%   scenario - dominant parameter
+%   l - length (tip to tip) of the airship
+%   FR - fineness ratio of the airship
+%   handles - GUI parameter
 
 %---SET VALUES
 % M [ density Sut Suc Sy E brittle ] - information of the material
@@ -155,15 +162,20 @@ while 1;
                     break
                 end
             else
-                if weightBadness <= battBadness
-                    break
-                else
-                    indexBatt = find(battMasses == battChoice(2));
-                    if indexBatt ~= 1
-                        massLimitBatt = battMasses(indexBatt-1);
-                    else
+                if motBadness <= 0
+                    if weightBadness <= battBadness
                         break
+                    else
+                        indexBatt = find(battMasses == battChoice(2));
+                        if indexBatt ~= 1
+                            massLimitBatt = battMasses(indexBatt-1);
+                        else
+                            break
+                        end
                     end
+                else
+                    warningMessage = 3;
+                    break
                 end
             end
         case 3 % time

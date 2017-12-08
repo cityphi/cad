@@ -226,7 +226,7 @@ set(handles.textSectionLength, 'String', ['Section Length: ' num2str(a) 'm'])
 if a > 1.524
     set(handles.textWarning, 'Visible', 'on');
     set(handles.textWarningString, 'String', ['Section length larger then '...
-        'specified max of 90" (1524mm). Might result in strange results.']);
+        'specified max of 60" (1524mm). Might result in strange results.']);
 elseif a < 1.092
     set(handles.textWarning, 'Visible', 'on');
     set(handles.textWarningString, 'String', ['Section length too small and '...

@@ -1,7 +1,8 @@
 function topSpeed = airshipSpeed(D, P, n, dragValues)
-%AIRSHIPSPEED gives the airships top speed
+%AIRSHIPSPEED Gives the airships top speed
 %   speed = AIRSHIPSPEED(D, P, n) returns the intersect of the
 %   thrust curve with the drag curve (top speed)
+%
 %   D - Diameter (in)
 %   P - Pitch (in)
 %   n - RPMs

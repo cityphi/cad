@@ -1,6 +1,13 @@
 function pitches = pitchPlot(fixedMass, gondolaMass, CV, airshipRad)
-%PITCHPLOT Summary of this function goes here
-%   Detailed explanation goes here
+%PITCHPLOT Finds the pitch angle of the airship and plot the values
+%   PITCHPLOT(fixedMass, gondolaMass, CV, airshipRad) returns the pitch
+%   data of the airship
+%
+%   fixedMass - fixed masses form solidworks
+%   gondolaMass - mass of the gondola
+%   CV - the location of the centre of volume relative to the thruster arms
+%   airshipRad - the radius of the airship
+
 
 points = 100; % number of points for graph
 keelDist = 0.0027; % roughly an inch
@@ -38,6 +45,10 @@ title('Pitch angle relative to the gondola')
 xlabel('Distance along the Keel (m)');
 ylabel('Pitch angle (deg)');
 end
+
+%----------------------------------------
+%   GONDOLA POSITION
+%----------------------------------------
 
 function pos = gondola(loc, keelDist, radius, CV, gondolaReference, airshipRad)
 %Finds a x-z coordinate based on distance traveled along the keel

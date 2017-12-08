@@ -1,3 +1,19 @@
+% =========================================================================
+% =========================================================================
+%                              WILDCAT DESIGN     
+% =========================================================================
+% =========================================================================
+
+% Developed by: Alex Pennell, Isaak Goldenberg, Sawyer Woodside, Joey Kane
+% GROUP: RE3
+% University of Ottawa
+% Mechanical Engineering
+% Latest Revision: 08/12/2017
+
+% =========================================================================
+% Analyses and parameterises components of an airship based on inputs
+% =========================================================================
+
 function varargout = main(varargin)
 % MAIN MATLAB code for main.fig
 %      MAIN, by itself, creates a new MAIN or raises the existing

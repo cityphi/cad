@@ -1,6 +1,11 @@
 function [ totalMass, fixedMass, gondolaMass ] = airshipMass( thrusterMass, envMass, radius )
-%AIRSHIPMASS Summary of this function goes here
-%   Detailed explanation goes here
+%AIRSHIPMASS Gets the mass of the total mass of the airship
+%   AIRSHIPMASS( thrusterMass, envMass, radius ) returns the different
+%   masses and the total mass of the airship.
+%   
+%   thrusterMass [mag locx locy locz] - mass of entire thruster assembly
+%   envMass [mag locx locy locz] - mass of plastic and helium
+%   radius - radius of the airship
 
 % get the mass from the file of the fixed masses (ref = 5)
 fixedData = csvread('weightData.csv', 1);

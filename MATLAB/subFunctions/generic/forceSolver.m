@@ -53,6 +53,10 @@ else
 end
 end
 
+%--------------------------------------------------
+%   EQUATION BUILDER
+%--------------------------------------------------
+
 function [ sysEquations ] = equationBuilder(reactions, forces, related, ...
     scenario)
 %EQUATIONBUILDER Makes a system of euqations
@@ -116,6 +120,10 @@ for i = 1:numReactions
 end
 end
 
+%--------------------------------------------------
+%   RELATIONS
+%--------------------------------------------------
+
 function [sysEquations, reactions] = relations(sysEquations, reactions)
 %RELATIONS Changes the system of equations and reactions based on reactions
 %   [sysEqs, reacts] = RELATIONS(sysEqs, reacts) returns modified arrays
@@ -155,6 +163,10 @@ end
 extraEquations( ~any(extraEquations,2), : ) = [];
 sysEquations = [sysEquations; extraEquations];
 end
+
+%--------------------------------------------------
+%   SPECIAL CASES
+%--------------------------------------------------
 
 function sysEquations = specialCases(sysEquations, scenario)
 %SPECIALCASES Adds specific assumptions to solve system
